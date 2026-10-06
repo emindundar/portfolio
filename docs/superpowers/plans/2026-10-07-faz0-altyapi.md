@@ -1972,6 +1972,8 @@ pnpm dev · pnpm build · pnpm lint · pnpm typecheck · pnpm test · pnpm e2e (
 - Performance budget: first-load JS ≤ 180 KB gz, LCP < 2.0 s, CLS < 0.05. Lazy-load anything animation/WebGL.
 - Reduced motion: every animation goes through gsap.matchMedia() (Faz 1) — static fallback required.
 - Tests: unit for lib/* and content schema; e2e for routing/theme/content. Add a test with every behavior change.
+- UI/UX work: the globally installed `ui-ux-pro-max` skill is the first stop for design-system questions (styles, palettes, font pairs).
+  Its output never overrides the spec tokens in app/globals.css. Use `21st-ui-review` (if installed) for UI review, not `21st-ui-build`.
 
 ## Lenis + GSAP bridge (Faz 1, lib/motion.ts)
 lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll', ScrollTrigger.update); gsap.ticker.lagSmoothing(0)
