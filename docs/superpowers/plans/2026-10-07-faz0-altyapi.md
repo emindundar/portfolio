@@ -36,7 +36,7 @@
 
 ## İnsan ön adımları (Task 1'den önce, kullanıcı yapar)
 
-- [ ] Fontshare'den indir: https://www.fontshare.com/fonts/cabinet-grotesk ve https://www.fontshare.com/fonts/satoshi — "Download family" → zip içinden `Fonts/Variable/CabinetGrotesk-Variable.woff2` ve `Fonts/Variable/Satoshi-Variable.woff2` dosyalarını `/Users/emindundar/Portfolyo/public/fonts/` altına koy (klasörü oluştur). Lisans: ITF Free Font License, ticari kullanım serbest, yeniden dağıtım yasak; dosyalar repoda kalır çünkü site bir dağıtım değil, kullanım.
+- [x] Fontlar hazır (2026-10-07): `public/fonts/CabinetGrotesk-Variable.woff2`, `Satoshi-Variable.woff2`, `Satoshi-VariableItalic.woff2`. Kaynak: Fontshare "Download family" zip, `WEB/fonts/` klasörü. Lisans: ITF Free Font License, ticari kullanım serbest, yeniden dağıtım yasak; dosyalar repoda kalır çünkü site bir dağıtım değil, kullanım.
 - [ ] GitHub'da boş public repo oluştur: `emindundar/portfolio`. README/.gitignore ekleme.
 - [ ] **UI/UX Pro Max skill** (zorunlu, kullanıcı tüm projelerde ister; global kurulum):
   ```bash
@@ -72,7 +72,7 @@
 - [ ] **Step 1: Geçici klasöre scaffold üret**
 
 ```bash
-cd /Users/emindundar/Portfolyo
+cd /Users/emindundar/ProjeBelgeleri/Portfolyo
 pnpm create next-app@latest tmp-scaffold --ts --eslint --tailwind --app --no-src-dir --turbopack --import-alias "@/*" --use-pnpm --disable-git --skip-install --no-agents-md --no-agent-feedback --yes
 ```
 
@@ -81,7 +81,7 @@ Beklenen: `tmp-scaffold/` içinde `app/`, `public/`, `package.json`, `next.confi
 - [ ] **Step 2: Kök dizine taşı, geçici klasörü sil, .gitignore birleştir**
 
 ```bash
-cd /Users/emindundar/Portfolyo
+cd /Users/emindundar/ProjeBelgeleri/Portfolyo
 rsync -a --exclude .gitignore tmp-scaffold/ ./
 cat tmp-scaffold/.gitignore .gitignore | awk '!seen[$0]++' > .gitignore.merged && mv .gitignore.merged .gitignore
 rm -rf tmp-scaffold
@@ -195,10 +195,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Font dosyalarını doğrula**
 
 ```bash
-ls -la /Users/emindundar/Portfolyo/public/fonts/CabinetGrotesk-Variable.woff2 /Users/emindundar/Portfolyo/public/fonts/Satoshi-Variable.woff2
+ls -la public/fonts/CabinetGrotesk-Variable.woff2 public/fonts/Satoshi-Variable.woff2 public/fonts/Satoshi-VariableItalic.woff2
 ```
 
-Beklenen: iki dosya listelenir. Yoksa dur, kullanıcıdan "İnsan ön adımları" bölümünü iste.
+Beklenen: üç dosya listelenir. Yoksa dur, kullanıcıdan "İnsan ön adımları" bölümünü iste.
 
 - [ ] **Step 2: `lib/fonts.ts` yaz**
 
@@ -214,9 +214,11 @@ export const cabinet = localFont({
 });
 
 export const satoshi = localFont({
-  src: "../public/fonts/Satoshi-Variable.woff2",
+  src: [
+    { path: "../public/fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" },
+    { path: "../public/fonts/Satoshi-VariableItalic.woff2", weight: "300 900", style: "italic" },
+  ],
   variable: "--font-satoshi",
-  weight: "300 900",
   display: "swap",
 });
 
