@@ -21,7 +21,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "#site/content": ["./.velite"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
