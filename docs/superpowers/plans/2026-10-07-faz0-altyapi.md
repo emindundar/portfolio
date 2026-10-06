@@ -38,6 +38,17 @@
 
 - [ ] Fontshare'den indir: https://www.fontshare.com/fonts/cabinet-grotesk ve https://www.fontshare.com/fonts/satoshi — "Download family" → zip içinden `Fonts/Variable/CabinetGrotesk-Variable.woff2` ve `Fonts/Variable/Satoshi-Variable.woff2` dosyalarını `/Users/emindundar/Portfolyo/public/fonts/` altına koy (klasörü oluştur). Lisans: ITF Free Font License, ticari kullanım serbest, yeniden dağıtım yasak; dosyalar repoda kalır çünkü site bir dağıtım değil, kullanım.
 - [ ] GitHub'da boş public repo oluştur: `emindundar/portfolio`. README/.gitignore ekleme.
+- [ ] **UI/UX Pro Max skill** (zorunlu, kullanıcı tüm projelerde ister; global kurulum):
+  ```bash
+  claude plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
+  claude plugin install ui-ux-pro-max@ui-ux-pro-max-skill
+  ```
+  Python 3.9 yeterli (stdlib only). Faz 1 başında `ui-ux-pro-max` ile brutalist tema için tasarım sistemi raporu üretilir; token'lar spec 3.1 ile çelişirse spec kazanır.
+- [ ] **21st.dev** (opsiyonel, Faz 1'de ilham + UI review): ücretsiz plan günde 2 bileşen kopyası. Skill'ler `21st-ui-explore`, `21st-ui-review` yararlı; `21st-ui-build` bizim token sistemimizi ezebilir, kullanma.
+  ```bash
+  npx @21st-dev/cli@latest init --client claude
+  ```
+  API anahtarı https://21st.dev/mcp adresinden.
 - [ ] Claude Code eklentileri (opsiyonel, geliştirme konforu):
   ```bash
   claude plugin install frontend-design@claude-plugins-official
