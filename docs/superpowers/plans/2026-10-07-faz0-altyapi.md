@@ -795,7 +795,7 @@ curl -sI http://localhost:3000/ | grep -i '^location'
 curl -s http://localhost:3000/tr | grep -o '<html lang="tr"'
 curl -sL -o /dev/null -w '%{http_code}\n' http://localhost:3000/fr
 curl -sL -o /dev/null -w '%{http_code}\n' http://localhost:3000/en/nope
-curl -s http://localhost:3000/en | grep -o 'hreflang="[^"]*"' | sort -u
+curl -s http://localhost:3000/en | grep -io 'hreflang="[^"]*"' | sort -u
 kill %1
 ```
 
@@ -2033,7 +2033,7 @@ vercel.com → Add New → Project → `emindundar/portfolio` import. Framework:
 URL=https://<vercel-url>
 curl -sI -H 'Accept-Language: tr' $URL/ | grep -i '^location'
 curl -sL -o /dev/null -w '%{http_code}\n' $URL/fr
-curl -s $URL/en | grep -o 'hreflang="[^"]*"' | sort -u
+curl -s $URL/en | grep -io 'hreflang="[^"]*"' | sort -u
 ```
 
 Beklenen: `location: /tr`, `404`, üç hreflang.
