@@ -1,0 +1,30 @@
+{
+  "Meta": {
+    "title": "Emin Dündar — Mobile, Web, Backend & AI",
+    "description": "I build products end to end: mobile apps, web, backend and AI integrations."
+  },
+  "Nav": {
+    "home": "Home",
+    "work": "Work",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "lang": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light"
+  },
+  "Home": {
+    "eyebrow": "Portfolio — v0",
+    "headline": "I build products end to end.",
+    "projectsHeading": "Work"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "Nothing lives at this address.",
+    "backHome": "Back to home"
+  },
+  "Footer": {
+    "rights": "Emin Dündar"
+  }
+}

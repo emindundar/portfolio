@@ -1,0 +1,30 @@
+{
+  "Meta": {
+    "title": "Emin Dündar — Mobil, Web, Backend ve AI",
+    "description": "Ürünü uçtan uca kurarım: mobil uygulama, web, backend ve AI entegrasyonları."
+  },
+  "Nav": {
+    "home": "Ana sayfa",
+    "work": "İşler",
+    "about": "Hakkımda",
+    "services": "Hizmetler",
+    "contact": "İletişim",
+    "lang": "Dil",
+    "theme": "Tema",
+    "themeDark": "Koyu",
+    "themeLight": "Açık"
+  },
+  "Home": {
+    "eyebrow": "Portfolyo — v0",
+    "headline": "Ürünü uçtan uca kurarım.",
+    "projectsHeading": "İşler"
+  },
+  "NotFound": {
+    "title": "Sayfa bulunamadı",
+    "body": "Bu adreste bir şey yok.",
+    "backHome": "Ana sayfaya dön"
+  },
+  "Footer": {
+    "rights": "Emin Dündar"
+  }
+}
