@@ -18,6 +18,12 @@ describe("alternatesFor", () => {
       languages: { en: "/en", tr: "/tr", "x-default": "/en" },
     });
   });
+  it("adds a missing leading slash", () => {
+    expect(alternatesFor("work", "en")).toEqual({
+      canonical: "/en/work",
+      languages: { en: "/en/work", tr: "/tr/work", "x-default": "/en/work" },
+    });
+  });
   it("exposes the production site url", () => {
     expect(SITE_URL).toBe("https://emindundar.dev");
   });

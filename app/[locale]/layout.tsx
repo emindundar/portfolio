@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { routing, type Locale } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { fontClassNames } from "@/lib/fonts";
 import { alternatesFor, SITE_URL } from "@/lib/seo";
 import "../globals.css";
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
     metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: "%s — Emin Dündar" },
     description: t("description"),
-    alternates: alternatesFor("/", locale as Locale),
+    alternates: alternatesFor("/", locale),
   };
 }
 

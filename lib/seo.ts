@@ -4,7 +4,8 @@ import { routing, type Locale } from "@/i18n/routing";
 export const SITE_URL = "https://emindundar.dev";
 
 function join(locale: Locale, path: string): string {
-  const clean = path === "/" ? "" : path.replace(/\/+$/, "");
+  const trimmed = path.replace(/\/+$/, "");
+  const clean = trimmed === "" ? "" : trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   return `/${locale}${clean}`;
 }
 
