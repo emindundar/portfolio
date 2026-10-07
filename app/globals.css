@@ -70,8 +70,7 @@
     color: var(--bg);
   }
   body[data-cursor="custom"],
-  body[data-cursor="custom"] a,
-  body[data-cursor="custom"] button {
+  body[data-cursor="custom"] * {
     cursor: none;
   }
   :focus-visible {
