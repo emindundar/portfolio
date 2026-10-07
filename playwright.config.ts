@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3000;
+const PORT = 3100;
 const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
@@ -14,7 +14,7 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "pnpm start",
+    command: "pnpm exec next start -p 3100",
     url: `${baseURL}/en`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
