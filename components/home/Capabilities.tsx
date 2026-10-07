@@ -19,7 +19,7 @@ export async function Capabilities({ projects }: { projects: Project[] }) {
             href={{ pathname: "/work", query: { f } }}
             data-reveal
             data-testid="capability"
-            className="group flex min-h-40 flex-col justify-between border-b border-r border-line p-5 hover:bg-surface"
+            className="flex min-h-40 flex-col justify-between border-b border-r border-line p-5 hover:bg-surface"
           >
             <span className="font-display text-2xl">{t(FACET_LABEL_KEYS[f])}</span>
             <span className="font-mono text-sm text-muted">{t("projects", { count: counts[f] })}</span>

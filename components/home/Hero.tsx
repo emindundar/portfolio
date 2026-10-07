@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 export async function Hero() {
   const t = await getTranslations("Hero");
   return (
-    <section className="relative isolate flex min-h-[88vh] flex-col justify-end px-4 pb-12 md:px-6">
+    <section className="relative isolate flex min-h-[88svh] flex-col justify-end px-4 pb-12 md:px-6">
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <HeroShaderLoader />
       </div>
@@ -21,7 +21,7 @@ export async function Hero() {
           <Button href="/work">{t("cta")} →</Button>
         </Magnetic>
       </div>
-      <span className="absolute bottom-4 right-4 font-mono text-xs uppercase text-muted">{t("scroll")}</span>
+      <span aria-hidden="true" className="absolute bottom-4 right-4 font-mono text-xs uppercase text-muted">{t("scroll")}</span>
     </section>
   );
 }

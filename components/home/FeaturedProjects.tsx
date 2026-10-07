@@ -4,9 +4,11 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SectionReveal } from "@/components/motion/SectionReveal";
 import { Button } from "@/components/ui/Button";
 import { Link } from "@/i18n/navigation";
+import { FACET_LABEL_KEYS } from "@/lib/content/facets";
 
 export async function FeaturedProjects({ projects }: { projects: Project[] }) {
   const t = await getTranslations("Home");
+  const tc = await getTranslations("Capabilities");
   const featured = projects.filter((p) => p.featured).slice(0, 4);
   return (
     <section className="px-4 py-16 md:px-6">
@@ -16,10 +18,10 @@ export async function FeaturedProjects({ projects }: { projects: Project[] }) {
           {featured.map((p, i) => (
             <li key={p.slug} data-reveal data-testid="project" className="border-b border-line">
               <Link href={`/work/${p.slug}`} className="grid grid-cols-[3rem_1fr] items-baseline gap-4 py-6 hover:bg-surface md:grid-cols-[4rem_1fr_auto]">
-                <span className="font-mono text-sm text-muted">0{i + 1}</span>
+                <span aria-hidden="true" className="font-mono text-sm text-muted">0{i + 1}</span>
                 <span className="font-display text-2xl md:text-4xl">{p.title}</span>
                 <span className="col-start-2 font-mono text-xs uppercase text-muted md:col-start-3">
-                  {p.year} — {p.facets.join(" · ")}
+                  {p.year} — {p.facets.map((f) => tc(FACET_LABEL_KEYS[f])).join(" · ")}
                 </span>
               </Link>
             </li>

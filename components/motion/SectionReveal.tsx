@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, ScrollTrigger, EASE } from "@/lib/motion";
+import { gsap, useGSAP, EASE } from "@/lib/motion";
 import { useReducedMotion } from "./useReducedMotion";
 
 export function SectionReveal({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -14,7 +14,6 @@ export function SectionReveal({ children, className }: { children: React.ReactNo
       if (reduced || !ref.current) return;
       const items = ref.current.querySelectorAll<HTMLElement>("[data-reveal]");
       if (!items.length) return;
-      gsap.set(items, { willChange: "transform, opacity" });
       gsap.from(items, {
         y: 24,
         opacity: 0,
@@ -22,9 +21,13 @@ export function SectionReveal({ children, className }: { children: React.ReactNo
         stagger: 0.03,
         ease: EASE.out,
         scrollTrigger: { trigger: ref.current, start: "top 85%", once: true },
-        onComplete: () => gsap.set(items, { clearProps: "willChange" }),
+        onStart: () => {
+          gsap.set(items, { willChange: "transform, opacity" });
+        },
+        onComplete: () => {
+          gsap.set(items, { clearProps: "transform,opacity,willChange" });
+        },
       });
-      return () => ScrollTrigger.getAll().forEach((t) => t.trigger === ref.current && t.kill());
     },
     { scope: ref, dependencies: [reduced], revertOnUpdate: true },
   );

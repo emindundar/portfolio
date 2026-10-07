@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { facetCounts } from "./facets";
+import { facetCounts, FACET_LABEL_KEYS } from "./facets";
+import en from "@/messages/en.json";
+import tr from "@/messages/tr.json";
 import type { Project } from "./merge";
 
 const p = (slug: string, facets: Project["facets"]): Project =>
@@ -14,5 +16,13 @@ describe("facetCounts", () => {
   });
   it("returns all zeros for no projects", () => {
     expect(Object.values(facetCounts([])).every((n) => n === 0)).toBe(true);
+  });
+});
+
+describe("FACET_LABEL_KEYS", () => {
+  it.each([["en", en], ["tr", tr]] as const)("every label key exists in Capabilities (%s)", (_l, msgs) => {
+    for (const key of Object.values(FACET_LABEL_KEYS)) {
+      expect(msgs.Capabilities).toHaveProperty(key);
+    }
   });
 });
