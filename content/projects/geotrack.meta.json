@@ -1,0 +1,16 @@
+{
+  "slug": "geotrack",
+  "facets": ["mobile", "backend"],
+  "stack": ["Flutter", "Riverpod", "OSRM", "Nominatim", "Node.js"],
+  "year": 2026,
+  "role": "solo",
+  "featured": true,
+  "order": 1,
+  "cover": { "type": "image", "src": "/media/geotrack/cover.webp", "frame": "phone" },
+  "links": {
+    "repo": [
+      "https://github.com/emindundar/map_tracking",
+      "https://github.com/emindundar/map_tracking_backend"
+    ]
+  }
+}

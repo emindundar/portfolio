@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* Koyu tema varsayılan; açık tema sistem tercihi veya data-theme="light" ile */
+:root {
+  --bg: #0b0b0c;
+  --surface: #141416;
+  --line: #2a2a2e;
+  --fg: #ededed;
+  --muted: #8a8a90;
+  --accent: #ff4d00;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f2ee;
+    --surface: #ffffff;
+    --line: #d9d6d0;
+    --fg: #111111;
+    --muted: #6b6b70;
+    --accent: #e04300;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f2ee;
+  --surface: #ffffff;
+  --line: #d9d6d0;
+  --fg: #111111;
+  --muted: #6b6b70;
+  --accent: #e04300;
+  color-scheme: light;
+}
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --breakpoint-3xl: 90rem; /* 1440px */
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-display: var(--font-cabinet), system-ui, sans-serif;
+  --font-sans: var(--font-satoshi), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--bg);
+  }
+}
