@@ -49,14 +49,29 @@ test.describe("home page", () => {
     await expect.poll(opacity, { timeout: 3000 }).toBe("1");
   });
 
-  test("keyboard: hero CTA is focusable with a visible focus ring", async ({ page, isMobile }) => {
+  test("keyboard: Tab reaches the hero CTA with the accent focus ring", async ({ page, isMobile }) => {
     test.skip(isMobile, "keyboard on desktop");
     await page.goto("/en");
+    await expect(page.locator("html")).toHaveAttribute("data-motion", /reduced|full/);
     const cta = page.getByRole("link", { name: /explore work/i });
-    await cta.focus();
+    const isFocused = () => cta.evaluate((el) => el === document.activeElement);
+    for (let i = 0; i < 20 && !(await isFocused()); i++) await page.keyboard.press("Tab");
     await expect(cta).toBeFocused();
-    const outline = await cta.evaluate((el) => getComputedStyle(el).outlineStyle);
-    expect(outline).not.toBe("none");
+    // Justified sleep: the button's transition-colors also animates outline-color (200 ms); read it once settled.
+    await page.waitForTimeout(250);
+    const ring = await cta.evaluate((el) => {
+      const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+      const probe = document.createElement("span");
+      probe.style.color = accent;
+      document.body.appendChild(probe);
+      const accentRgb = getComputedStyle(probe).color;
+      probe.remove();
+      const cs = getComputedStyle(el);
+      return { width: cs.outlineWidth, style: cs.outlineStyle, color: cs.outlineColor, accentRgb };
+    });
+    expect(ring.style).toBe("solid");
+    expect(ring.width).toBe("2px");
+    expect(ring.color).toBe(ring.accentRgb);
   });
 
   test("turkish home renders translated sections", async ({ page }) => {
