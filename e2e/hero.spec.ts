@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { hasHardwareGL } from "./helpers/gl";
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -14,6 +15,14 @@ test.describe("hero shader", () => {
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
+    if (!(await hasHardwareGL(page))) {
+      // Software GL (CI runners, GPU-less VMs) counts as unsupported: the loader keeps the poster.
+      test.info().annotations.push({ type: "note", description: "software GL → poster path" });
+      await expect(page.locator("[data-hero-poster='static']")).toHaveCount(1);
+      await expect(page.locator("canvas")).toHaveCount(0);
+      expect(errors).toEqual([]);
+      return;
+    }
     const canvas = page.locator("[data-shader='ready'] canvas");
     await expect(canvas).toHaveCount(1);
     await expect(canvas).toHaveAttribute("aria-hidden", "true");
@@ -26,6 +35,7 @@ test.describe("hero shader", () => {
     test.skip(isMobile, "visibility gating is viewport-independent; run on desktop");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
+    test.skip(!(await hasHardwareGL(page)), "needs hardware WebGL");
     const host = page.locator("[data-shader='ready']");
     await expect(host).toHaveCount(1);
     await expect(host).toHaveAttribute("data-running", "1");

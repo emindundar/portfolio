@@ -1,4 +1,5 @@
 import { test, expect, type Browser, type Page } from "@playwright/test";
+import { hasHardwareGL } from "./helpers/gl";
 
 // Motion is an enhancement: if a lazy motion/WebGL chunk fails to load (flaky network, stale deploy),
 // the page must keep its static content and never fall into an error screen.
@@ -16,7 +17,7 @@ async function lazyChunks(browser: Browser): Promise<string[]> {
   });
   const html = await (await page.request.get("/en")).text();
   await page.goto("/en");
-  // Everything lazy has arrived: the split headline (GSAP), Lenis and the shader's first frame.
+  // Everything lazy has arrived: the split headline (GSAP) and Lenis. The shader chunk is part of this set only on hardware GL.
   await expect(page.locator("h1")).toHaveAttribute("aria-label", HEADLINE);
   await expect(page.locator("html")).toHaveClass(/\blenis\b/);
   await page.waitForLoadState("networkidle");
@@ -84,7 +85,9 @@ test.describe("motion chunk failure", () => {
     await ctx.close();
   });
 
-  test("hero shader chunk fails: the poster stays as the static fallback", async ({ browser }) => {
+  test("hero shader chunk fails: the poster stays as the static fallback", async ({ browser, page: probe }) => {
+    await probe.goto("/en");
+    test.skip(!(await hasHardwareGL(probe)), "shader chunk is never requested on software GL (poster path)");
     const shader = await chunksContaining(browser, "uAccent");
     const { ctx, page, errors } = await openWithout(browser, shader);
     await expectStaticHome(page, errors);
