@@ -1,0 +1,51 @@
+import { test, expect, type Page } from "@playwright/test";
+
+function collectErrors(page: Page): string[] {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") errors.push(`console: ${msg.text()}`);
+  });
+  return errors;
+}
+
+test.describe("hero shader", () => {
+  test("renders a canvas when motion and WebGL are available", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/en");
+    await expect(page.locator("[data-shader='ready'] canvas")).toHaveCount(1);
+    await expect(page.locator("[data-shader='ready'] canvas")).toHaveAttribute("aria-hidden", "true");
+    await expect(page.locator("[data-hero-poster]")).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
+  test("renders the poster under reduced motion", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/en");
+    await expect(page.locator("[data-hero-poster]")).toHaveCount(1);
+    await expect(page.locator("canvas")).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
+  test("renders the poster when WebGL is unavailable", async ({ browser }) => {
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await page.addInitScript(() => {
+      const orig = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
+        if (type === "webgl" || type === "webgl2") return null;
+        return (orig as (this: HTMLCanvasElement, t: string, ...r: unknown[]) => unknown).call(this, type, ...rest);
+      } as typeof HTMLCanvasElement.prototype.getContext;
+    });
+    const errors = collectErrors(page);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/en");
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("[data-hero-poster]")).toHaveCount(1);
+    await expect(page.locator("canvas")).toHaveCount(0);
+    expect(errors).toEqual([]);
+    await ctx.close();
+  });
+});

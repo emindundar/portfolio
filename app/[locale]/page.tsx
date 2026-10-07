@@ -5,6 +5,7 @@ import { hasLocale } from "next-intl";
 import type { Metadata } from "next";
 import { alternatesFor } from "@/lib/seo";
 import { SplitReveal } from "@/components/motion/SplitReveal";
+import { HeroShaderLoader } from "@/components/canvas/HeroShaderLoader";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -21,10 +22,13 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <main className="p-6">
-      <p className="font-mono text-muted uppercase tracking-wide">{t("eyebrow")}</p>
-      <SplitReveal as="h1" className="font-display text-6xl">
-        {t("headline")}
-      </SplitReveal>
+      <section className="relative isolate min-h-[80vh] overflow-hidden">
+        <HeroShaderLoader />
+        <p className="font-mono text-muted uppercase tracking-wide">{t("eyebrow")}</p>
+        <SplitReveal as="h1" className="font-display text-6xl">
+          {t("headline")}
+        </SplitReveal>
+      </section>
 
       <section className="mt-12 border-t border-line pt-6">
         <h2 className="font-mono text-muted">01 / {t("projectsHeading")}</h2>
