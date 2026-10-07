@@ -15,7 +15,7 @@ test.describe("SplitReveal hero headline", () => {
   test("reduced motion: h1 stays a plain text node", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/en");
-    await page.getByRole("button", { name: /theme/i }).waitFor();
+    await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
     const h1 = page.locator("h1");
     await expect(h1).toHaveText(HEADLINE);
     await expect(h1.locator('[aria-hidden="true"]')).toHaveCount(0);

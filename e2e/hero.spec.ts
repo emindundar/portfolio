@@ -26,8 +26,8 @@ test.describe("hero shader", () => {
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/en");
-    // Hydration sinyali: istemci bileşeni etkileşimli hale geldi
-    await page.getByRole("button", { name: /theme/i }).waitFor();
+    // İstemci hydrate oldu ve hareket kararını verdi
+    await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
     // Yükleyici karar verdi: kalıcı poster ("pending"/"loading" değil)
     await expect(page.locator("[data-hero-poster='static']")).toHaveCount(1);
     await expect.poll(async () => page.locator("canvas").count(), { timeout: 1500 }).toBe(0);

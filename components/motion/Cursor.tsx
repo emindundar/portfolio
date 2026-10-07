@@ -12,11 +12,11 @@ export function Cursor() {
   const fine = useFinePointer();
   const enabled = !reduced && fine;
 
+  // Always states the decision once mounted ("custom" hides the native cursor via globals.css).
   useEffect(() => {
-    if (!enabled) return;
-    document.body.dataset.cursor = "custom";
+    document.body.dataset.cursor = enabled ? "custom" : "native";
     return () => {
-      delete document.body.dataset.cursor;
+      document.body.dataset.cursor = "native";
     };
   }, [enabled]);
 

@@ -28,9 +28,8 @@ test.describe("home page", () => {
   test("reduced motion: every revealed element is fully visible", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/en");
-    // Hydration settle: the SSR snapshot is "reduced", so wait for hydration before asserting.
-    await page.getByRole("button", { name: /theme/i }).waitFor();
-    await page.waitForTimeout(300);
+    // The client has hydrated and decided; reveal impls never mount under reduced motion.
+    await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
     await expect(page.locator("[data-reveal]").first()).toBeAttached();
     expect(await page.locator("[data-reveal]").count()).toBeGreaterThan(0);
     const hidden = await page.locator("[data-reveal]").evaluateAll((els) =>
@@ -42,8 +41,7 @@ test.describe("home page", () => {
   test("motion: below-fold reveal items start hidden and reveal on scroll", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
-    await page.getByRole("button", { name: /theme/i }).waitFor();
-    await page.waitForTimeout(300);
+    await expect(page.locator("html")).toHaveAttribute("data-motion", "full");
     const item = page.locator("section:last-of-type [data-reveal]").first();
     const opacity = () => item.evaluate((el) => getComputedStyle(el).opacity);
     await expect.poll(opacity).toBe("0");

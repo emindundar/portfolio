@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
 // Lenis + GSAP stay out of first-load JS: they load after hydration, only when motion is allowed.
@@ -22,6 +23,10 @@ const Cursor = dynamic(
 
 export function MotionProvider({ children }: { children: React.ReactNode }) {
   const reduced = useReducedMotion();
+  // Public decision signal (CSS hooks, e2e): absent in SSR HTML, set once the client has hydrated and decided.
+  useEffect(() => {
+    document.documentElement.dataset.motion = reduced ? "reduced" : "full";
+  }, [reduced]);
   return (
     <>
       {!reduced && <SmoothScroll />}
