@@ -11,9 +11,20 @@ test.describe("theme", () => {
   });
 
   test("invalid theme cookie is ignored", async ({ context, page }) => {
-    await context.addCookies([{ name: "theme", value: "evil", url: "http://localhost:3000" }]);
+    const { baseURL } = test.info().project.use;
+    await context.addCookies([{ name: "theme", value: "evil", url: baseURL! }]);
     await page.goto("/en");
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
+  });
+
+  test("invalid cookie falls back to system light", async ({ context, page }) => {
+    const { baseURL } = test.info().project.use;
+    await page.emulateMedia({ colorScheme: "light" });
+    await context.addCookies([{ name: "theme", value: "evil", url: baseURL! }]);
+    await page.goto("/en");
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
+    const bg = await page.locator("html").evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg).toBe("rgb(244, 242, 238)");
   });
 
   test("no rounded corners on the nav links", async ({ page }) => {
