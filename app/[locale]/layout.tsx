@@ -5,6 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { fontClassNames } from "@/lib/fonts";
 import { alternatesFor, SITE_URL } from "@/lib/seo";
+import { Nav } from "@/components/layout/Nav";
+import { Footer } from "@/components/layout/Footer";
+import { ThemeScript } from "@/components/layout/ThemeScript";
 import "../globals.css";
 
 type Props = { children: React.ReactNode; params: Promise<{ locale: string }> };
@@ -31,8 +34,15 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} className={fontClassNames} suppressHydrationWarning>
-      <body className="bg-bg text-fg font-sans">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="flex min-h-dvh flex-col bg-bg text-fg font-sans">
+        <NextIntlClientProvider>
+          <Nav />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
