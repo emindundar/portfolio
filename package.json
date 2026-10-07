@@ -11,7 +11,7 @@
     "content:dev": "velite --watch",
     "build": "run-s content:build next:build",
     "next:build": "next build",
-    "content:build": "velite --clean",
+    "content:build": "velite --strict",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "pnpm content:build && tsc --noEmit",
