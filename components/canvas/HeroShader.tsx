@@ -120,6 +120,8 @@ export default function HeroShader({ onFirstFrame, onError }: Props) {
         running = false;
         cancelAnimationFrame(raf);
       }
+      // Observable pause state (offscreen or hidden tab) for e2e and debugging.
+      host.dataset.running = running ? "1" : "0";
     });
 
     return () => {

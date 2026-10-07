@@ -22,6 +22,19 @@ test.describe("hero shader", () => {
     expect(errors).toEqual([]);
   });
 
+  test("pauses the render loop offscreen and resumes when scrolled back", async ({ page, isMobile }) => {
+    test.skip(isMobile, "visibility gating is viewport-independent; run on desktop");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/en");
+    const host = page.locator("[data-shader='ready']");
+    await expect(host).toHaveCount(1);
+    await expect(host).toHaveAttribute("data-running", "1");
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(host).toHaveAttribute("data-running", "0");
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(host).toHaveAttribute("data-running", "1");
+  });
+
   test("renders the poster under reduced motion", async ({ page }) => {
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "reduce" });
