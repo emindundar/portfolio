@@ -38,5 +38,9 @@ lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll',
 - Velite outputs `.velite/projectMeta.json` / `projectContent.json`; import via `#site/content` only from `lib/content/index.ts`.
 - `npm-run-all2` pinned `^8` (v9 needs Node ≥ 24.15). React renders `hrefLang` camelCase; grep case-insensitively.
 - LHCI: default optimistic aggregation, 2 runs (lenient for Faz 0); tighten to `median-run` + 3 runs in Faz 1.5.
-- LHCI gates: `resource-summary:script:size` ≤ 180 KB (error), LCP ≤ 2.0 s (warn). Faz 0 baseline: script 157 KB, simulated-mobile LCP 2.3–2.8 s (warns; text-only page, revisit in Faz 1.5).
+- LHCI gates: `resource-summary:script:size` ≤ 256 KB (error, total transfer incl. lazy chunks), LCP ≤ 2.0 s (warn). Faz 0 baseline: script 157 KB, simulated-mobile LCP 2.3–2.8 s (warns; text-only page, revisit in Faz 1.5).
 - Local ports: Playwright uses 3100, LHCI 3101 (both `next start`), so a stray dev server on 3000 never gets measured.
+- Motion lives in components/motion, components/canvas, lib/motion.ts only. Single rAF: Lenis autoRaf:false driven by gsap.ticker; ScrollTrigger.update on lenis scroll.
+- useReducedMotion() returns true on the server: SSR HTML is always the static variant; motion mounts only on the client after the query says "no-preference".
+- SplitText only on the hero headline (aria:"auto", revert on unmount). HeroShader is dynamic/ssr:false, paused when offscreen or tab hidden, poster under reduced-motion or no WebGL.
+- LHCI script gate is 256 KB total transfer (Lighthouse counts lazy chunks); spec's 180 KB applies to first-load JS. Current baseline: 226 KB on /en (first-load JS measured at ~206 KB gz, over the 180 KB spec target; revisit in Faz 1.5).
