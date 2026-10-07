@@ -49,6 +49,11 @@
     "body": "Nothing lives at this address.",
     "backHome": "Back to home"
   },
+  "Error": {
+    "title": "Something went wrong.",
+    "body": "The page hit an unexpected error.",
+    "retry": "Try again"
+  },
   "Footer": {
     "rights": "Emin Dündar"
   }

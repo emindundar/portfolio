@@ -49,6 +49,11 @@
     "body": "Bu adreste bir şey yok.",
     "backHome": "Ana sayfaya dön"
   },
+  "Error": {
+    "title": "Bir şeyler ters gitti.",
+    "body": "Sayfa beklenmedik bir hatayla karşılaştı.",
+    "retry": "Tekrar dene"
+  },
   "Footer": {
     "rights": "Emin Dündar"
   }

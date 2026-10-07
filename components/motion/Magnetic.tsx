@@ -7,7 +7,12 @@ type Props = { strength?: number; max?: number; children: ReactElement<{ ref?: R
 
 // GSAP loads after hydration. The child is always rendered here and never remounted (so focus is never lost);
 // the lazy component is effect-only and is not mounted under reduced motion.
-const Impl = lazy(() => import("./Magnetic.impl").then((m) => ({ default: m.MagneticImpl })));
+// Motion is an enhancement: a failed chunk renders nothing instead of throwing to the error boundary.
+const Impl = lazy(() =>
+  import("./Magnetic.impl")
+    .then((m) => ({ default: m.MagneticImpl }))
+    .catch(() => ({ default: () => null })),
+);
 
 function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
   if (typeof ref === "function") ref(value);

@@ -4,8 +4,21 @@ import dynamic from "next/dynamic";
 import { useReducedMotion } from "./useReducedMotion";
 
 // Lenis + GSAP stay out of first-load JS: they load after hydration, only when motion is allowed.
-const SmoothScroll = dynamic(() => import("./SmoothScroll").then((m) => m.SmoothScroll), { ssr: false });
-const Cursor = dynamic(() => import("./Cursor").then((m) => m.Cursor), { ssr: false });
+// A failed chunk degrades to native scroll / native cursor instead of throwing to the error boundary.
+const SmoothScroll = dynamic(
+  () =>
+    import("./SmoothScroll")
+      .then((m) => m.SmoothScroll)
+      .catch(() => () => null),
+  { ssr: false },
+);
+const Cursor = dynamic(
+  () =>
+    import("./Cursor")
+      .then((m) => m.Cursor)
+      .catch(() => () => null),
+  { ssr: false },
+);
 
 export function MotionProvider({ children }: { children: React.ReactNode }) {
   const reduced = useReducedMotion();

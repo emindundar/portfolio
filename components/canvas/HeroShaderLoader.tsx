@@ -1,12 +1,24 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useEffectEvent, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "@/components/motion/useReducedMotion";
 import { supportsWebGL } from "./visibility";
 
+type ShaderProps = { onFirstFrame?: () => void; onError?: () => void };
+
+// Chunk yüklenemezse shader'ın kurulum hatasıyla aynı yol: onError → phase "failed" → kalıcı poster.
+function FailedShader({ onError }: ShaderProps) {
+  const failed = useEffectEvent(() => onError?.());
+  useEffect(() => failed(), []);
+  return null;
+}
+
 // Chunk yüklenirken dıştaki <Poster /> zaten görünür; ikinci bir poster render etme.
-const HeroShader = dynamic(() => import("./HeroShader"), { ssr: false, loading: () => null });
+const HeroShader = dynamic<ShaderProps>(
+  () => import("./HeroShader").catch(() => ({ default: FailedShader })),
+  { ssr: false, loading: () => null },
+);
 
 // Token tabanlı poster: iki temada da --bg / --accent'ten türer, görsel dosyası yok.
 // data-hero-poster: "pending" (SSR/hydration, karar yok) · "static" (kalıcı fallback) · "loading" (shader ısınıyor)

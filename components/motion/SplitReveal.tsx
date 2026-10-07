@@ -14,7 +14,12 @@ type Props = {
 
 // GSAP/SplitText load after hydration. The heading is always rendered here (SSR = plain static markup)
 // and never remounted; the lazy component is effect-only.
-const Impl = lazy(() => import("./SplitReveal.impl").then((m) => ({ default: m.SplitRevealImpl })));
+// Motion is an enhancement: a failed chunk renders nothing instead of throwing to the error boundary.
+const Impl = lazy(() =>
+  import("./SplitReveal.impl")
+    .then((m) => ({ default: m.SplitRevealImpl }))
+    .catch(() => ({ default: () => null })),
+);
 
 export function SplitReveal({ as: Tag = "h1", className, delay = 0, children }: Props) {
   const [el, setEl] = useState<HTMLElement | null>(null);

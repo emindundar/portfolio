@@ -6,7 +6,12 @@ import { useReducedMotion } from "./useReducedMotion";
 // GSAP/ScrollTrigger load after hydration. The block is always rendered here (SSR = plain static markup)
 // and never remounted; the lazy component is effect-only. Reduced motion never mounts it, so
 // [data-reveal] is never touched (nothing is ever at opacity 0).
-const Impl = lazy(() => import("./SectionReveal.impl").then((m) => ({ default: m.SectionRevealImpl })));
+// Motion is an enhancement: a failed chunk renders nothing instead of throwing to the error boundary.
+const Impl = lazy(() =>
+  import("./SectionReveal.impl")
+    .then((m) => ({ default: m.SectionRevealImpl }))
+    .catch(() => ({ default: () => null })),
+);
 
 export function SectionReveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const [el, setEl] = useState<HTMLElement | null>(null);

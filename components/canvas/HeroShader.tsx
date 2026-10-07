@@ -35,8 +35,10 @@ export default function HeroShader({ onFirstFrame, onError }: Props) {
     let renderer: Renderer;
     let program: Program;
     let mesh: Mesh;
+    // Set as soon as a context exists, so a later setup failure can still release it.
+    let created: Renderer | null = null;
     try {
-      renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 1.5), alpha: true, antialias: false });
+      renderer = created = new Renderer({ dpr: Math.min(window.devicePixelRatio, 1.5), alpha: true, antialias: false });
       program = new Program(renderer.gl, {
         vertex,
         fragment,
@@ -50,6 +52,7 @@ export default function HeroShader({ onFirstFrame, onError }: Props) {
       });
       mesh = new Mesh(renderer.gl, { geometry: new Triangle(renderer.gl), program });
     } catch {
+      created?.gl.getExtension("WEBGL_lose_context")?.loseContext();
       failed();
       return;
     }
