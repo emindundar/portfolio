@@ -8,6 +8,7 @@ import { SITE_URL } from "@/lib/seo";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { ThemeScript } from "@/components/layout/ThemeScript";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import "../globals.css";
 
 type Props = { children: React.ReactNode; params: Promise<{ locale: string }> };
@@ -38,9 +39,11 @@ export default async function LocaleLayout({ children, params }: Props) {
       </head>
       <body className="flex min-h-dvh flex-col bg-bg text-fg font-sans">
         <NextIntlClientProvider>
-          <Nav />
-          <div className="flex-1">{children}</div>
-          <Footer />
+          <MotionProvider>
+            <Nav />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>
