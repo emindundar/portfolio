@@ -5,8 +5,6 @@ import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
-export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-
 /** gsap.matchMedia with the project's single reduced-motion condition. */
 export function createMatchMedia() {
   return gsap.matchMedia();

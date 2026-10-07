@@ -1,7 +1,9 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { REDUCED_MOTION_QUERY } from "@/lib/motion";
+
+// Kept out of lib/motion.ts so this hook never pulls gsap into first-load JS.
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribe(cb: () => void) {
   const mql = window.matchMedia(REDUCED_MOTION_QUERY);
