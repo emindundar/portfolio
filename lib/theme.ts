@@ -6,12 +6,19 @@ export function parseTheme(v: unknown): Theme | null {
   return v === "dark" || v === "light" ? v : null;
 }
 
-export function readThemeCookie(cookieHeader: string): Theme | null {
-  const match = cookieHeader
-    .split(";")
-    .map((p) => p.trim())
-    .find((p) => p.startsWith(`${THEME_COOKIE}=`));
-  return match ? parseTheme(match.slice(THEME_COOKIE.length + 1)) : null;
+/**
+ * Runs in the browser before hydration. ThemeScript stringifies this function into an inline
+ * <script>, so it MUST stay self-contained: no references to module-level identifiers, no helpers.
+ */
+export function applyThemeFromCookie(cookieName: string): void {
+  for (const raw of document.cookie.split(";")) {
+    const pair = raw.trim();
+    if (pair.indexOf(cookieName + "=") === 0) {
+      const v = pair.slice(cookieName.length + 1);
+      if (v === "dark" || v === "light") document.documentElement.setAttribute("data-theme", v);
+      return;
+    }
+  }
 }
 
 export function themeCookieString(t: Theme): string {
