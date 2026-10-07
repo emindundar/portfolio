@@ -4,12 +4,18 @@ import { gsap, useGSAP, SplitText, EASE } from "@/lib/motion";
 
 type Props = { el: HTMLElement | null; delay: number; text: string };
 
+// Past this point (ms since navigation start) the headline has been readable for a while;
+// replaying an entrance on already-read text is worse than no entrance at all.
+const LATE_MS = 1200;
+
 // Effect-only: the heading element itself is rendered (and stays mounted) by SplitReveal.tsx,
 // so loading this chunk never remounts the DOM or drops focus.
 export function SplitRevealImpl({ el, delay, text }: Props) {
   useGSAP(
     () => {
       if (!el) return;
+      // Chunk arrived late (slow network) or the user already scrolled: keep the plain heading.
+      if (performance.now() > LATE_MS || window.scrollY > 0) return;
       const split = SplitText.create(el, {
         type: "lines",
         mask: "lines",
