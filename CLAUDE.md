@@ -20,12 +20,12 @@ pnpm dev · pnpm build · pnpm lint · pnpm typecheck · pnpm test · pnpm e2e (
   Missing tr falls back to en with a build warning. Invalid facet or >3 facets fails the build.
 - Theme: `data-theme` on <html>, cookie `theme`, set before hydration by components/layout/ThemeScript.tsx. Never read cookies() in layouts (keeps pages static).
 - Performance budget: first-load JS ≤ 180 KB gz, LCP < 2.0 s, CLS < 0.05. Lazy-load anything animation/WebGL.
-- Reduced motion: every animation goes through gsap.matchMedia() (Faz 1) — static fallback required.
+- Reduced motion: every animation is gated by useReducedMotion(); impls mount only when motion is allowed — static fallback required.
 - Tests: unit for lib/* and content schema; e2e for routing/theme/content. Add a test with every behavior change.
 - UI/UX work: the globally installed `ui-ux-pro-max` skill is the first stop for design-system questions (styles, palettes, font pairs).
   Its output never overrides the spec tokens in app/globals.css. Use `21st-ui-review` (if installed) for UI review, not `21st-ui-build`.
 
-## Lenis + GSAP bridge (Faz 1, lib/motion.ts)
+## Lenis + GSAP bridge (Faz 1, components/motion/SmoothScroll.tsx → ScrollBridge)
 lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll', ScrollTrigger.update); gsap.ticker.lagSmoothing(0)
 
 ## Learned constraints
@@ -40,8 +40,10 @@ lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll',
 - LHCI: default optimistic aggregation, 2 runs (lenient for Faz 0); tighten to `median-run` + 3 runs in Faz 1.5.
 - LHCI gates: `resource-summary:script:size` ≤ 256 KB (error, total transfer incl. lazy chunks), LCP ≤ 2.0 s (warn). Faz 0 baseline: script 157 KB, simulated-mobile LCP 2.3–2.8 s (warns; text-only page, revisit in Faz 1.5).
 - Local ports: Playwright uses 3100, LHCI 3101 (both `next start`), so a stray dev server on 3000 never gets measured.
-- Motion lives in components/motion, components/canvas, lib/motion.ts only. Single rAF: Lenis autoRaf:false driven by gsap.ticker; ScrollTrigger.update on lenis scroll.
+- Motion lives in components/motion, components/canvas, lib/motion.ts only. Single rAF for Lenis/GSAP: Lenis autoRaf:false driven by gsap.ticker; ScrollTrigger.update on lenis scroll. HeroShader runs its own visibility-gated rAF (`data-running` on its host).
 - useReducedMotion() returns true on the server: SSR HTML is always the static variant; motion mounts only on the client after the query says "no-preference".
 - SplitText only on the hero headline (aria:"auto", revert on unmount). HeroShader is dynamic/ssr:false, paused when offscreen or tab hidden, poster under reduced-motion or no WebGL.
 - LHCI script gate is 256 KB total transfer (Lighthouse counts lazy chunks); spec's 180 KB applies to first-load JS. Current baseline: 229 KB total script on /en (234303 B); first-load JS 153.6 KB gz (budget 180 KB), gsap/lenis/ogl load after hydration.
 - Motion components are thin wrappers (SSR = static markup) over `*.impl.tsx` loaded lazily after hydration; `lib/motion.ts` is imported only by impl files, SmoothScroll and Cursor — keeps gsap/lenis out of first-load JS. The wrappers always render the real element (never swap it for a Suspense fallback, which would drop focus); the lazy impl is effect-only and receives the element. `REDUCED_MOTION_QUERY` lives in `useReducedMotion.ts`, not `lib/motion.ts`.
+- Every `lazy()`/`dynamic()` import of motion/WebGL code catches load failure and renders nothing (HeroShader → `FailedShader` → poster). `app/[locale]/error.tsx` is the localized boundary; MotionProvider sits in the layout, above it.
+- Decision signals for tests: `<html data-motion="reduced|full">` (MotionProvider, absent in SSR HTML) and `body[data-cursor="custom|native"]` (Cursor). e2e waits on these, never on fixed sleeps.

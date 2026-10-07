@@ -13,7 +13,7 @@ export async function ContactCta() {
         </p>
         <h2 data-reveal className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-none">{t("heading")}</h2>
         <div data-reveal className="mt-10">
-          <Button href="/contact">{t("button")} →</Button>
+          <Button href="/contact">{t("button")} <span aria-hidden="true">→</span></Button>
         </div>
       </SectionReveal>
     </section>

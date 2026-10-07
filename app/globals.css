@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @source not "../docs";
+@source not "../design-system";
 
 /* Koyu tema varsayılan; açık tema sistem tercihi veya data-theme="light" ile */
 :root {

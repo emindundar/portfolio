@@ -18,7 +18,7 @@ export async function Hero() {
       <div className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <p className="max-w-xl text-lg text-muted">{t("sub")}</p>
         <Magnetic>
-          <Button href="/work">{t("cta")} →</Button>
+          <Button href="/work">{t("cta")} <span aria-hidden="true">→</span></Button>
         </Magnetic>
       </div>
       <span aria-hidden="true" className="absolute bottom-4 right-4 font-mono text-xs uppercase text-muted">{t("scroll")}</span>

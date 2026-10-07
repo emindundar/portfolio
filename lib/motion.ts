@@ -5,12 +5,6 @@ import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
-/** gsap.matchMedia with the project's single reduced-motion condition. */
-export function createMatchMedia() {
-  return gsap.matchMedia();
-}
-
 export const EASE = { out: "expo.out", inOut: "expo.inOut", soft: "power2.out" } as const;
-export const DUR = { fast: 0.25, base: 0.6, slow: 1.0 } as const;
 
 export { gsap, useGSAP, ScrollTrigger, SplitText };

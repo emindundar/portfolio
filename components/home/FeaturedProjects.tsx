@@ -28,7 +28,7 @@ export async function FeaturedProjects({ projects }: { projects: Project[] }) {
           ))}
         </ol>
         <div className="mt-8">
-          <Button href="/work" variant="ghost">{t("allWork")} →</Button>
+          <Button href="/work" variant="ghost">{t("allWork")} <span aria-hidden="true">→</span></Button>
         </div>
       </SectionReveal>
     </section>
