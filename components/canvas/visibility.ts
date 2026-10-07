@@ -8,7 +8,8 @@ export function createVisibilityController(
   const emit = () => onChange(intersecting && document.visibilityState === "visible");
 
   const io = new IntersectionObserver((entries) => {
-    intersecting = entries.some((e) => e.isIntersecting);
+    const lastEntry = entries[entries.length - 1];
+    if (lastEntry) intersecting = lastEntry.isIntersecting;
     emit();
   });
   io.observe(el);
@@ -27,7 +28,11 @@ export function createVisibilityController(
 export function supportsWebGL(): boolean {
   try {
     const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
+    const gl = c.getContext("webgl2") || c.getContext("webgl");
+    if (!gl) return false;
+    // Sonda bağlamını hemen bırak: tarayıcının WebGL bağlam limitinden yemesin
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return true;
   } catch {
     return false;
   }

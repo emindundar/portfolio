@@ -14,8 +14,10 @@ test.describe("hero shader", () => {
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
-    await expect(page.locator("[data-shader='ready'] canvas")).toHaveCount(1);
-    await expect(page.locator("[data-shader='ready'] canvas")).toHaveAttribute("aria-hidden", "true");
+    const canvas = page.locator("[data-shader='ready'] canvas");
+    await expect(canvas).toHaveCount(1);
+    await expect(canvas).toHaveAttribute("aria-hidden", "true");
+    // Poster yalnızca ilk kare çizildikten sonra kalkar
     await expect(page.locator("[data-hero-poster]")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
@@ -24,8 +26,13 @@ test.describe("hero shader", () => {
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/en");
+    // Hydration sinyali: istemci bileşeni etkileşimli hale geldi
+    await page.getByRole("button", { name: /theme/i }).waitFor();
+    // Yükleyici karar verdi: kalıcı poster ("pending"/"loading" değil)
+    await expect(page.locator("[data-hero-poster='static']")).toHaveCount(1);
+    await expect.poll(async () => page.locator("canvas").count(), { timeout: 1500 }).toBe(0);
     await expect(page.locator("[data-hero-poster]")).toHaveCount(1);
-    await expect(page.locator("canvas")).toHaveCount(0);
+    await expect(page.locator("[data-shader]")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 
@@ -33,17 +40,24 @@ test.describe("hero shader", () => {
     const ctx = await browser.newContext();
     const page = await ctx.newPage();
     await page.addInitScript(() => {
+      const w = window as unknown as { __glProbed?: boolean };
       const orig = HTMLCanvasElement.prototype.getContext;
       HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
-        if (type === "webgl" || type === "webgl2") return null;
+        if (type === "webgl" || type === "webgl2") {
+          w.__glProbed = true;
+          return null;
+        }
         return (orig as (this: HTMLCanvasElement, t: string, ...r: unknown[]) => unknown).call(this, type, ...rest);
       } as typeof HTMLCanvasElement.prototype.getContext;
     });
     const errors = collectErrors(page);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
-    await page.waitForLoadState("networkidle");
+    // Yükleyici WebGL'i gerçekten sorguladı → karar verildi
+    await page.waitForFunction(() => (window as unknown as { __glProbed?: boolean }).__glProbed === true);
+    await expect(page.locator("[data-hero-poster='static']")).toHaveCount(1);
     await expect(page.locator("[data-hero-poster]")).toHaveCount(1);
+    await expect(page.locator("[data-shader]")).toHaveCount(0);
     await expect(page.locator("canvas")).toHaveCount(0);
     expect(errors).toEqual([]);
     await ctx.close();

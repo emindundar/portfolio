@@ -10,7 +10,11 @@ void main() {
 
 // Yavaş noise + hafif grid distortion. Renkler uniform: zemin ve vurgu.
 export const fragment = /* glsl */ `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
+#else
+precision mediump float;
+#endif
 uniform float uTime;
 uniform vec2 uMouse;      // 0..1
 uniform vec2 uRes;
@@ -41,13 +45,13 @@ void main() {
   float line = smoothstep(0.0, 0.02, g.x) * smoothstep(0.0, 0.02, g.y);
   float grid = 1.0 - line;
 
-  vec3 col = uBg;
-  col += uAccent * (0.06 * n + 0.04 * n2);
-  col += uAccent * grid * 0.10;
+  // Zeminden vurguya karışım: her iki temada da token renkleri arasında kalır
+  float k = 0.06 * n + 0.04 * n2 + 0.10 * grid;
+  vec3 col = mix(uBg, uAccent, k);
 
-  // vignette
+  // vignette: kenarlar zemine döner (açık temada grileşmez)
   float d = distance(uv, vec2(0.5));
-  col *= 1.0 - smoothstep(0.4, 0.9, d) * 0.6;
+  col = mix(col, uBg, smoothstep(0.4, 0.9, d) * 0.6);
 
   gl_FragColor = vec4(col, 1.0);
 }
