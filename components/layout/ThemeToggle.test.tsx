@@ -24,6 +24,7 @@ describe("ThemeToggle", () => {
     fireEvent.click(screen.getByRole("button", { name: /theme/i }));
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
     expect(document.cookie).toContain("theme=light");
+    expect(screen.getByRole("button", { name: /theme/i })).toHaveAccessibleName("Theme: Dark");
   });
 
   it("toggles back to dark", () => {
@@ -31,5 +32,7 @@ describe("ThemeToggle", () => {
     renderToggle();
     fireEvent.click(screen.getByRole("button", { name: /theme/i }));
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+    expect(document.cookie).toContain("theme=dark");
+    expect(screen.getByRole("button", { name: /theme/i })).toHaveAccessibleName("Theme: Light");
   });
 });

@@ -30,7 +30,7 @@ export function ThemeToggle() {
   const label = theme === "light" ? t("themeDark") : t("themeLight");
 
   return (
-    <button type="button" onClick={toggle} aria-label={t("theme")} className="font-mono text-muted hover:text-fg">
+    <button type="button" onClick={toggle} aria-label={`${t("theme")}: ${label}`} className="font-mono text-muted hover:text-fg">
       [{label}]
     </button>
   );
