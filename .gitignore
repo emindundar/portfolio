@@ -45,3 +45,7 @@ node_modules/
 test-results/
 playwright-report/
 .lighthouseci/
+
+# claude code local tooling (keep settings.json committable)
+.claude/*
+!.claude/settings.json

@@ -4,7 +4,8 @@
       "startServerCommand": "pnpm start",
       "startServerReadyPattern": "Ready",
       "url": ["http://localhost:3000/en", "http://localhost:3000/tr"],
-      "numberOfRuns": 2
+      "numberOfRuns": 2,
+      "settings": { "formFactor": "mobile" }
     },
     "assert": {
       "assertions": {
