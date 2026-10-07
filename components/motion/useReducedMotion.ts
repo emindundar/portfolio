@@ -1,8 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-
-export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+import { REDUCED_MOTION_QUERY } from "@/lib/motion";
 
 function subscribe(cb: () => void) {
   const mql = window.matchMedia(REDUCED_MOTION_QUERY);
