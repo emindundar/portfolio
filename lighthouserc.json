@@ -1,14 +1,16 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "pnpm start",
+      "startServerCommand": "pnpm exec next start -p 3101",
       "startServerReadyPattern": "Ready",
-      "url": ["http://localhost:3000/en", "http://localhost:3000/tr"],
+      "url": ["http://localhost:3101/en", "http://localhost:3101/tr"],
       "numberOfRuns": 2,
       "settings": { "formFactor": "mobile" }
     },
     "assert": {
       "assertions": {
+        "resource-summary:script:size": ["error", { "maxNumericValue": 184320 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
         "categories:performance": ["error", { "minScore": 0.9 }],
         "categories:accessibility": ["error", { "minScore": 0.95 }],
         "categories:seo": ["error", { "minScore": 1 }],
