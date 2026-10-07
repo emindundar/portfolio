@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source not "../docs";
+@source not "../design-system";
 
 /* Koyu tema varsayılan; açık tema sistem tercihi veya data-theme="light" ile */
 :root {
@@ -67,5 +69,13 @@
   ::selection {
     background: var(--accent);
     color: var(--bg);
+  }
+  body[data-cursor="custom"],
+  body[data-cursor="custom"] * {
+    cursor: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }

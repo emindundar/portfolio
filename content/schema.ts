@@ -1,7 +1,7 @@
 import { s } from "velite";
+import { FACETS, type Facet } from "./facet-list";
 
-export const FACETS = ["mobile", "web", "backend", "ai", "data-erp"] as const;
-export type Facet = (typeof FACETS)[number];
+export { FACETS, type Facet };
 
 export const projectMetaSchema = s.object({
   slug: s.string().regex(/^[a-z0-9-]+$/, "slug: only a-z, 0-9 and dashes"),

@@ -15,14 +15,44 @@
     "themeLight": "Açık"
   },
   "Home": {
-    "eyebrow": "Portfolyo — v0",
+    "projectsHeading": "Seçili işler",
+    "allWork": "Tüm işler"
+  },
+  "Hero": {
+    "eyebrow": "Mobil · Web · Backend · AI — İstanbul",
     "headline": "Ürünü uçtan uca kurarım.",
-    "projectsHeading": "İşler"
+    "sub": "Flutter uygulamaları, Next.js web, Node backend ve AI entegrasyonları; tek sistem olarak teslim.",
+    "cta": "İşleri keşfet",
+    "scroll": "Kaydır"
+  },
+  "Capabilities": {
+    "heading": "Yetkinlikler",
+    "mobile": "Mobil",
+    "web": "Web",
+    "backend": "Backend",
+    "ai": "AI",
+    "dataErp": "Veri & ERP",
+    "projects": "{count, plural, =0 {henüz proje yok} one {# proje} other {# proje}}"
+  },
+  "AboutTeaser": {
+    "heading": "Hakkımda",
+    "body": "Yönetim Bilişim Sistemleri mezunu (Pamukkale, 2025). Alışkanlıkla mobil, zorunlulukla full-stack: uygulamanın, API'nin ve arkasındaki verinin sahibiyim. Şu an bir yem sektörü yazılım danışmanlığında ERP ve NIR entegrasyonları ile Claude destekli otomasyon geliştiriyorum.",
+    "more": "Devamı"
+  },
+  "Cta": {
+    "eyebrow": "Yeni projelere açığım",
+    "heading": "Birlikte bir şey kuralım.",
+    "button": "İletişime geç"
   },
   "NotFound": {
     "title": "Sayfa bulunamadı",
     "body": "Bu adreste bir şey yok.",
     "backHome": "Ana sayfaya dön"
+  },
+  "Error": {
+    "title": "Bir şeyler ters gitti.",
+    "body": "Sayfa beklenmedik bir hatayla karşılaştı.",
+    "retry": "Tekrar dene"
   },
   "Footer": {
     "rights": "Emin Dündar"

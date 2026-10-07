@@ -15,14 +15,44 @@
     "themeLight": "Light"
   },
   "Home": {
-    "eyebrow": "Portfolio — v0",
+    "projectsHeading": "Selected work",
+    "allWork": "All work"
+  },
+  "Hero": {
+    "eyebrow": "Mobile · Web · Backend · AI — Istanbul",
     "headline": "I build products end to end.",
-    "projectsHeading": "Work"
+    "sub": "Flutter apps, Next.js web, Node backends and AI integrations, shipped as one system.",
+    "cta": "Explore work",
+    "scroll": "Scroll"
+  },
+  "Capabilities": {
+    "heading": "Capabilities",
+    "mobile": "Mobile",
+    "web": "Web",
+    "backend": "Backend",
+    "ai": "AI",
+    "dataErp": "Data & ERP",
+    "projects": "{count, plural, =0 {no projects yet} one {# project} other {# projects}}"
+  },
+  "AboutTeaser": {
+    "heading": "About",
+    "body": "Management Information Systems graduate (Pamukkale, 2025). Mobile-first by habit, full-stack by necessity: I own the app, the API and the data behind it. Currently shipping ERP and NIR integrations and Claude-powered automation for a feed-industry software consultancy.",
+    "more": "More about me"
+  },
+  "Cta": {
+    "eyebrow": "Available for new projects",
+    "heading": "Let's build something.",
+    "button": "Get in touch"
   },
   "NotFound": {
     "title": "Page not found",
     "body": "Nothing lives at this address.",
     "backHome": "Back to home"
+  },
+  "Error": {
+    "title": "Something went wrong.",
+    "body": "The page hit an unexpected error.",
+    "retry": "Try again"
   },
   "Footer": {
     "rights": "Emin Dündar"

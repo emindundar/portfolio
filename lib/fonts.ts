@@ -13,12 +13,15 @@ export const satoshi = localFont({
   weight: "300 900",
   variable: "--font-satoshi",
   display: "swap",
+  // Only the LCP font (Cabinet, hero headline) is preloaded; body/mono fonts must not compete with it.
+  preload: false,
 });
 
 export const jetbrains = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
   variable: "--font-jetbrains",
   display: "swap",
+  preload: false,
 });
 
 export const fontClassNames = `${cabinet.variable} ${satoshi.variable} ${jetbrains.variable}`;
