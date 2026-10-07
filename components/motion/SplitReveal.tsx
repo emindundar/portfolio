@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ElementType } from "react";
 import { gsap, useGSAP, SplitText, EASE } from "@/lib/motion";
 import { useReducedMotion } from "./useReducedMotion";
 
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export function SplitReveal({ as: Tag = "h1", className, delay = 0, children }: Props) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLHeadingElement & HTMLParagraphElement>(null);
   const reduced = useReducedMotion();
 
   useGSAP(
@@ -26,6 +26,8 @@ export function SplitReveal({ as: Tag = "h1", className, delay = 0, children }: 
         autoSplit: true,
         aria: "auto",
         onSplit(self) {
+          // mask uses overflow: clip; pad the bottom so descenders (p, g, y) are not cut, offset by a negative margin.
+          gsap.set(self.masks, { paddingBottom: "0.15em", marginBottom: "-0.15em" });
           return gsap.from(self.lines, {
             yPercent: 110,
             duration: 0.9,
@@ -35,15 +37,12 @@ export function SplitReveal({ as: Tag = "h1", className, delay = 0, children }: 
           });
         },
       });
-      return () => {
-        if (split.isSplit) split.revert();
-      };
+      return () => split.revert();
     },
-    { dependencies: [reduced, children], revertOnUpdate: true },
+    { dependencies: [reduced, children, delay], revertOnUpdate: true },
   );
 
-  // ref tipi: Tag dinamik olduğu için HTMLElement; JSX'te cast gerekir.
-  const Comp = Tag as unknown as React.ElementType;
+  const Comp: ElementType = Tag;
   return (
     <Comp ref={ref} className={className}>
       {children}
