@@ -17,7 +17,6 @@ test.describe("motion foundation", () => {
   });
 
   test("wheel scroll moves the page (no scroll-jacking lockup)", async ({ page }) => {
-    test.skip(true, "page too short until Task 5");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
     await page.mouse.move(400, 400);

@@ -4,7 +4,7 @@ test("home lists projects from the content pipeline in both locales", async ({ p
   await page.goto("/en");
   await expect(page.getByTestId("project")).toHaveCount(1);
   await expect(page.getByTestId("project").first()).toContainText("GeoTrack");
-  await expect(page.getByTestId("project").first()).toContainText("MOBILE · BACKEND");
+  await expect(page.getByTestId("project").first()).toContainText("mobile · backend");
 
   await page.goto("/tr");
   await expect(page.getByTestId("project").first()).toContainText("Gerçek Zamanlı");
