@@ -2,8 +2,18 @@ import { getTranslations } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
 import { getProjects } from "@/lib/content";
 import { hasLocale } from "next-intl";
+import type { Metadata } from "next";
+import { alternatesFor } from "@/lib/seo";
 
-export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) return {};
+  return { alternates: alternatesFor("/", locale) };
+}
+
+export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   const t = await getTranslations("Home");
   const projects = hasLocale(routing.locales, locale) ? getProjects(locale as Locale) : [];

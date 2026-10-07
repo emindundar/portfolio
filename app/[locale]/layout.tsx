@@ -4,7 +4,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { fontClassNames } from "@/lib/fonts";
-import { alternatesFor, SITE_URL } from "@/lib/seo";
+import { SITE_URL } from "@/lib/seo";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { ThemeScript } from "@/components/layout/ThemeScript";
@@ -24,7 +24,6 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
     metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: "%s — Emin Dündar" },
     description: t("description"),
-    alternates: alternatesFor("/", locale),
   };
 }
 
