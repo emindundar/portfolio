@@ -16,7 +16,7 @@ pnpm dev · pnpm build · pnpm lint · pnpm typecheck · pnpm test · pnpm e2e (
   toggles and forms are `"use client"`. ESLint blocks gsap/lenis/ogl/motion imports elsewhere.
 - Tokens only: bg, surface, line, fg, muted, accent (see app/globals.css). No arbitrary colors. No border-radius. No shadows.
 - Fonts: font-display (Cabinet Grotesk), font-sans (Satoshi), font-mono (JetBrains Mono) via lib/fonts.ts.
-- Content: add a project = `content/projects/<slug>.meta.json` + `<slug>.en.mdx` + `<slug>.tr.mdx`. Schema in content/schema.ts.
+- Content: add a project = `content/projects/<slug>.meta.json` + `<slug>.en.mdx` + `<slug>.tr.mdx`. Schema in content/schema.ts (optional: `cover` {type,src,frame}, `gallery` [{src,alt{en,tr}}], `client`, `credits`, `links.live`).
   Missing tr falls back to en with a build warning. Invalid facet or >3 facets fails the build.
 - Theme: `data-theme` on <html>, cookie `theme`, set before hydration by components/layout/ThemeScript.tsx. Never read cookies() in layouts (keeps pages static).
 - Performance budget: first-load JS ≤ 180 KB gz, LCP < 2.0 s, CLS < 0.05. Lazy-load anything animation/WebGL.
@@ -48,3 +48,9 @@ lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll',
 - Every `lazy()`/`dynamic()` import of motion/WebGL code catches load failure and renders nothing (HeroShader → `FailedShader` → poster). `app/[locale]/error.tsx` is the localized boundary; MotionProvider sits in the layout, above it.
 - Decision signals for tests: `<html data-motion="reduced|full">` (MotionProvider, absent in SSR HTML) and `body[data-cursor="custom|native"]` (Cursor). e2e waits on these, never on fixed sleeps.
 - WebGL on software renderers (SwiftShader/llvmpipe — e.g. GitHub runners, GPU-less VMs) counts as unsupported: HeroShader is replaced by the poster (`probeWebGL`/`isSoftwareRenderer` in `components/canvas/visibility.ts`). CI e2e/LHCI therefore exercise the poster path; the shader path is verified locally with `PLAYWRIGHT_HARDWARE_GL=1`. Reason: software GL made every frame a long task (TBT 4 s). e2e gates on `hasGL` via `e2e/helpers/gl.ts` (keep its regex identical); headless Chromium is software GL by default (poster path, like CI); `PLAYWRIGHT_HARDWARE_GL=1 pnpm e2e` (macOS/Metal) runs the real shader path locally.
+- Media: `pnpm media` turns `media-src/<slug>/` into `public/media/<slug>/` (webp/video) + `lib/media-manifest.json`. Never `next/image`; `imageFor`/`videoFor` are manifest-driven. Privacy: crop/blur e-mails, QR codes and third-party faces in the SOURCE file, not via CSS.
+- `/work` reads `searchParams` only inside a `<Suspense>` (PPR under cacheComponents); a `<noscript><style>` reveals the streamed list without JS (guarded by e2e "no JS"). Flip reorder state is captured on chip click/popstate in `WorkFlip`; `data-work-ready` marks a settled list.
+- Case pages: `ensureStatic = "navigation"` (unknown slug is a real 404); cover uses `ViewTransition name="cover-<slug>"` shared with the list row.
+- Content rules: exactly five fixed `##` headings per language, 180-350 words, every claim verifiable in the repo. `/[locale]/cv` is a static 302 with a relative `Location`.
+- Nav: Home link is hidden below `md` (brand links home); TR nav fits 360px (4 links, last right edge 316px). Footer gutters `px-4 md:px-6`.
+- LHCI URLs: /en, /tr, /en/work, /en/work/geotrack, /en/work/karaoke-sync, /en/about. Faz 1b baseline (perf / script transfer): /en 95 / 246 KB, /tr 94 / 246 KB, /work 92 / 233 KB, case 95 / 230 KB, /about 98 / 229 KB; a11y 100, SEO 100 everywhere. Known: /work CLS 0.13 (chip row re-wraps on mono font swap), geotrack LCP is the cover image, /en LCP ~2.9 s simulated (warn).
