@@ -28,6 +28,8 @@ files under `public/media/`, which are committed (the script does not run on Ver
   EXIF rotation before committing. Videos are committed as a pre-compressed mezzanine at native
   resolution (H.264 crf 23, no audio, ≤ 3 MB); `karaoke-sync/cover.mp4` is 2.7 MB, with the
   Next.js dev badge in the bottom-left corner masked by a black `drawbox` (x 0, y 945, 155×63).
+  Command used for the mask:
+  `ffmpeg -i karaokeApp.mp4 -vf "drawbox=x=0:y=945:w=155:h=63:color=black:t=fill" -c:v libx264 -crf 23 -preset slow -an -movflags +faststart media-src/karaoke-sync/cover.mp4`
 - Crop out people who did not agree to be on the site (e.g. `events/devfest-denizli-25.jpg` is the
   banner only).
 - Do not commit originals with location EXIF; re-encoding through sharp strips it.
@@ -37,6 +39,10 @@ files under `public/media/`, which are committed (the script does not run on Ver
 ```bash
 pnpm media
 ```
+
+Without ffmpeg/ffprobe, videos are not re-encoded; if their outputs already exist the previous
+manifest entry is kept, otherwise the entry is omitted (both with a warning). `MEDIA_NO_FFMPEG=1
+pnpm media` simulates that for testing.
 
 An output is regenerated when it is missing or older than its source, so replacing a source file
 and re-running is enough. Keep `public/media` under 15 MB in total.

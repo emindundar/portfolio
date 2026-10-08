@@ -1,4 +1,4 @@
-import { readdirSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join, parse } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -29,6 +29,13 @@ export function serializeManifest(manifest: Manifest) {
 export function isStale(outMtimeMs: number | undefined, srcMtimeMs: number) {
   return outMtimeMs === undefined || outMtimeMs < srcMtimeMs;
 }
+/**
+ * Encoding was skipped (ffmpeg/ffprobe unavailable): keep the previous manifest entry only if it is a
+ * video entry and the encoded outputs are still on disk; otherwise the key is omitted.
+ */
+export function videoEntryWhenSkipped(prev: ImageEntry | VideoEntry | undefined, outputsExist: boolean): VideoEntry | undefined {
+  return prev && "video" in prev && outputsExist ? prev : undefined;
+}
 export const videoScaleFilter = "scale=-2:'min(720,ih)'";
 
 const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp"];
@@ -46,12 +53,22 @@ async function run() {
   const sharp = (await import("sharp")).default;
   const srcRoot = "media-src";
   const outRoot = join("public", "media");
+  // MEDIA_NO_FFMPEG=1 simulates a machine without ffmpeg (for testing the skip path).
   const hasFfmpeg = (() => {
+    if (process.env.MEDIA_NO_FFMPEG === "1") return false;
     try {
       execFileSync("ffmpeg", ["-version"], { stdio: "ignore" });
+      execFileSync("ffprobe", ["-version"], { stdio: "ignore" });
       return true;
     } catch {
       return false;
+    }
+  })();
+  const previous: Manifest = (() => {
+    try {
+      return JSON.parse(readFileSync(MANIFEST_PATH, "utf8")) as Manifest;
+    } catch {
+      return {};
     }
   })();
   const manifest: Manifest = {};
@@ -82,18 +99,30 @@ async function run() {
         const largest = await sharp(join(outRoot, group, outputName(name, widths[widths.length - 1]!))).metadata();
         manifest[manifestKey(group, name)] = { widths, width: largest.width ?? 0, height: largest.height ?? 0 };
       } else if (ext.toLowerCase() === ".mp4") {
-        if (!hasFfmpeg) {
-          console.warn("ffmpeg missing, skip", src);
-          continue;
-        }
+        const key = manifestKey(group, name);
         const mp4 = join(outRoot, group, `${name}.mp4`);
         const webm = join(outRoot, group, `${name}.webm`);
         const poster = join(outRoot, group, "poster-1280.webp");
-        if (isStale(mtime(mp4), srcMtime))
+        if (!hasFfmpeg) {
+          const outputsExist = [mp4, webm, poster].every((f) => mtime(f) !== undefined);
+          const kept = videoEntryWhenSkipped(previous[key], outputsExist);
+          if (kept) {
+            manifest[key] = kept;
+            console.warn("ffmpeg/ffprobe missing: not re-encoding", src, "- kept existing outputs and manifest entry");
+          } else console.warn("ffmpeg/ffprobe missing: skipped", src, "- no manifest entry written");
+          continue;
+        }
+        let encoded = false;
+        if (isStale(mtime(mp4), srcMtime)) {
+          encoded = true;
           execFileSync("ffmpeg", ["-v", "error", "-y", "-i", src, "-vf", videoScaleFilter, "-c:v", "libx264", "-crf", "28", "-preset", "slow", "-an", "-movflags", "+faststart", mp4]);
-        if (isStale(mtime(webm), srcMtime))
+        }
+        if (isStale(mtime(webm), srcMtime)) {
+          encoded = true;
           execFileSync("ffmpeg", ["-v", "error", "-y", "-i", src, "-vf", videoScaleFilter, "-c:v", "libvpx-vp9", "-crf", "38", "-b:v", "0", "-an", webm]);
+        }
         if (isStale(mtime(poster), srcMtime)) {
+          encoded = true;
           // Homebrew ffmpeg ships without libwebp: grab the frame as PNG on stdout, encode with sharp.
           const frame = execFileSync("ffmpeg", ["-v", "error", "-ss", "3", "-i", src, "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"], { maxBuffer: 64 * 1024 * 1024 });
           await sharp(frame).resize({ width: 1280, withoutEnlargement: true }).webp({ quality: 78 }).toFile(poster);
@@ -103,8 +132,8 @@ async function run() {
           .trim()
           .split(",")
           .map(Number);
-        manifest[manifestKey(group, name)] = { video: true, poster: `/media/${group}/poster-1280.webp`, width: vw ?? 0, height: vh ?? 0 };
-        console.log("video", mp4, webm, poster);
+        manifest[key] = { video: true, poster: `/media/${group}/poster-1280.webp`, width: vw ?? 0, height: vh ?? 0 };
+        if (encoded) console.log("video", mp4, webm, poster);
       }
     }
   }

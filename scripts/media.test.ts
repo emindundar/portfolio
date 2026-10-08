@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
-import { targetSizes, outputName } from "./media";
+import { targetSizes, outputName, manifestKey, serializeManifest, isStale, videoScaleFilter, videoEntryWhenSkipped } from "./media";
 
 describe("media script helpers", () => {
   it("never upscales: picks only sizes <= source width, at least the smallest", () => {
@@ -13,8 +13,6 @@ describe("media script helpers", () => {
     expect(outputName("cover", 1280)).toBe("cover-1280.webp");
   });
 });
-
-import { manifestKey, serializeManifest, isStale, videoScaleFilter } from "./media";
 
 describe("media manifest helpers", () => {
   it("builds extension-less public keys", () => {
@@ -37,5 +35,12 @@ describe("media manifest helpers", () => {
   });
   it("never upscales video", () => {
     expect(videoScaleFilter).toBe("scale=-2:'min(720,ih)'");
+  });
+  it("keeps the previous video entry when encoding is skipped but outputs exist", () => {
+    const prev = { video: true as const, poster: "/media/k/poster-1280.webp", width: 1026, height: 720 };
+    expect(videoEntryWhenSkipped(prev, true)).toEqual(prev);
+    expect(videoEntryWhenSkipped(prev, false)).toBeUndefined();
+    expect(videoEntryWhenSkipped(undefined, true)).toBeUndefined();
+    expect(videoEntryWhenSkipped({ widths: [640], width: 640, height: 480 }, true)).toBeUndefined();
   });
 });
