@@ -4,6 +4,7 @@ import { mergeProjects, type Project } from "./merge";
 
 export type { Project };
 export { getTimeline, getServices, getEvents } from "./site";
+export { orgName } from "./localize";
 
 export function getProjects(locale: Locale): Project[] {
   return mergeProjects(projectMeta, projectContent, locale);

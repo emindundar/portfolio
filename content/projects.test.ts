@@ -31,3 +31,33 @@ describe("project content integrity", () => {
     }
   });
 });
+
+const metas = slugs.map((slug) => JSON.parse(readFileSync(join(dir, `${slug}.meta.json`), "utf8")) as {
+  slug: string;
+  featured?: boolean;
+  order: number;
+  cover?: { src: string };
+});
+
+describe("project content cross-references", () => {
+  it("every services.json caseSlug is a project slug", () => {
+    const services = JSON.parse(readFileSync("content/services.json", "utf8")) as { caseSlug: string }[];
+    for (const s of services) expect(slugs, s.caseSlug).toContain(s.caseSlug);
+  });
+  it("every declared cover.src is a key in the media manifest", () => {
+    const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, unknown>;
+    for (const m of metas) if (m.cover) expect(Object.keys(manifest), m.slug).toContain(m.cover.src);
+  });
+  it("featured set is geotrack, kipgoz, gymai, karaoke-sync", () => {
+    expect(metas.filter((m) => m.featured).map((m) => m.slug).sort()).toEqual(["geotrack", "gymai", "karaoke-sync", "kipgoz"]);
+  });
+  it("order values are 1..7 and unique", () => {
+    expect(metas.map((m) => m.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+  });
+  it.each(slugs.flatMap((slug) => [`${slug}.en.mdx`, `${slug}.tr.mdx`]))("%s body is 150-380 words", (file) => {
+    const body = readFileSync(join(dir, file), "utf8").replace(/^---[\s\S]*?---/, "").replace(/^## .+$/gm, "");
+    const words = body.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    expect(words, file).toBeGreaterThanOrEqual(150);
+    expect(words, file).toBeLessThanOrEqual(380);
+  });
+});

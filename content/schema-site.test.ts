@@ -24,4 +24,31 @@ describe("site schemas", () => {
   it("event needs date, place, coords, photo, en/tr caption", () => {
     expect(eventsSchema.safeParse({ slug: "devfest-izmir-24", date: "2024-12-07", place: "İzmir", lat: 38.4514, lng: 27.1705, photo: "/media/events/devfest-izmir-24", en: { title: "DevFest İzmir '24", caption: "x" }, tr: { title: "DevFest İzmir '24", caption: "y" } }).success).toBe(true);
   });
+  it("rejects impossible months in timeline dates", () => {
+    const base = { kind: "work", org: "x", en: { title: "a" }, tr: { title: "b" } };
+    expect(timelineSchema.safeParse({ ...base, from: "2026-12" }).success).toBe(true);
+    expect(timelineSchema.safeParse({ ...base, from: "2026-13" }).success).toBe(false);
+    expect(timelineSchema.safeParse({ ...base, from: "2026-00" }).success).toBe(false);
+    expect(timelineSchema.safeParse({ ...base, from: "2026-01", to: "2026-19" }).success).toBe(false);
+  });
+  it("accepts org as a string or an { en, tr } pair", () => {
+    const base = { kind: "education", from: "2021-09", en: { title: "a" }, tr: { title: "b" } };
+    expect(timelineSchema.safeParse({ ...base, org: "Google" }).success).toBe(true);
+    expect(timelineSchema.safeParse({ ...base, org: { en: "Pamukkale University", tr: "Pamukkale Üniversitesi" } }).success).toBe(true);
+    expect(timelineSchema.safeParse({ ...base, org: { en: "Pamukkale University" } }).success).toBe(false);
+    expect(timelineSchema.safeParse({ ...base, org: "" }).success).toBe(false);
+  });
+  it("rejects out-of-range coordinates and impossible event dates", () => {
+    const base = { slug: "e", date: "2024-12-07", place: "İzmir", lat: 38.4, lng: 27.1, photo: "/media/events/e", en: { title: "a" }, tr: { title: "b" } };
+    expect(eventsSchema.safeParse(base).success).toBe(true);
+    expect(eventsSchema.safeParse({ ...base, lat: 90, lng: -180 }).success).toBe(true);
+    expect(eventsSchema.safeParse({ ...base, lat: 90.1 }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, lat: -91 }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, lng: 180.5 }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, lng: -181 }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, date: "2024-13-07" }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, date: "2024-12-32" }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, date: "2024-12-00" }).success).toBe(false);
+    expect(eventsSchema.safeParse({ ...base, date: "2024-12-31" }).success).toBe(true);
+  });
 });

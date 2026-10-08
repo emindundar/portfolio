@@ -35,7 +35,7 @@ lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll',
 - Theme toggle accessible name is `"<Theme>: <Light|Dark>"` (WCAG 2.5.3); tests select it with `/theme/i`.
 - Playwright: Accept-Language must be set via `page.route` (context locale overrides `extraHTTPHeaders`); see `e2e/i18n.spec.ts`. Run `pnpm build` before `pnpm e2e`.
 - Vitest: `resolve.tsconfigPaths: true` (no vite-tsconfig-paths plugin); tests importing `velite` need `// @vitest-environment node`.
-- Velite outputs `.velite/projectMeta.json` / `projectContent.json`; import via `#site/content` only from `lib/content/index.ts`.
+- Velite outputs `.velite/projectMeta.json` / `projectContent.json`; `#site/content` is imported only from `lib/content/index.ts` and `lib/content/site.ts`.
 - `npm-run-all2` pinned `^8` (v9 needs Node ≥ 24.15). React renders `hrefLang` camelCase; grep case-insensitively.
 - LHCI: default optimistic aggregation, 2 runs (lenient for Faz 0); tighten to `median-run` + 3 runs in Faz 1.5.
 - LHCI gates: `resource-summary:script:size` ≤ 256 KB (error, total transfer incl. lazy chunks), LCP ≤ 2.0 s (warn). Faz 0 baseline: script 157 KB, simulated-mobile LCP 2.3–2.8 s (warns; text-only page, revisit in Faz 1.5).
