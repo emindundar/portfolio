@@ -28,6 +28,8 @@ export function videoFor(base: string): VideoSource | null {
   return { mp4: `${base}.mp4`, webm: `${base}.webm`, poster: e.poster, width: e.width, height: e.height };
 }
 
-export function sizesFor(kind: "list" | "hero"): string {
-  return kind === "list" ? "(min-width: 768px) 40vw, 100vw" : "100vw";
+/** Hero: the phone frame is capped at 20rem (app/[locale]/work/[slug]/page.tsx HERO_BOX), other frames span the page. */
+export function sizesFor(kind: "list" | "hero", frame: "phone" | "browser" | "none" = "none"): string {
+  if (kind === "list") return "(min-width: 768px) 40vw, 100vw";
+  return frame === "phone" ? "min(20rem, 100vw)" : "100vw";
 }

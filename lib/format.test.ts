@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { formatRange, formatCoords, formatDate } from "./format";
 describe("formatRange", () => {
-  it("en month-year with Present", () => { expect(formatRange("2026-02", null, "en")).toBe("Feb 2026 — Present"); });
-  it("tr month-year with Devam", () => { expect(formatRange("2026-02", null, "tr")).toBe("Şub 2026 — Devam"); });
+  it("en month-year with Present", () => { expect(formatRange("2026-02", null, "en", "Present")).toBe("Feb 2026 — Present"); });
+  it("tr month-year with the passed label", () => { expect(formatRange("2026-02", null, "tr", "Günümüz")).toBe("Şub 2026 — Günümüz"); });
   it("year-only entries", () => {
-    expect(formatRange("2024", "2024", "en")).toBe("2024");
-    expect(formatRange("2021-09", "2025-06", "tr")).toBe("Eyl 2021 — Haz 2025");
+    expect(formatRange("2024", "2024", "en", "Present")).toBe("2024");
+    expect(formatRange("2021-09", "2025-06", "tr", "Günümüz")).toBe("Eyl 2021 — Haz 2025");
   });
-  it("renders September as Sep in English", () => { expect(formatRange("2021-09", "2025-09", "en")).toBe("Sep 2021 — Sep 2025"); });
+  it("renders September as Sep in English", () => { expect(formatRange("2021-09", "2025-09", "en", "Present")).toBe("Sep 2021 — Sep 2025"); });
   it("undefined end counts as ongoing; empty start yields empty string", () => {
-    expect(formatRange("2026-02", undefined, "en")).toBe("Feb 2026 — Present");
-    expect(formatRange("", null, "en")).toBe("");
+    expect(formatRange("2026-02", undefined, "en", "Now")).toBe("Feb 2026 — Now");
+    expect(formatRange("", null, "en", "Present")).toBe("");
   });
 });
 describe("formatCoords", () => {

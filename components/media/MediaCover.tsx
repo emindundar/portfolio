@@ -9,12 +9,16 @@ export function MediaCover({
   kind,
   facetLabels,
   priority = false,
+  videoLabels,
 }: {
   project: Project;
-  kind: "list" | "hero";
   facetLabels: string[];
   priority?: boolean;
-}) {
+} & (
+  | { kind: "list"; videoLabels?: undefined }
+  /** The hero may autoplay a looping video, which needs a translated pause/play control (WCAG 2.2.2). */
+  | { kind: "hero"; videoLabels: { pause: string; play: string } }
+)) {
   const c = project.cover;
   const typo = (
     <TypoCover
@@ -23,10 +27,13 @@ export function MediaCover({
       facetLabels={facetLabels}
       title={project.title}
       variant={kind === "list" ? "compact" : "full"}
+      decorative={kind === "hero"}
     />
   );
   if (!c) return typo;
 
+  // The hero sits directly under the <h1> with the same title: an image there is decorative (empty alt).
+  // List thumbnails and the hero video (which has a control that needs a named subject) keep the title.
   const alt = project.title;
   // Intrinsic width, never stretched; centered inside the frame.
   const cls = "block h-auto max-w-full";
@@ -43,9 +50,10 @@ export function MediaCover({
         </DeviceFrame>
       );
     }
+    if (!videoLabels) return typo;
     return (
       <DeviceFrame frame={c.frame}>
-        <VideoCover {...v} alt={alt} className={cls} priority={priority} />
+        <VideoCover {...v} alt={alt} pauseLabel={videoLabels.pause} playLabel={videoLabels.play} className={cls} priority={priority} />
       </DeviceFrame>
     );
   }
@@ -58,8 +66,8 @@ export function MediaCover({
       <img
         src={img.src}
         srcSet={img.srcSet}
-        sizes={sizesFor(kind)}
-        alt={alt}
+        sizes={sizesFor(kind, c.frame)}
+        alt={kind === "hero" ? "" : alt}
         width={img.width}
         height={img.height}
         loading={priority ? "eager" : "lazy"}

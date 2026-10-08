@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ViewTransition } from "react";
 import { hasLocale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
@@ -44,12 +44,13 @@ const HERO_BOX =
 export default async function CasePage({ params }: Props) {
   const { locale, slug } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
+  setRequestLocale(locale);
   const all = getProjects(locale);
   const idx = all.findIndex((p) => p.slug === slug);
   const project = all[idx];
   if (!project) notFound();
-  const t = await getTranslations("Case");
-  const tc = await getTranslations("Capabilities");
+  const t = await getTranslations({ locale, namespace: "Case" });
+  const tc = await getTranslations({ locale, namespace: "Capabilities" });
   const facetLabels = project.facets.map((f) => tc(FACET_LABEL_KEYS[f]));
 
   return (
@@ -59,11 +60,18 @@ export default async function CasePage({ params }: Props) {
           {t("fallbackNote")}
         </p>
       )}
-      {/* The <h1> stays above the cover and is the LCP element; the cover is never fetched with priority. */}
+      {/* The cover is in the first mobile viewport and larger than the <h1>, so it is the LCP candidate: it is fetched
+          eagerly with high priority (image covers and the video poster). The typographic cover has no request. */}
       <CaseHeader project={project} facetLabels={facetLabels} />
       <div className={HERO_BOX}>
         <ViewTransition name={`cover-${project.slug}`} share="morph" default="none">
-          <MediaCover project={project} kind="hero" facetLabels={facetLabels} />
+          <MediaCover
+            project={project}
+            kind="hero"
+            facetLabels={facetLabels}
+            priority
+            videoLabels={{ pause: t("videoPause"), play: t("videoPlay") }}
+          />
         </ViewTransition>
       </div>
       <div className="mt-12 grid gap-12 md:mt-16 md:grid-cols-12 md:gap-x-6">

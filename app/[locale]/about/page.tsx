@@ -36,7 +36,7 @@ export default async function AboutPage({ params }: Props) {
       <AboutHero title={t("title")} intro={t("intro")} portraitAlt={t("title")} />
       <section className="px-4 py-12 md:px-6">
         <SectionHeader number="01" title={t("timelineHeading")} />
-        <SectionReveal><Timeline locale={locale} /></SectionReveal>
+        <SectionReveal><Timeline locale={locale} present={t("present")} /></SectionReveal>
       </section>
       <section className="px-4 py-12 md:px-6">
         <SectionHeader number="02" title={t("howHeading")} />

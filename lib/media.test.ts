@@ -45,5 +45,8 @@ describe("sizesFor", () => {
   it("differs by kind", () => {
     expect(sizesFor("list")).toBe("(min-width: 768px) 40vw, 100vw");
     expect(sizesFor("hero")).toBe("100vw");
+    expect(sizesFor("hero", "browser")).toBe("100vw");
+    expect(sizesFor("hero", "phone")).toBe("min(20rem, 100vw)");
+    expect(sizesFor("list", "phone")).toBe("(min-width: 768px) 40vw, 100vw");
   });
 });

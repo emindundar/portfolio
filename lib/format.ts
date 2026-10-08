@@ -2,8 +2,6 @@ import type { Locale } from "@/i18n/routing";
 
 // All dates are built and formatted in UTC from the string parts: no current-time access (cacheComponents)
 // and no timezone drift between build machine and viewer.
-export const PRESENT: Record<Locale, string> = { en: "Present", tr: "Devam" };
-
 function utc(y: number | undefined, m: number | undefined, d = 1): Date {
   return new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, d));
 }
@@ -14,11 +12,14 @@ export function formatPoint(value: string, locale: Locale): string {
   return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(utc(y, m)).replace("Sept", "Sep");
 }
 
-/** `from`/`to` are `YYYY-MM` or `YYYY`. Null/undefined `to` = ongoing. Empty `from` = no date (certificates). */
-export function formatRange(from: string, to: string | null | undefined, locale: Locale): string {
+/**
+ * `from`/`to` are `YYYY-MM` or `YYYY`. Null/undefined `to` = ongoing, rendered with `present` (a translated label,
+ * messages `About.present`). Empty `from` = no date (certificates).
+ */
+export function formatRange(from: string, to: string | null | undefined, locale: Locale, present: string): string {
   if (!from) return "";
   const start = formatPoint(from, locale);
-  if (to == null) return `${start} — ${PRESENT[locale]}`;
+  if (to == null) return `${start} — ${present}`;
   const end = formatPoint(to, locale);
   return start === end ? start : `${start} — ${end}`;
 }

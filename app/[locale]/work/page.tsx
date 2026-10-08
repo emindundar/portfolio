@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { hasLocale } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
@@ -52,7 +52,10 @@ async function List({ params, searchParams }: Props) {
 }
 
 export default async function WorkPage(props: Props) {
-  const t = await getTranslations("Work");
+  const { locale } = await props.params;
+  if (!hasLocale(routing.locales, locale)) notFound();
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "Work" });
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
       <h1 className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-none">{t("title")}</h1>

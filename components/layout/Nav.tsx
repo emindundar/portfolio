@@ -22,9 +22,11 @@ export async function Nav() {
       <Link href="/" className="inline-flex min-h-11 items-center font-display text-lg">
         emin dündar
       </Link>
+      {/* Below md the nav scrolls horizontally, and overflow-x-auto also clips vertically. `py-1` extends the clip box
+          by the 4px the focus ring needs (2px outline + 2px offset); `-my-1` keeps the header height unchanged. */}
       <nav
         aria-label={t("primary")}
-        className="order-last -mx-4 flex w-[calc(100%+2rem)] gap-4 overflow-x-auto md:gap-6 px-4 md:order-none md:mx-0 md:w-auto md:overflow-visible md:px-0"
+        className="order-last -mx-4 -my-1 flex w-[calc(100%+2rem)] gap-4 overflow-x-auto md:gap-6 px-4 py-1 md:order-none md:mx-0 md:my-0 md:w-auto md:overflow-visible md:px-0 md:py-0"
       >
         <NavLinks items={items} />
       </nav>

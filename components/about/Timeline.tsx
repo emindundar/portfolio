@@ -1,9 +1,9 @@
 import type { Locale } from "@/i18n/routing";
 import { getTimeline, orgName } from "@/lib/content";
-import { PRESENT, formatPoint } from "@/lib/format";
+import { formatPoint } from "@/lib/format";
 
 /** Work + education, newest first (list order in content/timeline.json is already newest first; sort defensively). */
-export function Timeline({ locale }: { locale: Locale }) {
+export function Timeline({ locale, present }: { locale: Locale; present: string }) {
   const items = getTimeline(locale)
     .filter((e) => e.kind !== "cert")
     .sort((a, b) => b.from.localeCompare(a.from));
@@ -13,7 +13,7 @@ export function Timeline({ locale }: { locale: Locale }) {
         <li key={`${e.kind}-${e.from}-${e.text.title}`} data-reveal className="grid gap-2 border-b border-line py-6 md:grid-cols-12 md:gap-6">
           <p className="font-mono text-sm text-muted md:col-span-3">
             <time dateTime={e.from}>{formatPoint(e.from, locale)}</time>
-            {e.to == null ? ` — ${PRESENT[locale]}` : e.to !== e.from && (
+            {e.to == null ? ` — ${present}` : e.to !== e.from && (
               <>
                 {" — "}
                 <time dateTime={e.to}>{formatPoint(e.to, locale)}</time>

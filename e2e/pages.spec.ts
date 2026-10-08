@@ -28,6 +28,12 @@ test.describe("/colophon", () => {
     await expect(repo).toHaveAttribute("target", "_blank");
     await expect(repo).toHaveAttribute("rel", "noreferrer noopener");
   });
+  test("tr is titled Künye, in the page and in the footer", async ({ page }) => {
+    await page.goto("/tr/colophon");
+    await expect(page.getByRole("heading", { level: 1, name: "Künye" })).toBeVisible();
+    await expect(page).toHaveTitle(/Künye/);
+    await expect(page.getByRole("navigation", { name: "Alt bilgi" }).getByRole("link", { name: "Künye" })).toHaveAttribute("href", "/tr/colophon");
+  });
 });
 
 test.describe("nav", () => {
@@ -69,6 +75,19 @@ test.describe("nav", () => {
       await expect(primary(page).getByRole("link")).toHaveCount(5);
     });
   }
+
+  test("below md the scrolling nav leaves room for the focus ring above and below its links", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto("/en");
+    const header = (await page.getByRole("banner").boundingBox())!;
+    const nav = (await primary(page).boundingBox())!;
+    const link = (await primary(page).getByRole("link", { name: "Work" }).boundingBox())!;
+    // 2px outline + 2px offset must fit inside the nav's clip box (overflow-x-auto clips both axes).
+    expect(link.y - nav.y).toBeGreaterThanOrEqual(4);
+    expect(nav.y + nav.height - (link.y + link.height)).toBeGreaterThanOrEqual(4);
+    // …without growing the header: brand row (44) + link row (44) + py-1 + border.
+    expect(header.height).toBeLessThanOrEqual(98);
+  });
 
   test("tr labels", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });

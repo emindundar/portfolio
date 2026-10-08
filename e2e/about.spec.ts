@@ -17,7 +17,7 @@ test.describe("/about", () => {
     await page.goto("/tr/about");
     await expect(page.getByRole("heading", { level: 2, name: "Nasıl çalışırım" })).toBeVisible();
     await expect(page.locator("main")).toContainText("Pamukkale Üniversitesi");
-    await expect(page.locator("main")).toContainText("Şub 2026 — Devam");
+    await expect(page.locator("main")).toContainText("Şub 2026 — Günümüz");
   });
 
   test("events strip has three figures with photo and coordinates", async ({ page }) => {
@@ -25,7 +25,8 @@ test.describe("/about", () => {
     const figures = page.locator("main figure");
     await expect(figures).toHaveCount(3);
     await expect(figures.first().locator("img")).toHaveAttribute("src", /\/media\/events\//);
-    await expect(figures.first().locator("img")).toHaveAttribute("alt", /DevFest/);
+    await expect(figures.first().locator("img")).toHaveAttribute("alt", "");
+    await expect(figures.first().locator("figcaption")).toContainText("DevFest");
     await expect(figures.first().locator("figcaption")).toContainText("38.4514°N");
   });
 

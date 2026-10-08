@@ -12,12 +12,13 @@ export function EventsStrip({ locale }: { locale: Locale }) {
           <figure key={ev.slug} data-reveal className="m-0 flex flex-col gap-3">
             {img && (
               <div className="aspect-[4/5] overflow-hidden border border-line bg-surface">
+                {/* Empty alt: the figcaption right below carries the event title, date and place. */}
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-generated responsive set */}
                 <img
                   src={img.src}
                   srcSet={img.srcSet}
                   sizes="(min-width: 768px) 30vw, 100vw"
-                  alt={ev.text.title}
+                  alt=""
                   width={img.width}
                   height={img.height}
                   loading="lazy"
