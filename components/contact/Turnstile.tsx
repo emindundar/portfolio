@@ -44,7 +44,12 @@ export function Turnstile({ siteKey, locale, onUnavailable, onAvailable }: Props
     let id: string | null = null;
     loadScript()
       .then(() => {
-        if (cancelled || !host.current || !window.turnstile) return;
+        if (cancelled || !host.current) return;
+        // The request succeeded but defined no API (a content blocker answering with an empty stub).
+        if (!window.turnstile) {
+          onUnavailable();
+          return;
+        }
         const theme = document.documentElement.dataset.theme;
         id = window.turnstile.render(host.current, {
           sitekey: siteKey,
