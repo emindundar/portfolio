@@ -30,6 +30,7 @@
 2. **Commit count comes from the commit search API**, not from the `events` feed. GitHub removed commit lists from public `PushEvent` payloads, so the feed can no longer be summed. Two unauthenticated requests per hour: `GET /users/emindundar/repos?sort=pushed&per_page=1` and `GET /search/commits?q=author:emindundar+author-date:>=<30 days ago>&per_page=1`.
 3. **Sender address is configurable.** Spec says `contact@emindundar.dev`; the domain is not bought yet. `CONTACT_FROM` defaults to Resend's shared sender `onboarding@resend.dev`, which delivers only to the Resend account owner — exactly the recipient here.
 4. **GitHub panel moves from Faz 1.5 to this phase** (already agreed when Faz 1 was split).
+5. **No e-mail link on the contact page.** Spec §2.1 lists "Form + e-posta/LinkedIn/GitHub"; the page shows the form plus LinkedIn and GitHub only. A published address gets harvested, and this branch keeps the rule that no personal address is committed. Publishing one is the owner's call.
 
 ## Review Focus
 
@@ -1672,11 +1673,15 @@ git commit -m "feat(analytics): optional Umami script; shared newTab label; cont
 
 ## Owner steps (outside the code, any time before announcing the site)
 
-1. **Resend:** create an account with the mailbox that should receive messages, create an API key. Vercel → project `eminsportfolio` → Environment Variables: `RESEND_API_KEY`, `CONTACT_TO` (Production + Preview).
-2. **Turnstile:** Cloudflare dashboard → Turnstile → add widget, mode "Managed", hostnames `eminsportfolio.vercel.app` (add `emindundar.dev` later). Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` in Vercel.
-3. **Umami Cloud:** add website, copy the website id into `NEXT_PUBLIC_UMAMI_ID`.
-4. Redeploy. Until steps 1–2 are done the form shows "not available" and points to LinkedIn; nothing breaks.
-5. After the domain is bought: verify it in Resend and set `CONTACT_FROM=Portfolio <contact@emindundar.dev>`.
+Until steps 1-4 are done the form shows "not available" and points to LinkedIn; nothing breaks.
+
+1. **Resend:** create the account **with the mailbox that should receive the messages**, then create an API key. Vercel → project `eminsportfolio` → Settings → Environment Variables, environment **Production only**: `RESEND_API_KEY` and `CONTACT_TO`. While `CONTACT_FROM` is unset (the shared sender `onboarding@resend.dev`), `CONTACT_TO` **must be the e-mail address of the Resend account itself**: Resend rejects any other recipient with 403 and the visitor sees "could not be sent".
+2. **Turnstile:** Cloudflare dashboard → Turnstile → add widget, mode "Managed", hostname `eminsportfolio.vercel.app` (add `emindundar.dev` later; never the bare `vercel.app`). Vercel, **Production only**: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`. Both are needed: with the secret but no site key the form answers "not available".
+3. **Preview deployments:** set only `CONTACT_DRY_RUN=1`, environment **Preview only**. Preview URLs are other hostnames (`eminsportfolio-git-<branch>-….vercel.app`), so the real widget would fail there; with the dry run the form validates, answers success and sends nothing. Do not put the Resend or Turnstile keys in Preview. The dry run is ignored in Production even if the variable ends up there.
+4. **Redeploy.** `NEXT_PUBLIC_*` values are baked in at build time: after adding or changing one, trigger a **new deployment** (Deployments → ⋯ → Redeploy). A running deployment does not pick them up.
+5. **Umami Cloud (optional):** add the website, copy the website id into `NEXT_PUBLIC_UMAMI_ID`, **Production only** (otherwise previews pollute the statistics). Optionally `NEXT_PUBLIC_UMAMI_DOMAINS=eminsportfolio.vercel.app` (comma-separated hostnames) so no other host can report. Redeploy as in step 4.
+6. **Smoke test on the production URL:** send one message through the form, confirm it arrives, and confirm that "Reply" addresses the visitor, not the sender. No automated test exercises the real Turnstile + Resend path. If it fails: Vercel → project → Logs, search `contact:`. The line names the cause: `not configured (missing <VARIABLE>)`, `turnstile rejected (<Cloudflare error code or HTTP status>)`, `mail provider rejected the message (401)` = wrong API key, `(403)` = recipient not allowed (see step 1), `(429)` = quota, `global send ceiling reached` = more than 30 messages in an hour.
+7. After the domain is bought: verify it in Resend, set `CONTACT_FROM=Portfolio <contact@emindundar.dev>` (then `CONTACT_TO` may be any mailbox), add `emindundar.dev` to the Turnstile widget and to `NEXT_PUBLIC_UMAMI_DOMAINS`, redeploy, repeat step 6.
 
 ## Self-review notes
 

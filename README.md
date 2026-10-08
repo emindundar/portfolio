@@ -23,13 +23,22 @@ pnpm build && pnpm e2e && pnpm lhci
 
 All variables are optional. Copy `.env.example` to `.env.local`.
 
-| Variable | Used by | Without it |
-|---|---|---|
-| `RESEND_API_KEY`, `CONTACT_TO` | contact form mail | form answers "not available", points to LinkedIn |
-| `CONTACT_FROM` | sender address | `Portfolio <onboarding@resend.dev>` |
-| `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | bot check | form answers "not available" |
-| `CONTACT_DRY_RUN=1` | local work and e2e | — (ignored when `VERCEL_ENV=production`) |
-| `NEXT_PUBLIC_UMAMI_ID` | analytics | no analytics script |
+| Variable | Used by | Without it | Vercel environment |
+|---|---|---|---|
+| `RESEND_API_KEY`, `CONTACT_TO` | contact form mail | form answers "not available", points to LinkedIn | Production only |
+| `CONTACT_FROM` | sender address | `Portfolio <onboarding@resend.dev>` | Production only |
+| `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | bot check (both are needed) | form answers "not available" | Production only |
+| `CONTACT_DRY_RUN=1` | local work, e2e, previews: validates, answers success, sends nothing | — (ignored when `VERCEL_ENV=production`) | Preview only |
+| `NEXT_PUBLIC_UMAMI_ID` | analytics | no analytics script | Production only |
+| `NEXT_PUBLIC_UMAMI_DOMAINS` | comma-separated hostnames allowed to report | attribute omitted, every host reports | Production only |
+
+- Real keys go into **Production only**. Preview deployments run on other hostnames, where the Turnstile widget is not authorised: give Preview nothing but `CONTACT_DRY_RUN=1`.
+- While `CONTACT_FROM` is the default, `CONTACT_TO` must be the Resend account's own e-mail address; Resend rejects any other recipient (403).
+- `NEXT_PUBLIC_*` values are baked in at build time. After adding or changing one, trigger a new deployment; a running deployment does not pick it up.
+- After configuring, send one message on the production URL and check that it arrives with the visitor as reply-to. On failure search the Vercel logs for `contact:`; the line carries the missing variable, the Cloudflare error code or the provider's HTTP status (never visitor data).
+- Limits: 5 messages per hour per client (IPv4 address or IPv6 /64) and 30 per hour in total, per server instance.
+
+Data flows: a submitted name, e-mail address and message are sent as an e-mail through Resend and stored nowhere else; Cloudflare Turnstile runs the bot check and receives the visitor's IP address. The form says so under the submit button. Analytics, when enabled, is Umami Cloud: no cookies, no personal data, Do Not Track respected, so there is no consent banner.
 
 The home page "now" panel reads `content/now.json` (edit the text and the `updated` date by hand) and, once an hour, two unauthenticated GitHub API endpoints. If GitHub does not answer, only the hand-written line is shown.
 
