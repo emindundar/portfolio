@@ -57,7 +57,8 @@
     "retry": "Try again"
   },
   "Footer": {
-    "rights": "Emin Dündar"
+    "rights": "Emin Dündar",
+    "nav": "Footer"
   },
   "Work": {
     "title": "Work",
@@ -126,6 +127,10 @@
     "p6": "Fonts: Cabinet Grotesk, Satoshi and JetBrains Mono.",
     "stackHeading": "Stack",
     "processHeading": "Process",
-    "repo": "Source on GitHub"
+    "repo": "Source on GitHub",
+    "process1": "Written spec",
+    "process2": "Task-by-task plan",
+    "process3": "Implementation by one agent, review by another",
+    "process4": "Rulings recorded in a ledger"
   }
 }

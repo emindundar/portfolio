@@ -2,16 +2,16 @@ import type { Locale } from "@/i18n/routing";
 
 // All dates are built and formatted in UTC from the string parts: no current-time access (cacheComponents)
 // and no timezone drift between build machine and viewer.
-const PRESENT: Record<Locale, string> = { en: "Present", tr: "Devam" };
+export const PRESENT: Record<Locale, string> = { en: "Present", tr: "Devam" };
 
 function utc(y: number | undefined, m: number | undefined, d = 1): Date {
   return new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, d));
 }
 
-function formatPoint(value: string, locale: Locale): string {
+export function formatPoint(value: string, locale: Locale): string {
   const [y, m] = value.split("-").map(Number);
   if (!m) return String(y);
-  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(utc(y, m));
+  return new Intl.DateTimeFormat(locale, { month: "short", year: "numeric", timeZone: "UTC" }).format(utc(y, m)).replace("Sept", "Sep");
 }
 
 /** `from`/`to` are `YYYY-MM` or `YYYY`. Null/undefined `to` = ongoing. Empty `from` = no date (certificates). */
@@ -25,7 +25,7 @@ export function formatRange(from: string, to: string | null | undefined, locale:
 
 export function formatDate(iso: string, locale: Locale): string {
   const [y, m, d] = iso.split("-").map(Number);
-  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(utc(y, m, d));
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(utc(y, m, d)).replace("Sept", "Sep");
 }
 
 export function formatCoords(lat: number, lng: number): string {

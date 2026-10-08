@@ -7,6 +7,7 @@ describe("formatRange", () => {
     expect(formatRange("2024", "2024", "en")).toBe("2024");
     expect(formatRange("2021-09", "2025-06", "tr")).toBe("Eyl 2021 — Haz 2025");
   });
+  it("renders September as Sep in English", () => { expect(formatRange("2021-09", "2025-09", "en")).toBe("Sep 2021 — Sep 2025"); });
   it("undefined end counts as ongoing; empty start yields empty string", () => {
     expect(formatRange("2026-02", undefined, "en")).toBe("Feb 2026 — Present");
     expect(formatRange("", null, "en")).toBe("");
@@ -20,5 +21,6 @@ describe("formatDate", () => {
   it("formats ISO dates in UTC", () => {
     expect(formatDate("2024-12-07", "en")).toBe("7 Dec 2024");
     expect(formatDate("2024-12-07", "tr")).toBe("7 Ara 2024");
+    expect(formatDate("2025-09-29", "en")).toBe("29 Sep 2025");
   });
 });

@@ -29,7 +29,7 @@ export function EventsStrip({ locale }: { locale: Locale }) {
             <figcaption className="flex flex-col gap-1">
               <span className="font-display text-xl leading-tight">{ev.text.title}</span>
               <span className="font-mono text-xs uppercase text-muted">
-                {formatDate(ev.date, locale)} — {ev.place}
+                <time dateTime={ev.date}>{formatDate(ev.date, locale)}</time> — {ev.place}
               </span>
               <span className="font-mono text-xs text-muted">{formatCoords(ev.lat, ev.lng)}</span>
               {ev.text.caption && <span className="text-sm text-muted">{ev.text.caption}</span>}

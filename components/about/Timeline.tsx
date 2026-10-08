@@ -1,6 +1,6 @@
 import type { Locale } from "@/i18n/routing";
 import { getTimeline, orgName } from "@/lib/content";
-import { formatRange } from "@/lib/format";
+import { PRESENT, formatPoint } from "@/lib/format";
 
 /** Work + education, newest first (list order in content/timeline.json is already newest first; sort defensively). */
 export function Timeline({ locale }: { locale: Locale }) {
@@ -11,7 +11,15 @@ export function Timeline({ locale }: { locale: Locale }) {
     <ol className="m-0 list-none border-t border-line p-0">
       {items.map((e) => (
         <li key={`${e.kind}-${e.from}-${e.text.title}`} data-reveal className="grid gap-2 border-b border-line py-6 md:grid-cols-12 md:gap-6">
-          <p className="font-mono text-sm text-muted md:col-span-3">{formatRange(e.from, e.to, locale)}</p>
+          <p className="font-mono text-sm text-muted md:col-span-3">
+            <time dateTime={e.from}>{formatPoint(e.from, locale)}</time>
+            {e.to == null ? ` — ${PRESENT[locale]}` : e.to !== e.from && (
+              <>
+                {" — "}
+                <time dateTime={e.to}>{formatPoint(e.to, locale)}</time>
+              </>
+            )}
+          </p>
           <div className="md:col-span-9">
             <h3 className="font-display text-2xl leading-tight md:text-3xl">{e.text.title}</h3>
             <p className="mt-1 font-mono text-sm text-muted">

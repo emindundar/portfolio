@@ -57,7 +57,8 @@
     "retry": "Tekrar dene"
   },
   "Footer": {
-    "rights": "Emin Dündar"
+    "rights": "Emin Dündar",
+    "nav": "Alt bilgi"
   },
   "Work": {
     "title": "İşler",
@@ -126,6 +127,10 @@
     "p6": "Yazı tipleri: Cabinet Grotesk, Satoshi ve JetBrains Mono.",
     "stackHeading": "Teknolojiler",
     "processHeading": "Süreç",
-    "repo": "GitHub'da kaynak kodu"
+    "repo": "GitHub'da kaynak kodu",
+    "process1": "Yazılı spec",
+    "process2": "Görev görev plan",
+    "process3": "Bir ajan uygular, bir başkası inceler",
+    "process4": "Kararlar bir deftere kaydedilir"
   }
 }
