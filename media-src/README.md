@@ -46,3 +46,9 @@ pnpm media` simulates that for testing.
 
 An output is regenerated when it is missing or older than its source, so replacing a source file
 and re-running is enough. Keep `public/media` under 15 MB in total.
+
+## Privacy
+
+Sources are committed and published. Before committing a source, crop or blur anything in it that identifies
+or contacts a person: e-mail addresses, QR codes and third-party faces. Do it in the source file, not in the
+generated output, so every regenerated width inherits it.
