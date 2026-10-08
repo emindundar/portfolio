@@ -29,5 +29,7 @@ export default defineConfig({
     url: `${baseURL}/en`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // The contact action validates and rate-limits but never calls Cloudflare or Resend.
+    env: { CONTACT_DRY_RUN: "1" },
   },
 });

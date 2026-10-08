@@ -1,0 +1,99 @@
+import { useEffect } from "react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import en from "@/messages/en.json";
+import { BUDGETS, HONEYPOT_FIELD, type ContactState } from "@/lib/contact";
+
+const state = vi.hoisted(() => ({ current: { status: "idle" } as ContactState, pending: false }));
+vi.mock("react", async (orig) => ({
+  ...(await orig<typeof import("react")>()),
+  useActionState: () => [state.current, vi.fn(), state.pending],
+}));
+vi.mock("@/app/[locale]/contact/actions", () => ({ sendContact: vi.fn() }));
+// Button.tsx (source of buttonClasses) imports the locale-aware Link, which needs the Next runtime.
+vi.mock("@/i18n/navigation", () => ({ Link: "a" }));
+// Stands in for a blocked Cloudflare script: the widget reports itself unavailable as soon as it mounts.
+vi.mock("./Turnstile", () => ({
+  Turnstile: ({ onUnavailable }: { onUnavailable: () => void }) => {
+    useEffect(() => onUnavailable(), [onUnavailable]);
+    return <div data-turnstile />;
+  },
+}));
+
+import { ContactForm } from "./ContactForm";
+
+const LINKEDIN = "https://www.linkedin.com/in/emindundar";
+const EMPTY = { name: "", email: "", message: "", budget: "" };
+
+function show(s: ContactState, { pending = false, siteKey = "" } = {}) {
+  state.current = s;
+  state.pending = pending;
+  return render(
+    <NextIntlClientProvider locale="en" messages={en}>
+      <ContactForm locale="en" siteKey={siteKey} linkedinUrl={LINKEDIN} budgets={BUDGETS} honeypotField={HONEYPOT_FIELD} />
+    </NextIntlClientProvider>,
+  );
+}
+
+describe("ContactForm", () => {
+  it("idle: labelled fields, hidden honeypot out of the tab order, no status", () => {
+    const { container } = show({ status: "idle" });
+    expect(screen.getByLabelText("Name")).toBeRequired();
+    expect(screen.getByLabelText("E-mail")).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText("Message")).toHaveAttribute("maxlength", "2000");
+    expect(screen.getByLabelText("Message")).toHaveAttribute("aria-describedby", "contact-message-hint");
+    const trap = container.querySelector('input[name="company"]')!;
+    expect(trap).toHaveAttribute("tabindex", "-1");
+    expect(trap).toHaveAttribute("autocomplete", "off");
+    expect(trap.closest("[aria-hidden='true']")).not.toBeNull();
+    expect(container.querySelector("[data-contact-status]")).toBeNull();
+    expect(container.querySelector("[data-turnstile]")).toBeNull();
+    expect(screen.getByRole("button", { name: "Send message" })).toBeEnabled();
+    expect(screen.getAllByRole("option").map((o) => (o as HTMLOptionElement).value)).toEqual(["", ...BUDGETS]);
+  });
+  it("pending: button disabled and renamed", () => {
+    show({ status: "idle" }, { pending: true });
+    expect(screen.getByRole("button", { name: "Sending…" })).toBeDisabled();
+  });
+  it("field errors: refilled values, aria-invalid, described by the error, alert summary", () => {
+    show({ status: "error", code: "invalid", fieldErrors: { email: "invalid" }, values: { name: "Ada", email: "nope", message: "hello hello hello", budget: "1k-5k" } });
+    const email = screen.getByLabelText("E-mail");
+    expect(email).toHaveValue("nope");
+    expect(email).toHaveAttribute("aria-invalid", "true");
+    expect(document.getElementById(email.getAttribute("aria-describedby")!)).toHaveTextContent("This does not look right.");
+    expect(email).toHaveFocus();
+    expect(screen.getByLabelText("Name")).toHaveValue("Ada");
+    expect(screen.getByLabelText("Name")).not.toHaveAttribute("aria-invalid");
+    expect(screen.getByLabelText("Budget (optional)")).toHaveValue("1k-5k");
+    expect(screen.getByRole("alert")).toHaveTextContent("Some fields need attention.");
+    expect(screen.getByRole("alert").querySelector("a")).toBeNull();
+  });
+  it("message error: described by the error and the hint, focus on the first invalid field", () => {
+    show({ status: "error", code: "invalid", fieldErrors: { message: "tooShort", email: "required" }, values: { ...EMPTY, name: "Ada", message: "hi" } });
+    const message = screen.getByLabelText("Message");
+    expect(message).toHaveAttribute("aria-describedby", "contact-message-error contact-message-hint");
+    expect(message).toHaveAccessibleDescription("This is too short. 10 to 2000 characters.");
+    expect(screen.getByLabelText("E-mail")).toHaveFocus();
+  });
+  it("unavailable: message plus a LinkedIn link", () => {
+    show({ status: "error", code: "unavailable", values: EMPTY });
+    expect(screen.getByRole("alert")).toHaveTextContent("The form is not available right now.");
+    expect(screen.getByRole("alert").querySelector("a")).toHaveAttribute("href", LINKEDIN);
+  });
+  it("bot check cannot load: alert with the LinkedIn fallback instead of a dead button", () => {
+    show({ status: "idle" }, { siteKey: "site-key" });
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("The bot check did not complete.");
+    expect(alert.querySelector("a")).toHaveAttribute("href", LINKEDIN);
+    expect(alert.querySelector("a")).toHaveAttribute("rel", "noreferrer noopener");
+  });
+  it("success: form replaced by a status message that takes focus", () => {
+    const { container } = show({ status: "success" });
+    expect(container.querySelector("form")).toBeNull();
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("Message sent.");
+    expect(status).toHaveFocus();
+    expect(screen.getByRole("link", { name: "Send another message" })).toHaveAttribute("href", "/en/contact");
+  });
+});
