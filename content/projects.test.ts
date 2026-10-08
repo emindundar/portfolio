@@ -37,6 +37,7 @@ const metas = slugs.map((slug) => JSON.parse(readFileSync(join(dir, `${slug}.met
   featured?: boolean;
   order: number;
   cover?: { src: string };
+  gallery?: string[];
 });
 
 describe("project content cross-references", () => {
@@ -47,6 +48,16 @@ describe("project content cross-references", () => {
   it("every declared cover.src is a key in the media manifest", () => {
     const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, unknown>;
     for (const m of metas) if (m.cover) expect(Object.keys(manifest), m.slug).toContain(m.cover.src);
+  });
+  it("every gallery base is an image entry in the media manifest with its file on disk", () => {
+    const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, { widths?: number[] }>;
+    for (const m of metas)
+      for (const base of m.gallery ?? []) {
+        const widths = manifest[base]?.widths ?? [];
+        expect(widths.length, `${m.slug}: ${base}`).toBeGreaterThan(0);
+        for (const w of widths) expect(existsSync(join("public", `${base}-${w}.webp`)), `${base}-${w}.webp`).toBe(true);
+      }
+    expect(metas.find((m) => m.slug === "gymai")?.gallery).toEqual(["/media/gymai/poster", "/media/gymai/screens-right"]);
   });
   it("featured set is geotrack, kipgoz, gymai, karaoke-sync", () => {
     expect(metas.filter((m) => m.featured).map((m) => m.slug).sort()).toEqual(["geotrack", "gymai", "karaoke-sync", "kipgoz"]);

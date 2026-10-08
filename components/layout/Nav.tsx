@@ -6,7 +6,11 @@ import { ThemeToggle } from "./ThemeToggle";
 export async function Nav() {
   const t = await getTranslations("Nav");
   return (
-    <header className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line bg-bg px-6 py-3 font-mono text-sm">
+    // Anchored during view transitions (see app/globals.css): the header never cross-fades or moves.
+    <header
+      style={{ viewTransitionName: "site-header" }}
+      className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line bg-bg px-6 py-3 font-mono text-sm"
+    >
       <Link href="/" className="font-display text-lg">
         emin dündar
       </Link>

@@ -85,7 +85,11 @@
     "prev": "Previous",
     "next": "Next",
     "backToWork": "All work",
-    "fallbackNote": "This case study is available in English only for now."
+    "fallbackNote": "This case study is available in English only for now.",
+    "nav": "Case navigation",
+    "gallery": "Gallery",
+    "video": "Video",
+    "metrics": "Metrics"
   },
   "About": {
     "title": "About",

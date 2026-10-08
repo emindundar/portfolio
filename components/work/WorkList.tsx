@@ -1,3 +1,4 @@
+import { ViewTransition } from "react";
 import { getTranslations } from "next-intl/server";
 import type { Facet } from "@/content/facet-list";
 import type { Project } from "@/lib/content";
@@ -53,8 +54,11 @@ export async function WorkList({ items, facet }: { items: Project[]; facet: Face
                   </div>
                 </div>
                 <div aria-hidden="true" className={COVER_BOX}>
-                  {/* Row 1 is above the fold on desktop; eager only for a real image cover. */}
-                  <MediaCover project={p} kind="list" facetLabels={labels} priority={i === 0 && p.cover?.type === "image"} />
+                  {/* Never eager: the box is hidden on mobile and the page's LCP element is the <h1>.
+                      Same name as the hero cover on /work/[slug], so the thumbnail morphs into it. */}
+                  <ViewTransition name={`cover-${p.slug}`} share="morph" default="none">
+                    <MediaCover project={p} kind="list" facetLabels={labels} />
+                  </ViewTransition>
                 </div>
               </Link>
             </li>

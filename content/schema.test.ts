@@ -56,6 +56,13 @@ describe("projectMetaSchema", () => {
   it("rejects cover.src with a file extension", () => {
     expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" } }).success).toBe(false);
   });
+  it("accepts a gallery of media bases and rejects extensions or an empty list", () => {
+    const ok = projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster", "/media/gymai/screens-right"] });
+    expect(ok.success).toBe(true);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster-640.webp"] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [] }).success).toBe(false);
+    expect(projectMetaSchema.parse(valid).gallery).toBeUndefined();
+  });
   it("exposes exactly five facets", () => {
     expect(FACETS).toEqual(["mobile", "web", "backend", "ai", "data-erp"]);
   });

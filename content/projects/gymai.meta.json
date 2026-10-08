@@ -7,6 +7,7 @@
   "featured": true,
   "order": 3,
   "cover": { "type": "image", "src": "/media/gymai/cover", "frame": "none" },
+  "gallery": ["/media/gymai/poster", "/media/gymai/screens-right"],
   "credits": "B.Sc. thesis, Pamukkale University MIS (2025), with Beyzanur Eren; advisor Assoc. Prof. Ömer Güleç",
   "links": {}
 }

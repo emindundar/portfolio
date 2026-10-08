@@ -1,0 +1,32 @@
+import { getTranslations } from "next-intl/server";
+import { imageFor } from "@/lib/media";
+
+/** Extra stills below the body. Images keep their intrinsic width (never upscaled), centered in a bordered box. */
+export async function CaseGallery({ title, bases }: { title: string; bases: string[] }) {
+  const t = await getTranslations("Case");
+  const images = bases.flatMap((base) => {
+    const img = imageFor(base);
+    return img ? [{ base, ...img }] : [];
+  });
+  if (images.length === 0) return null;
+  return (
+    <section data-case-gallery aria-label={t("gallery")} className="mt-16 grid gap-4 border-t border-line pt-4 sm:grid-cols-2">
+      {images.map((img, i) => (
+        <figure key={img.base} className="m-0 flex items-center justify-center border border-line bg-surface p-4 md:p-8">
+          {/* eslint-disable-next-line @next/next/no-img-element -- pre-generated responsive set */}
+          <img
+            src={img.src}
+            srcSet={img.srcSet}
+            sizes="(min-width: 640px) 50vw, 100vw"
+            alt={`${title} — ${i + 1}`}
+            width={img.width}
+            height={img.height}
+            loading="lazy"
+            decoding="async"
+            className="block h-auto max-h-[70svh] w-auto max-w-full"
+          />
+        </figure>
+      ))}
+    </section>
+  );
+}

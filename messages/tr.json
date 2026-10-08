@@ -85,7 +85,11 @@
     "prev": "Önceki",
     "next": "Sonraki",
     "backToWork": "Tüm işler",
-    "fallbackNote": "Bu vaka çalışması şimdilik yalnızca İngilizce."
+    "fallbackNote": "Bu vaka çalışması şimdilik yalnızca İngilizce.",
+    "nav": "Vaka gezinmesi",
+    "gallery": "Galeri",
+    "video": "Video",
+    "metrics": "Ölçümler"
   },
   "About": {
     "title": "Hakkımda",
