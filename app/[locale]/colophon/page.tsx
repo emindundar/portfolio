@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
+import { REPO_URL } from "@/lib/site";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -62,7 +63,7 @@ export default async function ColophonPage({ params }: Props) {
       </div>
       <p className="mt-10">
         <a
-          href="https://github.com/emindundar/portfolio"
+          href={REPO_URL}
           target="_blank"
           rel="noreferrer noopener"
           className="inline-flex min-h-11 items-center font-mono text-sm text-accent underline underline-offset-4"

@@ -42,7 +42,6 @@ test.describe("/about", () => {
     const tr = await page.request.get("/tr/cv", { maxRedirects: 0 });
     expect(tr.status()).toBe(302);
     expect(tr.headers()["location"]).toBe("/cv/Emin_Dundar_CV_tr.pdf");
-    expect(tr.headers()["location"]).toMatch(/\/cv\/Emin_Dundar_CV_tr\.pdf$/);
 
     const pdf = await page.request.get("/cv/Emin_Dundar_CV_en.pdf");
     expect(pdf.headers()["content-type"]).toContain("application/pdf");

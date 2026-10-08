@@ -123,7 +123,7 @@
     "p2": "Teknolojiler: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, git tabanlı MDX içerik için Velite, hareket için GSAP + Lenis, hero shader için OGL.",
     "p3": "Hareket azaltma tercihi açıkken her animasyon statik sayfaya düşer; hareket kodu yalnızca hydration sonrası yüklenir, böylece ilk yükleme JavaScript'i 180 KB'ın altında kalır.",
     "p4": "Kalite kontrolleri her pull request'te çalışır: birim testler, masaüstü ve mobilde Playwright uçtan uca testler, performans, erişilebilirlik ve SEO için Lighthouse bütçeleri.",
-    "p5": "Spec'ler, planlar ve inceleme kayıtları depoda herkese açık.",
+    "p5": "Spec ve planlar repoda herkese açık.",
     "p6": "Yazı tipleri: Cabinet Grotesk, Satoshi ve JetBrains Mono.",
     "stackHeading": "Teknolojiler",
     "processHeading": "Süreç",
@@ -131,6 +131,6 @@
     "process1": "Yazılı spec",
     "process2": "Görev görev plan",
     "process3": "Bir ajan uygular, bir başkası inceler",
-    "process4": "Kararlar bir deftere kaydedilir"
+    "process4": "Kararlar ilerledikçe kaydedilir"
   }
 }

@@ -23,9 +23,10 @@ test.describe("/colophon", () => {
     await page.goto("/en/colophon");
     await expect(page.getByRole("heading", { level: 1, name: "Colophon" })).toBeVisible();
     await expect(page.locator("main ol li")).toHaveCount(4);
-    const repo = page.getByRole("link", { name: /GitHub|repo|source/i }).first();
-    await expect(page.locator('main a[href="https://github.com/emindundar/portfolio"]')).toHaveAttribute("rel", "noreferrer noopener");
+    const repo = page.locator('main a[href="https://github.com/emindundar/portfolio"]');
     await expect(repo).toBeVisible();
+    await expect(repo).toHaveAttribute("target", "_blank");
+    await expect(repo).toHaveAttribute("rel", "noreferrer noopener");
   });
 });
 
@@ -47,6 +48,18 @@ test.describe("nav", () => {
     const links = primary(page).getByRole("link");
     await expect(links).toHaveCount(5);
     for (const l of await links.all()) expect((await l.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  });
+
+  test("links are at least 44px tall and fit within 360px", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto("/en");
+    const links = primary(page).getByRole("link");
+    await expect(links).toHaveCount(5);
+    for (const l of await links.all()) {
+      const box = (await l.boundingBox())!;
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.x + box.width).toBeLessThanOrEqual(360);
+    }
   });
 
   test("tr labels", async ({ page }) => {

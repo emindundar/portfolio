@@ -123,7 +123,7 @@
     "p2": "Stack: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, Velite for git-based MDX content, GSAP + Lenis for motion, OGL for the hero shader.",
     "p3": "Every animation degrades to a static page under reduced motion; motion code loads only after hydration, so the first-load JavaScript stays under 180 KB.",
     "p4": "Quality gates run on every pull request: unit tests, Playwright end-to-end tests on desktop and mobile, and Lighthouse budgets for performance, accessibility and SEO.",
-    "p5": "The specs, plans and review ledgers are public in the repository.",
+    "p5": "The specs and plans are public in the repository.",
     "p6": "Fonts: Cabinet Grotesk, Satoshi and JetBrains Mono.",
     "stackHeading": "Stack",
     "processHeading": "Process",
@@ -131,6 +131,6 @@
     "process1": "Written spec",
     "process2": "Task-by-task plan",
     "process3": "Implementation by one agent, review by another",
-    "process4": "Rulings recorded in a ledger"
+    "process4": "Rulings recorded as I go"
   }
 }

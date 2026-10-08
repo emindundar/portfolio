@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
 
 // Computed once at module load: a build-time constant is correct for a statically built site.
 const YEAR = new Date().getFullYear();
@@ -11,8 +12,8 @@ export async function Footer() {
   const tn = await getTranslations("Nav");
   const tc = await getTranslations("Case");
   const externals = [
-    { href: "https://github.com/emindundar", label: "GitHub" },
-    { href: "https://www.linkedin.com/in/emindundar", label: "LinkedIn" },
+    { href: GITHUB_URL, label: "GitHub" },
+    { href: LINKEDIN_URL, label: "LinkedIn" },
   ];
   return (
     <footer className="flex flex-col gap-2 border-t border-line px-6 py-4 font-mono text-sm text-muted md:flex-row md:items-center md:justify-between">
