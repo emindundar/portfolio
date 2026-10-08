@@ -56,6 +56,21 @@ describe("ContactForm", () => {
     expect(screen.getByRole("button", { name: "Send message" })).toBeEnabled();
     expect(screen.getAllByRole("option").map((o) => (o as HTMLOptionElement).value)).toEqual(["", ...BUDGETS]);
   });
+  it("says where the data goes, right under the submit button, naming both processors", () => {
+    const { container } = show({ status: "idle" });
+    const note = container.querySelector("[data-contact-privacy]")!;
+    expect(note).toHaveTextContent(/through Resend and used only to reply/);
+    expect(note).toHaveTextContent(/Cloudflare Turnstile .* sees your IP address/);
+    expect(note).toHaveTextContent(/No cookies/);
+    const button = screen.getByRole("button", { name: "Send message" });
+    expect(button.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(container.querySelector("form")).toContainElement(note as HTMLElement);
+  });
+  it("the bot-check alert does not ask for a reload (the form remounts with a fresh token)", () => {
+    show({ status: "error", code: "turnstile", values: EMPTY });
+    expect(screen.getByRole("alert")).toHaveTextContent("The bot check did not complete. Try again, or reach me on LinkedIn");
+    expect(screen.getByRole("alert")).not.toHaveTextContent(/reload/i);
+  });
   it("pending: button disabled and renamed", () => {
     show({ status: "idle" }, { pending: true });
     expect(screen.getByRole("button", { name: "Sending…" })).toBeDisabled();

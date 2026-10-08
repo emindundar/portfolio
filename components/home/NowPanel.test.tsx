@@ -33,6 +33,13 @@ describe("NowPanel", () => {
     expect(live.querySelector('time[datetime="2026-10-07"]')).toHaveTextContent("7 Oct 2026");
     expect(live).toHaveTextContent("42 public commits in the last 30 days");
   });
+  it("names the repo link with a space before the new-tab note, and labels the source", async () => {
+    const { container } = await show({ repo: { name: "portfolio", url: "https://github.com/emindundar/portfolio" }, pushedAt: "2026-10-07", commits30d: 42 });
+    const link = screen.getByRole("link", { name: "portfolio (opens in a new tab)" });
+    // The space sits in normal flow: leading whitespace inside the absolutely positioned sr-only box can be collapsed away.
+    expect(link.querySelector(".sr-only")!.textContent).toBe("(opens in a new tab)");
+    expect(container.querySelector("[data-now-live]")).toHaveTextContent("From GitHub");
+  });
   it("omits the commit count when it is unknown and pluralizes one", async () => {
     const base = { repo: { name: "portfolio", url: "https://github.com/emindundar/portfolio" }, pushedAt: "2026-10-07" };
     const a = await show({ ...base, commits30d: null });

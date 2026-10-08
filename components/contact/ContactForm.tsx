@@ -143,6 +143,8 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
         <button type="submit" disabled={pending} className={buttonClasses("primary", "cursor-pointer disabled:cursor-wait disabled:opacity-60")}>
           {pending ? t("sending") : t("submit")}
         </button>
+        {/* KVKK art. 10 / GDPR art. 13: say where the data goes at the point of collection. text-muted on bg is 5.73:1 (dark) and 4.74:1 (light). */}
+        <p data-contact-privacy className="mt-4 max-w-xl text-sm text-muted">{t("privacy")}</p>
       </div>
     </form>
   );

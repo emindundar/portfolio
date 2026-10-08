@@ -130,6 +130,7 @@
     "p4": "Quality gates run on every pull request: unit tests, Playwright end-to-end tests on desktop and mobile, and Lighthouse budgets for performance, accessibility and SEO.",
     "p5": "The specs and plans are public in the repository.",
     "p6": "Fonts: Cabinet Grotesk, Satoshi and JetBrains Mono.",
+    "p7": "Visits are counted with Umami: no cookies, no personal data, and Do Not Track is respected.",
     "stackHeading": "Stack",
     "processHeading": "Process",
     "repo": "Source on GitHub",
@@ -158,7 +159,7 @@
     "success": "Message sent. I will reply to the address you gave.",
     "sendAnother": "Send another message",
     "errorInvalid": "Some fields need attention.",
-    "errorTurnstile": "The bot check did not complete. Reload the page and try again, or reach me on <link>LinkedIn</link>.",
+    "errorTurnstile": "The bot check did not complete. Try again, or reach me on <link>LinkedIn</link>.",
     "errorRate": "Too many messages from this connection. Try again in an hour.",
     "errorUnavailable": "The form is not available right now. Please reach me on <link>LinkedIn</link>.",
     "errorSend": "The message could not be sent. Try again, or reach me on <link>LinkedIn</link>.",
@@ -167,13 +168,14 @@
     "fieldTooLong": "This is too long.",
     "fieldInvalid": "This does not look right.",
     "elsewhere": "Elsewhere",
-    "noScript": "The bot check needs JavaScript. Without it, please reach me on <link>LinkedIn</link>."
+    "noScript": "The bot check needs JavaScript. Without it, please reach me on <link>LinkedIn</link>.",
+    "privacy": "Your name, e-mail and message are sent to my inbox through Resend and used only to reply. Cloudflare Turnstile checks that you are not a bot and sees your IP address. No cookies, nothing is stored on this site."
   },
   "Now": {
     "heading": "Now",
     "updated": "Updated",
     "lastPush": "Last push",
     "commits": "{count, plural, =0 {No public commits} one {# public commit} other {# public commits}} in the last 30 days",
-    "source": "Live from GitHub"
+    "source": "From GitHub"
   }
 }

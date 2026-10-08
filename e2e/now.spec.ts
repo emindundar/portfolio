@@ -19,8 +19,14 @@ test("live row, when GitHub answered at build time, links to a github.com repo w
   await expect(live.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d{2}-\d{2}$/);
 });
 
-test("the panel does not push the hero headline out of the first mobile viewport", async ({ page }, info) => {
+test("on mobile the panel starts at or below the bottom of the hero headline", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "mobile layout check");
   await page.goto("/en");
-  await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
+  // Wait for the motion decision so a headline split/reveal cannot move the boxes mid-measurement.
+  await expect(page.locator("html")).toHaveAttribute("data-motion", /reduced|full/);
+  const h1 = await page.getByRole("heading", { level: 1 }).boundingBox();
+  const panel = await page.locator("[data-now]").boundingBox();
+  expect(h1).not.toBeNull();
+  expect(panel).not.toBeNull();
+  expect(panel!.y).toBeGreaterThanOrEqual(h1!.y + h1!.height);
 });

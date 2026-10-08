@@ -94,6 +94,19 @@ test.describe("/contact", () => {
     await expect(page.getByLabel("Message", { exact: true })).toHaveValue("I would like to talk about a project.");
   });
 
+  test("privacy notice sits under the submit button and names both processors", async ({ page }) => {
+    await open(page);
+    const note = page.locator("form[data-contact-form] [data-contact-privacy]");
+    await expect(note).toContainText("through Resend");
+    await expect(note).toContainText("Cloudflare Turnstile");
+    const button = await page.getByRole("button", { name: "Send message" }).boundingBox();
+    expect((await note.boundingBox())!.y).toBeGreaterThanOrEqual(button!.y + button!.height);
+    await expect(page.getByRole("complementary").getByRole("link", { name: "LinkedIn (opens in a new tab)", exact: true })).toBeVisible();
+    await open(page, "/tr/contact");
+    await expect(page.locator("[data-contact-privacy]")).toContainText("Resend aracılığıyla");
+    await expect(page.locator("[data-contact-privacy]")).toContainText("Cloudflare Turnstile");
+  });
+
   test("tr is localized and nav marks the page current", async ({ page }) => {
     await open(page, "/tr/contact");
     await expect(page.getByRole("heading", { level: 1, name: "İletişim" })).toBeVisible();

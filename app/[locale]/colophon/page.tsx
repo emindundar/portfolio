@@ -12,7 +12,7 @@ const STACK = [
   "Next.js 16", "React 19", "TypeScript", "Tailwind CSS v4", "next-intl", "Velite", "GSAP",
   "Lenis", "OGL", "Vitest", "Playwright", "Lighthouse CI", "Vercel",
 ];
-const PARAGRAPHS = ["p1", "p2", "p3", "p4", "p5", "p6"] as const;
+const PARAGRAPHS = ["p1", "p2", "p3", "p4", "p5", "p6", "p7"] as const;
 const PROCESS = ["process1", "process2", "process3", "process4"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -27,8 +27,10 @@ export async function NowPanel({ locale }: { locale: Locale }) {
             <p>
               <span className="text-muted">{t("lastPush")}: </span>
               <a href={stats.repo.url} target="_blank" rel="noreferrer noopener" className="inline-flex min-h-11 items-center underline underline-offset-4 md:min-h-0">
-                {stats.repo.name}
-                <span className="sr-only"> ({tc("newTab")})</span>
+                {/* One flex item, with the space in normal flow: leading whitespace inside the sr-only box can be collapsed out of the name. */}
+                <span>
+                  {stats.repo.name} <span className="sr-only">({tc("newTab")})</span>
+                </span>
               </a>
               <span className="text-muted"> · </span>
               <time dateTime={stats.pushedAt}>{formatDate(stats.pushedAt, locale)}</time>
