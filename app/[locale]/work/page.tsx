@@ -57,9 +57,20 @@ export default async function WorkPage(props: Props) {
     <main className="px-4 py-12 md:px-6 md:py-16">
       <h1 className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-none">{t("title")}</h1>
       <p className="mt-4 max-w-xl text-muted">{t("description")}</p>
-      <Suspense fallback={<div aria-hidden="true" data-work-pending className="mt-12 min-h-dvh border-t border-line pt-6 font-mono text-muted">…</div>}>
+      <Suspense
+        fallback={
+          <div data-work-pending className="mt-12 min-h-dvh border-t border-line pt-6 font-mono text-muted">
+            <p role="status" className="sr-only">
+              {t("loading")}
+            </p>
+            <span aria-hidden="true">…</span>
+          </div>
+        }
+      >
         <List {...props} />
       </Suspense>
+      {/* No-JS only. Relies on React's streaming container markup (`<div hidden id="S:n">` appended to <body>),
+          see NO_SCRIPT_CSS above; guarded by e2e/work.spec.ts "URL filter narrows the list server-side (no JS needed)". */}
       <noscript>
         <style>{NO_SCRIPT_CSS}</style>
       </noscript>

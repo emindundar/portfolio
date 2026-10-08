@@ -66,7 +66,8 @@
     "filterLabel": "Filter by capability",
     "count": "{count, plural, =0 {no projects} one {# project} other {# projects}}",
     "empty": "Nothing here yet.",
-    "viewCase": "View case"
+    "viewCase": "View case",
+    "loading": "Loading projects"
   },
   "Case": {
     "role": "Role",

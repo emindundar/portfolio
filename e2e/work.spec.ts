@@ -89,29 +89,46 @@ test.describe("/work", () => {
     await expect(page.getByRole("link", { name: /^Web/ })).toHaveAttribute("aria-current", "page");
   });
 
-  test("hover preview follows the pointer on rows with a cover (fine pointer + motion only)", async ({ page, isMobile }) => {
-    test.skip(isMobile, "coarse pointer: the preview is never rendered");
+  test("keyboard: Enter on a focused chip filters and the list settles", async ({ page }) => {
     await page.goto("/en/work");
-    await expect(page.locator("html")).toHaveAttribute("data-motion", "full");
-    const preview = page.locator("[data-hover-preview]");
-    await expect(preview).toHaveCount(1);
-    await expect(preview).toBeHidden();
-    await expect(preview).toHaveAttribute("aria-hidden", "true");
-
-    await items(page).first().hover(); // geotrack: image cover
-    await expect(preview).toBeVisible();
-    await expect(preview.locator("img")).toHaveAttribute("src", /\/media\/geotrack\/cover-\d+\.webp$/);
-
-    await items(page).nth(1).hover(); // kipgoz: no cover
-    await expect(preview).toBeHidden();
+    await expect(page.locator("html")).toHaveAttribute("data-motion", /./);
+    const list = page.locator("[data-work-list]");
+    await expect(list).toHaveAttribute("data-work-ready", "all");
+    const chip = page.getByRole("link", { name: /^Backend/ });
+    await chip.focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/en\/work\?f=backend$/);
+    await expect(list).toHaveAttribute("data-work-ready", "backend");
+    await expect(items(page)).toHaveCount(5);
+    await expect(chip).toHaveAttribute("aria-current", "page");
+    expect(await dimmed(page)).toBe(0);
   });
 
-  test("reduced motion: items visible, list ready, no hover preview", async ({ page }) => {
+  test("clicking the active chip or a quick second chip never leaves the list unsettled", async ({ page }) => {
+    await page.goto("/en/work");
+    await expect(page.locator("html")).toHaveAttribute("data-motion", /./);
+    const list = page.locator("[data-work-list]");
+    await expect(list).toHaveAttribute("data-work-ready", "all");
+    await page.getByRole("link", { name: /^All/ }).click(); // already current: no capture, stays ready
+    await expect(list).toHaveAttribute("data-work-ready", "all");
+    await page.getByRole("link", { name: /^Mobile/ }).click();
+    await page.getByRole("link", { name: /^AI/ }).click(); // interrupts the first Flip
+    await expect(list).toHaveAttribute("data-work-ready", "ai");
+    await expect(items(page)).toHaveCount(2);
+    expect(await dimmed(page)).toBe(0);
+  });
+
+  test("rows expose their title as a heading inside the link", async ({ page }) => {
+    await page.goto("/en/work");
+    await expect(items(page).first().getByRole("link").getByRole("heading", { level: 2 })).toContainText("GeoTrack");
+    await expect(page.getByRole("heading", { level: 2 })).toHaveCount(7);
+  });
+
+  test("reduced motion: items visible, list ready", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/en/work");
     await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
     expect(await dimmed(page)).toBe(0);
-    await expect(page.locator("[data-hover-preview]")).toHaveCount(0);
     await page.getByRole("link", { name: /^Mobile/ }).click();
     await expect(page.locator("[data-work-list]")).toHaveAttribute("data-work-ready", "mobile");
     await expect(items(page)).toHaveCount(5);

@@ -3,14 +3,29 @@ export function TypoCover({
   year,
   facetLabels,
   title,
+  variant = "full",
 }: {
   slug: string;
   year: number;
   facetLabels: string[];
   title: string;
+  /** "compact": thumbnail next to a row that already shows title and facets — slug and year only. */
+  variant?: "full" | "compact";
 }) {
+  if (variant === "compact") {
+    return (
+      <figure
+        data-typo-cover
+        data-variant="compact"
+        className="m-0 flex aspect-[4/3] flex-col justify-between border border-line bg-surface p-4"
+      >
+        <span className="self-end font-mono text-xs text-muted">{year}</span>
+        <figcaption className="break-words font-mono text-xl leading-tight text-fg">{slug}</figcaption>
+      </figure>
+    );
+  }
   return (
-    <figure data-typo-cover className="m-0 flex aspect-[4/3] flex-col justify-between border border-line bg-surface p-4 md:p-6">
+    <figure data-typo-cover data-variant="full" className="m-0 flex aspect-[4/3] flex-col justify-between border border-line bg-surface p-4 md:p-6">
       <div className="flex items-baseline justify-between font-mono text-xs text-muted">
         <span>{slug}</span>
         <span>{year}</span>

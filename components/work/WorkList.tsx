@@ -2,43 +2,21 @@ import { getTranslations } from "next-intl/server";
 import type { Facet } from "@/content/facet-list";
 import type { Project } from "@/lib/content";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
-import { imageFor, videoFor } from "@/lib/media";
 import { Link } from "@/i18n/navigation";
 import { MediaCover } from "@/components/media/MediaCover";
 import { WorkFlip } from "@/components/motion/WorkFlip";
-import { HoverPreview, type PreviewCover } from "@/components/motion/HoverPreview";
 
-function previewFor(p: Project): PreviewCover | null {
-  const c = p.cover;
-  if (!c) return null;
-  if (c.type === "video") {
-    const v = videoFor(c.src);
-    return v ? { src: v.poster, width: v.width, height: v.height } : null;
-  }
-  const img = imageFor(c.src);
-  return img ? { src: img.src, width: img.width, height: img.height } : null;
-}
-
-// The list cover is a thumbnail: MediaCover's frames are sized for a wide column, so they are scaled down here
-// (phone frame narrowed, video/poster height-capped, typographic cover fills the box with small type).
+// The list cover is a thumbnail: MediaCover's phone frame is sized for a wide column and the browser frame's
+// poster would overflow the 12rem box, so both are scaled down here.
 const COVER_BOX =
   "hidden h-48 flex-col justify-center overflow-hidden md:flex " +
-  "[&_[data-frame=phone]]:max-w-24 " +
-  "[&_video]:max-h-40 [&_video]:w-auto [&_[data-video-poster]]:max-h-40 [&_[data-video-poster]]:w-auto " +
-  "[&_[data-typo-cover]]:aspect-auto [&_[data-typo-cover]]:h-full [&_[data-typo-cover]]:p-3 " +
-  "[&_figcaption]:line-clamp-3 [&_figcaption]:text-base";
+  "[&_[data-frame=phone]]:max-w-24 [&_[data-video-poster]]:max-h-40 [&_[data-video-poster]]:w-auto";
 
 // Server component. Rows keep their identity across filter changes (key = slug, no key on the list),
 // which is what lets WorkFlip animate the same DOM nodes to their new positions.
 export async function WorkList({ items, facet }: { items: Project[]; facet: Facet | null }) {
   const t = await getTranslations("Work");
   const tc = await getTranslations("Capabilities");
-  const covers: Record<string, PreviewCover> = {};
-  for (const p of items) {
-    const c = previewFor(p);
-    if (c) covers[p.slug] = c;
-  }
-
   if (items.length === 0) {
     return (
       <p data-work-empty className="mt-8 border-t border-line pt-6 font-mono text-muted">
@@ -65,7 +43,7 @@ export async function WorkList({ items, facet }: { items: Project[]; facet: Face
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="flex min-w-0 flex-col gap-3 self-start">
-                  <div className="font-display text-2xl leading-tight md:text-4xl">{p.title}</div>
+                  <h2 className="font-display text-2xl leading-tight md:text-4xl">{p.title}</h2>
                   <div className="font-mono text-xs uppercase text-muted">
                     {p.year} — {labels.join(" · ")}
                   </div>
@@ -75,14 +53,14 @@ export async function WorkList({ items, facet }: { items: Project[]; facet: Face
                   </div>
                 </div>
                 <div aria-hidden="true" className={COVER_BOX}>
-                  <MediaCover project={p} kind="list" facetLabels={labels} />
+                  {/* Row 1 is above the fold on desktop; eager only for a real image cover. */}
+                  <MediaCover project={p} kind="list" facetLabels={labels} priority={i === 0 && p.cover?.type === "image"} />
                 </div>
               </Link>
             </li>
           );
         })}
       </ol>
-      <HoverPreview covers={covers} />
     </>
   );
 }
