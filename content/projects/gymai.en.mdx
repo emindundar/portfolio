@@ -17,6 +17,8 @@ GymAI is a Flutter app on Firebase. After registration the member picks a goal, 
 
 On the gym floor each machine carries a QR code. Scanning it opens that exercise's video with a timer, and the member marks the exercise complete when the time is up. A chatbot answers fitness questions and, on request, analyses the member's last seven days of training. Another screen shows how busy the gym is hour by hour, and members book appointments from it.
 
+<FlowDiagram label="Programme generation" steps={["Goal, days per week, experience level", "Prompt", "Gemini API", "Day-by-day programme"]} />
+
 ## Decisions
 
 - A prompt built from the member's goal and level instead of static programme templates, because goal, frequency and experience multiply into more combinations than a template set can cover.

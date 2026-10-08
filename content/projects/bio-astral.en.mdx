@@ -17,6 +17,8 @@ The backend is a Node 20 and TypeScript service on Express, packaged with Docker
 
 On the client, a `BiometricRepository` interface defines four calls: sleep data for a date, current stress level, whether a data source exists, and a permission request. There are two implementations. One is for wearables. The other is for users without one: they pick an archetype card and the choice maps to a stress score.
 
+<FlowDiagram label="Natal chart request" steps={["Birth date and coordinates", "POST /api/v1/chart/natal", "Swiss Ephemeris", "Positions, Placidus houses, aspects"]} />
+
 ## Decisions
 
 - Calculating the chart on the server instead of on the device, because the native library and its ephemeris files stay out of the app bundle and iOS and Android share one implementation.

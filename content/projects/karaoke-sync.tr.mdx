@@ -17,13 +17,15 @@ Uygulama TypeScript ile Next.js App Router üzerinde çalışıyor; bütün sayf
 
 Tarayıcıda küçük bir LRC parser her zaman damgasını milisaniyeye çevirip satırları sıralıyor. Sahne bileşeni audio elementinin saatini okuyup aktif satırı seçiyor, `LyricsFlow` da o satıra kaydırıyor. Mikrofon açıkken Web Audio analyser dalga formunu çiziyor; tarayıcının konuşma tanıması söylenen kelimeleri aktif satırla eşleştirip puan üretiyor.
 
+<FlowDiagram label="Şarkı seçiminden aktif satıra" steps={["Şarkı seçimi", "API route: oturum, rate limit, katalog doğrulaması", "Presigned R2 URL'leri", "Audio elementinin saati", "Aktif söz satırı"]} />
+
 ## Kararlar
 
 - Hazır kütüphane yerine kendi LRC parser'ım; çünkü format tek bir regex'ten ibaret ve iki ya da üç haneli kesirler dahil çıktının şeklini kendim belirlemek istedim.
-- Medyayı uygulama üzerinden geçirmek yerine on iki saat geçerli presigned R2 URL'leri; çünkü çalma sunucuma bağlı olmamalı ve bağlantı etkinlik boyunca yaşamalı.
-- Redis yerine uygulama katmanında bellek içi rate limiter; çünkü dağıtım tek instance.
-- İlk sürümdeki YouTube tabanlı oynatıcı yerine kendi dosyalarımla HTML5 audio; çünkü ilk sürüm üçüncü taraf oynatıcılara bağımlıydı.
+- Medyayı uygulama üzerinden geçirmek yerine on iki saat geçerli presigned R2 URL'leri; çünkü çalma sunucuma bağlı olmamalı ve bağlantı etkinlik boyunca geçerli kalmalı.
+- Redis yerine uygulama katmanında bellek içi rate limiter; çünkü uygulama tek instance olarak çalışıyor.
+- İlk sürümdeki YouTube tabanlı oynatıcı yerine kendi dosyalarımla HTML5 audio; çünkü çalma ve söz zamanlaması yalnızca benim barındırdığım dosyalara bağlı kalıyor.
 
 ## Sonuç
 
-Canlı bağlantı giriş sayfasına açılıyor; sahneyi demo videosu gösteriyor. Zaman damgaları milisaniye hassasiyetinde ayrıştırılıyor; aktif satır, audio elementinin saniyede birkaç kez tetiklenen `timeupdate` olaylarını izliyor. Öğrendiğim şey: "çalma sırasında backend çağrısı yok" kuralını en başta yazınca depolama, kimlik doğrulama ve rate limit kararları bu kuraldan çıktı.
+Canlı bağlantı giriş sayfasına açılıyor; sahneyi demo videosu gösteriyor. Zaman damgaları milisaniye hassasiyetinde ayrıştırılıyor; aktif satır, audio elementinin saniyede birkaç kez tetiklenen `timeupdate` olaylarını izliyor. Öğrendiğim şey: "çalma sırasında backend çağrısı yok" kuralını en başta yazınca depolama, kimlik doğrulama ve rate limit kararları bu kuraldan türedi.

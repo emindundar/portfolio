@@ -22,7 +22,9 @@ Mobil uygulama feature-first: her özelliğin `data`, `domain` ve `presentation`
 
 Her özellik soyut bir repository ile konuşuyor. Şimdilik implementasyonlar tek bir demo veri setinden beslenen mock'lar; gerçek API'ye geçiş her özellikte tek bir provider dosyasından yapılacak.
 
-Backend ayrı bir repoda ve üç bağımsız katmandan oluşuyor: Flutter → HTTP/JSON → NestJS → Prisma → Docker'da PostgreSQL 16. Health check, Prisma bağlantısı ve Swagger dokümanı hazır.
+Backend ayrı bir repoda ve üç katmandan oluşuyor: Flutter istemcisi, Prisma kullanan NestJS API'si ve Docker'da PostgreSQL 16. Health check, Prisma bağlantısı ve Swagger dokümanı hazır.
+
+<FlowDiagram label="Backend katmanları" steps={["Flutter istemcisi", "HTTP/JSON", "NestJS", "Prisma", "Docker'da PostgreSQL 16"]} />
 
 ## Kararlar
 
@@ -33,4 +35,4 @@ Backend ayrı bir repoda ve üç bağımsız katmandan oluşuyor: Flutter → HT
 
 ## Sonuç
 
-Devam eden iş: mobil repoda 44 commit ve 123 Dart dosyası var; iki rol de demo verisiyle baştan sona gezilebiliyor. Sırada kimlik doğrulama ve çekirdek şema, ardından mock'ların özellik özellik değiştirilmesi var. Öğrendiğim şey: hedef ve kayıt doğru şekle girince öğretmen ve veli ekranları aynı verinin iki görünümüne dönüştü.
+Geliştirme sürüyor: mobil repoda 44 commit ve 123 Dart dosyası var; iki rol de demo verisiyle baştan sona gezilebiliyor. Sırada kimlik doğrulama ve çekirdek şema, ardından mock'ların özellik özellik değiştirilmesi var. Öğrendiğim şey: hedef ve kayıt doğru şekle girince öğretmen ve veli ekranları aynı verinin iki görünümüne dönüştü.

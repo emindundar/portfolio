@@ -19,11 +19,13 @@ Yükleme ekranı, mevcut web sayfasını açan bir WebView. Sayfa yüklenince uy
 
 Gönderim Cloud Functions'ta. Callable fonksiyonlar üç durumu karşılıyor: e-posta adresiyle tek kullanıcıya bildirim, bir roldeki herkese bildirim ve belirli bir müşteriye dosya gönderimi. Dosya paylaşıldığında ya da yüklendiğinde iki Firestore trigger'ı çalışıyor. Her fonksiyon bir bildirim kaydı yazıyor ve FCM'in geçersiz dediği token'ları siliyor.
 
+<FlowDiagram label="Bildirim akışı" steps={["Callable fonksiyon ya da Firestore trigger'ı", "Cloud Function", "Bildirim kaydı", "Cihaz token'larına FCM push"]} />
+
 ## Kararlar
 
 - Native yeniden yazım yerine mevcut sayfanın etrafında WebView; çünkü sayfa zaten çalışıyordu, zamanı bildirimlere ayırmak daha doğruydu.
 - İstemciden göndermek yerine Cloud Functions; çünkü rol sorguları ve mesajlaşma yetkileri sunucuda kalıyor.
-- Kullanıcıda tek token alanı yerine cihaz başına bir token dokümanı; çünkü insanlar birden fazla telefondan giriş yapıyor ve ölü token'lar tek tek silinebiliyor.
+- Kullanıcıda tek token alanı yerine cihaz başına bir token dokümanı; çünkü insanlar birden fazla telefondan giriş yapıyor ve geçersiz token'lar tek tek silinebiliyor.
 - Widget'lardan doğrudan Firebase çağrısı yerine araya `AuthRepository`; çünkü kayıt, onay ve token kaydı belirli bir sırayla yapılmalı.
 
 ## Sonuç

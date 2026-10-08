@@ -19,6 +19,8 @@ The upload screen is a WebView that loads the existing web page. Once it loads, 
 
 Sending happens in Cloud Functions. Callable functions cover three cases: notify one user by e-mail address, notify everyone with a role, and send a file to a specific customer. Two Firestore triggers fire when a file is shared or uploaded. Each function writes a notification record and deletes tokens that FCM reports as invalid.
 
+<FlowDiagram label="Notification flow" steps={["Callable function or Firestore trigger", "Cloud Function", "Notification record", "FCM push to device tokens"]} />
+
 ## Decisions
 
 - A WebView around the existing page instead of a native rewrite, because the page already worked and time was better spent on notifications.

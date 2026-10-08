@@ -17,6 +17,8 @@ It is a single Python file built on FastMCP from the official MCP Python SDK. Cu
 
 It exposes five tools. `add_note`, `add_todo` and `save_code_snippet` append heading, to-do and code blocks to the configured page. `search_in_notion` queries the workspace and returns titles with links. `get_git_summary` checks that the path is a git repository, then runs `git log --patch` since a given time and returns the raw output. The model in the editor writes the summary, and a second tool call saves it as a note.
 
+<FlowDiagram label="Daily report flow" steps={["Cursor agent", "get_git_summary: git log --patch", "Model writes the summary", "add_note", "Notion page"]} />
+
 ## Decisions
 
 - MCP instead of an editor extension, because a tool server is a standard interface: the same file works in any client that speaks the protocol.

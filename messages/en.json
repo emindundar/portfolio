@@ -90,6 +90,8 @@
     "nav": "Case navigation",
     "gallery": "Gallery",
     "video": "Video",
+    "videoPause": "Pause video",
+    "videoPlay": "Play video",
     "metrics": "Metrics",
     "newTab": "opens in a new tab"
   },
@@ -107,7 +109,8 @@
     "eventsHeading": "Community & events",
     "cvHeading": "CV",
     "cvDownloadEn": "Download CV (EN)",
-    "cvDownloadTr": "Download CV (TR)"
+    "cvDownloadTr": "Download CV (TR)",
+    "present": "Present"
   },
   "Services": {
     "title": "Services",

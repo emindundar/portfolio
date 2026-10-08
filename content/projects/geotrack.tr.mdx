@@ -5,7 +5,7 @@ summary: Saha ekipleri için OpenStreetMap altyapısında adres arama, rota ve n
 
 ## Problem
 
-Sahadaki çalışan adresi yazarak bulmak, oraya rota almak ve navigasyonla gitmek ister. Ofis tarafı ise her çalışanın konumunu canlı taşıyan bir kanala ihtiyaç duyar. Akla ilk gelen çözüm Google Maps SDK; ama istek başına ücret alıyor ve ürünü tek bir sağlayıcıya bağlıyor. Aynı işi OpenStreetMap tabanlı bir yığınla ne kadar ileri götürebileceğimi görmek istedim.
+Sahadaki çalışan adresi yazarak bulmak, oraya rota almak ve navigasyonla gitmek ister. Ofis tarafı ise her çalışanın konumunu canlı taşıyan bir kanala ihtiyaç duyar. Akla ilk gelen çözüm Google Maps SDK; ama istek başına ücret alıyor ve ürünü tek bir sağlayıcıya bağlıyor. Aynı işi OpenStreetMap tabanlı bir altyapıyla ne kadar ileri götürebileceğimi görmek istedim.
 
 ## Rol
 
@@ -17,15 +17,17 @@ Mobil tarafta Riverpod üzerinde MVVM var. `MapViewModel` tek bir değişmez `Ma
 
 Backend tek dosyalık bir Express API olarak başladı: JWT, roller, PostgreSQL. Sonra NestJS ile yeniden yazdım; TypeORM ve bir Socket.IO gateway ekledim. Token bağlantı anında doğrulanıyor, her kullanıcının kendi odası var, admin'ler takip ettikleri kullanıcılara abone oluyor. Admin uygulaması ise yalnızca admin hesaplarının giriş yapabildiği ikinci bir Flutter uygulaması.
 
+<FlowDiagram label="Aramadan navigasyona akış" steps={["Adres girişi (debounce)", "Nominatim araması", "OSRM sürüş rotası", "Navigasyon modu: konum stream'i açık"]} />
+
 ## Kararlar
 
 - Google Maps SDK yerine OpenStreetMap, OSRM ve Nominatim; çünkü istek başına ücret yok ve rota motorunu kendim barındırabiliyorum.
-- Sabit aralıklı zamanlayıcı yerine Geolocator stream'inde 10 metrelik mesafe filtresi; çünkü park hâlindeki araç ne batarya ne de trafik harcamalı.
-- Her konumu veritabanına yazmak yerine, kabul edilen her konumu yayınlayıp PostgreSQL'e kullanıcı başına en fazla dakikada bir kayıt; çünkü canlı görünüm tazelik ister, geçmişin o çözünürlüğe ihtiyacı yok.
+- Sabit aralıklı zamanlayıcı yerine Geolocator stream'inde 10 metrelik mesafe filtresi; çünkü park hâlindeki araç ne batarya ne de veri tüketmeli.
+- Her konumu veritabanına yazmak yerine her konumu yayınlayıp PostgreSQL'e kullanıcı başına dakikada en fazla bir kayıt yazmak; çünkü canlı görünüm güncellik ister, geçmişin bu çözünürlüğe ihtiyacı yok.
 - Express dosyasını büyütmek yerine NestJS; çünkü guard'lar, DTO doğrulaması ve WebSocket gateway modül sınırı gerektiriyordu.
 
 ## Sonuç
 
-Uygulamada arama, rota ve navigasyon modu lisans ücreti olmayan bir harita yığınında çalışıyor. Admin uygulaması takip edilebilir kullanıcıları listeliyor. Canlı kanal backend'de yazıldı ve test edildi; sırada iki istemciyi bu kanala bağlamak var. Öğrendiğim şey: ücretsiz harita yığını maliyeti faturadan operasyona taşıyor. OSRM'i ben çalıştırıyorum ve Nominatim'in kullanım politikasına uymam gerekiyor.
+Uygulamada arama, rota ve navigasyon modu lisans ücreti olmayan bir harita altyapısında çalışıyor. Admin uygulaması takip edilebilir kullanıcıları listeliyor. Canlı kanal backend'de yazıldı ve test edildi; sırada iki istemciyi bu kanala bağlamak var. Öğrendiğim şey: ücretsiz harita altyapısı maliyeti faturadan operasyona taşıyor. OSRM'i ben çalıştırıyorum ve Nominatim'in kullanım politikasına uymam gerekiyor.
 
 *Harita verisi © OpenStreetMap katkıcıları*

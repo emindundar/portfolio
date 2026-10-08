@@ -25,6 +25,9 @@ function External({ href, newTab, children }: { href: string; newTab: string; ch
 export async function CaseAside({ project, className }: { project: Project; className?: string }) {
   const t = await getTranslations("Case");
   const { links } = project;
+  // Follows the language of the body (project.locale), so an English fallback page stays consistently English.
+  const client = project.client?.[project.locale];
+  const credits = project.credits?.[project.locale];
   const single = (["live", "demo", "video", "store"] as const).flatMap((k) => (links[k] ? [{ key: k, href: links[k] }] : []));
   const hasLinks = (links.repo?.length ?? 0) > 0 || single.length > 0;
 
@@ -49,17 +52,17 @@ export async function CaseAside({ project, className }: { project: Project; clas
           ))}
         </ul>
       </section>
-      {project.client && (
+      {client && (
         <section>
           <h2 className={LABEL}>{t("client")}</h2>
-          <p className="mt-3 text-sm">{project.client}</p>
+          <p data-case-client className="mt-3 text-sm">{client}</p>
         </section>
       )}
-      {project.credits && (
+      {credits && (
         <section>
           <h2 className={LABEL}>{t("credits")}</h2>
           <p data-case-credits className="mt-3 text-sm leading-relaxed">
-            {project.credits}
+            {credits}
           </p>
         </section>
       )}

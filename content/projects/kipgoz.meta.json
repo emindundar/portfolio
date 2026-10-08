@@ -6,6 +6,6 @@
   "role": "solo",
   "featured": true,
   "order": 2,
-  "client": "A special-education institution",
+  "client": { "en": "A special-education institution", "tr": "Bir özel eğitim kurumu" },
   "links": {}
 }

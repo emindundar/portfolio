@@ -17,6 +17,8 @@ Backend, Express üzerinde Node 20 ve TypeScript ile yazılmış bir servis; Doc
 
 İstemcide `BiometricRepository` arayüzü dört çağrı tanımlıyor: bir tarihin uyku verisi, o anki stres seviyesi, veri kaynağı olup olmadığı ve izin isteği. İki implementasyon var. Biri giyilebilir cihazlar için. Diğeri cihazı olmayanlar için: kullanıcı bir arketip kartı seçiyor, seçim bir stres skoruna karşılık geliyor.
 
+<FlowDiagram label="Doğum haritası isteği" steps={["Doğum tarihi ve koordinat", "POST /api/v1/chart/natal", "Swiss Ephemeris", "Konumlar, Placidus evleri, açılar"]} />
+
 ## Kararlar
 
 - Hesaplamayı cihazda yapmak yerine sunucuya taşımak; çünkü native kütüphane ve ephemeris dosyaları uygulama paketine girmiyor, iOS ve Android de tek implementasyonu paylaşıyor.
@@ -25,4 +27,4 @@ Backend, Express üzerinde Node 20 ve TypeScript ile yazılmış bir servis; Doc
 
 ## Sonuç
 
-Erken aşama: harita endpoint'i Docker'da çalışıyor, arayüz ve manuel giriş yolu hazır, giyilebilir cihaz yolu ise sağlık eklentisi bağlanana kadar bir stub. Öğrendiğim şey: arayüzü iki veri kaynağı da ortada yokken tanımlamak, önce manuel yolla ilerlememi sağladı.
+Erken aşama: harita endpoint'i Docker'da çalışıyor, arayüz ve manuel giriş yolu hazır, giyilebilir cihaz yolu ise sağlık eklentisi bağlanana kadar bir yer tutucu. Öğrendiğim şey: arayüzü iki veri kaynağı da ortada yokken tanımlamak, önce manuel yolla ilerlememi sağladı.

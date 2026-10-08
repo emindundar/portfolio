@@ -30,8 +30,9 @@ export const projectMetaSchema = s.object({
     )
     .min(1)
     .optional(),
-  client: s.string().max(80).optional(),
-  credits: s.string().max(200).optional(),
+  /** Shown in the case aside; localized like gallery alts (never English text on a Turkish page). */
+  client: s.object({ en: s.string().min(1).max(80), tr: s.string().min(1).max(80) }).optional(),
+  credits: s.object({ en: s.string().min(1).max(200), tr: s.string().min(1).max(200) }).optional(),
   links: s
     .object({
       repo: s.array(s.string().url()).optional(),

@@ -44,8 +44,15 @@ describe("projectMetaSchema", () => {
   it("accepts a project without cover and with client/credits/live", () => {
     const rest: Partial<typeof valid> = { ...valid };
     delete rest.cover;
-    const r = projectMetaSchema.safeParse({ ...rest, client: "x", credits: "y", links: { live: "https://a.b" } });
+    const both = { en: "x", tr: "y" };
+    const r = projectMetaSchema.safeParse({ ...rest, client: both, credits: both, links: { live: "https://a.b" } });
     expect(r.success).toBe(true);
+  });
+  it("client and credits are localized: a plain string or a missing locale is rejected", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, client: "x" }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, credits: "y" }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, client: { en: "x" } }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, credits: { en: "x", tr: "" } }).success).toBe(false);
   });
   it("rejects cover without a known type", () => {
     expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "gif", src: "/media/a/cover", frame: "none" } }).success).toBe(false);

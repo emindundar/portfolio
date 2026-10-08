@@ -17,6 +17,8 @@ GymAI, Firebase üzerinde çalışan bir Flutter uygulaması. Üye kayıt oldukt
 
 Salonda her makinenin üzerinde bir QR kod var. Kodu okutan üye o egzersizin videosunu ve bir süre sayacını görüyor; süre dolunca egzersizi tamamlandı olarak işaretliyor. Chatbot fitness sorularını cevaplıyor ve istenirse son yedi günün antrenman geçmişini analiz ediyor. Ayrı bir ekran salonun saat saat doluluğunu gösteriyor, üye randevusunu buradan alıyor.
 
+<FlowDiagram label="Program üretimi" steps={["Hedef, haftalık gün sayısı, deneyim seviyesi", "Prompt", "Gemini API", "Gün gün program"]} />
+
 ## Kararlar
 
 - Sabit program şablonları yerine üyenin hedefi ve seviyesiyle kurulan prompt; çünkü hedef, sıklık ve deneyim kombinasyonları bir şablon setinin karşılayamayacağı kadar çoğalıyor.
@@ -25,4 +27,4 @@ Salonda her makinenin üzerinde bir QR kod var. Kodu okutan üye o egzersizin vi
 
 ## Sonuç
 
-Çalışan bir uygulama teslim ettik ve 2025'te sunduk. Tezin bulguları şöyle: randevu sistemi üyelerin daha planlı spor yapmasını sağlıyor, kişiye özel programlar bireysel gelişimi destekliyor, chatbot geri bildirimi motivasyona yardımcı oluyor, videolar da egzersizi yanlış yapmaktan doğan sakatlanma riskini azaltabiliyor. Bunlar tezin bulguları, kontrollü bir çalışma değil. Benim çıkardığım ders: bir AI özelliği, çıktısı kullanıcının bir sonraki adımına bağlandığında yerini hak ediyor.
+Çalışan bir uygulama teslim ettik ve 2025'te sunduk. Tezin bulguları şöyle: randevu sistemi üyelerin daha planlı spor yapmasını sağlıyor, kişiye özel programlar bireysel gelişimi destekliyor, chatbot geri bildirimi motivasyonu destekliyor, videolar da egzersizi yanlış yapmaktan doğan sakatlanma riskini azaltabiliyor. Bunlar tezin bulguları, kontrollü bir çalışma değil. Benim çıkardığım ders: bir AI özelliği, ancak çıktısı kullanıcının bir sonraki adımına bağlandığında anlam kazanıyor.

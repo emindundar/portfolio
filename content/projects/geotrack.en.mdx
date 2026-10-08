@@ -17,6 +17,8 @@ The mobile app is MVVM on Riverpod. A `MapViewModel` owns one immutable `MapStat
 
 The backend began as a single-file Express API with JWT, roles and PostgreSQL. I rewrote it in NestJS with TypeORM and a Socket.IO gateway: the token is verified on the handshake, every user gets a room, and admins subscribe to the users they follow. A second Flutter app serves admin accounts only.
 
+<FlowDiagram label="Search-to-navigation flow" steps={["Address typed (debounced)", "Nominatim search", "OSRM driving route", "Navigation mode: position stream on"]} />
+
 ## Decisions
 
 - OpenStreetMap, OSRM and Nominatim instead of the Google Maps SDK, because there is no per-request fee and I can host routing myself.

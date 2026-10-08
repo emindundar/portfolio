@@ -13,7 +13,7 @@
     "theme": "Tema",
     "themeDark": "Koyu",
     "themeLight": "Açık",
-    "colophon": "Kolofon",
+    "colophon": "Künye",
     "primary": "Ana gezinme"
   },
   "Home": {
@@ -38,7 +38,7 @@
   },
   "AboutTeaser": {
     "heading": "Hakkımda",
-    "body": "Yönetim Bilişim Sistemleri mezunu (Pamukkale, 2025). Alışkanlıkla mobil, zorunlulukla full-stack: uygulamanın, API'nin ve arkasındaki verinin sahibiyim. Şu an bir yem sektörü yazılım danışmanlığında ERP ve NIR entegrasyonları ile Claude destekli otomasyon geliştiriyorum.",
+    "body": "Yönetim Bilişim Sistemleri mezunu (Pamukkale, 2025). Alışkanlıktan mobil, ihtiyaçtan full-stack: uygulamayı, API'yi ve arkasındaki veriyi ben üstlenirim. Şu an bir yem sektörü yazılım danışmanlığında ERP ve NIR entegrasyonları ile Claude destekli otomasyon geliştiriyorum.",
     "more": "Devamı"
   },
   "Cta": {
@@ -78,7 +78,7 @@
     "stack": "Teknolojiler",
     "links": "Bağlantılar",
     "repo": "Kaynak kod",
-    "live": "Canlı",
+    "live": "Canlı site",
     "demo": "Demo",
     "store": "Mağaza",
     "client": "Müşteri",
@@ -86,11 +86,13 @@
     "prev": "Önceki",
     "next": "Sonraki",
     "backToWork": "Tüm işler",
-    "fallbackNote": "Bu vaka çalışması şimdilik yalnızca İngilizce.",
-    "nav": "Vaka gezinmesi",
+    "fallbackNote": "Bu çalışma şimdilik yalnızca İngilizce.",
+    "nav": "Çalışmalar arasında gezinme",
     "gallery": "Galeri",
     "video": "Video",
-    "metrics": "Ölçümler",
+    "videoPause": "Videoyu duraklat",
+    "videoPlay": "Videoyu oynat",
+    "metrics": "Rakamlar",
     "newTab": "yeni sekmede açılır"
   },
   "About": {
@@ -103,31 +105,32 @@
     "how1": "Önce spec. Koddan önce problemi yazıya dökerim.",
     "how2": "Uçtan uca. Uygulama, API ve veri tek bir sistemdir.",
     "how3": "AI bir araç, kısayol değil. Üretilen her satır gözden geçirilir ve test edilir.",
-    "how4": "Küçük parçalarla yayına al, ölç, tekrarla.",
+    "how4": "Küçük adımlarla yayınla, ölç, iyileştir.",
     "eventsHeading": "Topluluk ve etkinlikler",
     "cvHeading": "Özgeçmiş",
     "cvDownloadEn": "Özgeçmişi indir (EN)",
-    "cvDownloadTr": "Özgeçmişi indir (TR)"
+    "cvDownloadTr": "Özgeçmişi indir (TR)",
+    "present": "Günümüz"
   },
   "Services": {
     "title": "Hizmetler",
     "description": "Müşterilerim için neler geliştiriyorum.",
     "intro": "Freelance ve proje bazlı işlere açığım. İyi yaptığım dört şey:",
     "cta": "Proje başlat",
-    "seeCase": "Örnek çalışmaya bak"
+    "seeCase": "İlgili çalışmayı incele"
   },
   "Colophon": {
-    "title": "Kolofon",
+    "title": "Künye",
     "description": "Bu site nasıl yapıldı.",
-    "p1": "Bu site başlı başına bir vaka çalışması. Önce yazılı bir spec olarak tasarlandı, sonra görev görev planlandı ve Claude Code'un alt ajan ekibi olarak çalışmasıyla geliştirildi: bir ajan yazıyor, yeni bir ajan gözden geçiriyor, her anlaşmazlıkta kararı ben veriyorum.",
+    "p1": "Bu site başlı başına bir vaka çalışması. Önce yazılı bir spec olarak tasarlandı, sonra görev görev planlandı ve Claude Code alt ajanlarından oluşan bir ekiple geliştirildi: bir ajan yazıyor, yeni bir ajan gözden geçiriyor, her anlaşmazlıkta kararı ben veriyorum.",
     "p2": "Teknolojiler: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, git tabanlı MDX içerik için Velite, hareket için GSAP + Lenis, hero shader için OGL.",
-    "p3": "Hareket azaltma tercihi açıkken her animasyon statik sayfaya düşer; hareket kodu yalnızca hydration sonrası yüklenir, böylece ilk yükleme JavaScript'i 180 KB'ın altında kalır.",
-    "p4": "Kalite kontrolleri her pull request'te çalışır: birim testler, masaüstü ve mobilde Playwright uçtan uca testler, performans, erişilebilirlik ve SEO için Lighthouse bütçeleri.",
+    "p3": "Hareket azaltma tercihi açıkken her animasyonun yerini statik görünüm alır; hareket kodu yalnızca hydration sonrası yüklenir, böylece ilk yükleme JavaScript'i 180 KB'ın altında kalır.",
+    "p4": "Kalite kontrolleri her pull request'te çalışır: birim testleri, masaüstü ve mobilde Playwright ile uçtan uca testler, performans, erişilebilirlik ve SEO için Lighthouse bütçeleri.",
     "p5": "Spec ve planlar repoda herkese açık.",
     "p6": "Yazı tipleri: Cabinet Grotesk, Satoshi ve JetBrains Mono.",
     "stackHeading": "Teknolojiler",
     "processHeading": "Süreç",
-    "repo": "GitHub'da kaynak kodu",
+    "repo": "Kaynak kod GitHub'da",
     "process1": "Yazılı spec",
     "process2": "Görev görev plan",
     "process3": "Bir ajan uygular, bir başkası inceler",

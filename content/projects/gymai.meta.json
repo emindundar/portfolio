@@ -23,6 +23,9 @@
       }
     }
   ],
-  "credits": "B.Sc. thesis, Pamukkale University MIS (2025), with Beyzanur Eren; advisor Assoc. Prof. Ömer Güleç",
+  "credits": {
+    "en": "B.Sc. thesis, Pamukkale University MIS (2025), with Beyzanur Eren; advisor Assoc. Prof. Ömer Güleç",
+    "tr": "Lisans tezi, Pamukkale Üniversitesi YBS (2025), Beyzanur Eren ile; danışman Doç. Dr. Ömer Güleç"
+  },
   "links": {}
 }

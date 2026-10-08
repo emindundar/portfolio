@@ -32,6 +32,8 @@ describe("project content integrity", () => {
   });
 });
 
+const DIAGRAM = /<FlowDiagram\b[\s\S]*?\/>/g;
+
 const metas = slugs.map((slug) => JSON.parse(readFileSync(join(dir, `${slug}.meta.json`), "utf8")) as {
   slug: string;
   featured?: boolean;
@@ -67,6 +69,23 @@ describe("project content cross-references", () => {
     const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, { height: number }>;
     expect(manifest["/media/gymai/poster"]?.height).toBeLessThan(900);
   });
+  it.each(slugs)("%s has exactly one flow diagram of 3-6 steps inside the architecture section, in both languages", (slug) => {
+    const counts = (["en", "tr"] as const).map((loc) => {
+      const src = readFileSync(join(dir, `${slug}.${loc}.mdx`), "utf8");
+      const [start, end] = loc === "en" ? ["## Architecture", "## Decisions"] : ["## Mimari", "## Kararlar"];
+      const found = src.match(DIAGRAM) ?? [];
+      expect(found, `${slug}.${loc}`).toHaveLength(1);
+      const at = src.indexOf(found[0] ?? "");
+      expect(at, `${slug}.${loc}: after the architecture heading`).toBeGreaterThan(src.indexOf(start));
+      expect(at, `${slug}.${loc}: before the decisions heading`).toBeLessThan(src.indexOf(end));
+      expect(found[0], `${slug}.${loc}: label`).toMatch(/label="[^"]{5,}"/);
+      const steps = JSON.parse(/steps=\{(\[[\s\S]*?\])\}/.exec(found[0] ?? "")?.[1] ?? "[]") as string[];
+      expect(steps.length, `${slug}.${loc}`).toBeGreaterThanOrEqual(3);
+      expect(steps.length, `${slug}.${loc}`).toBeLessThanOrEqual(6);
+      return steps.length;
+    });
+    expect(counts[0], `${slug}: same number of steps in en and tr`).toBe(counts[1]);
+  });
   it("featured set is geotrack, kipgoz, gymai, karaoke-sync", () => {
     expect(metas.filter((m) => m.featured).map((m) => m.slug).sort()).toEqual(["geotrack", "gymai", "karaoke-sync", "kipgoz"]);
   });
@@ -74,7 +93,8 @@ describe("project content cross-references", () => {
     expect(metas.map((m) => m.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
   it.each(slugs.flatMap((slug) => [`${slug}.en.mdx`, `${slug}.tr.mdx`]))("%s body is 180-350 words", (file) => {
-    const body = readFileSync(join(dir, file), "utf8").replace(/^---[\s\S]*?---/, "").replace(/^## .+$/gm, "");
+    // Prose only: front matter, headings and the <FlowDiagram … /> element (labels, not sentences) are not counted.
+    const body = readFileSync(join(dir, file), "utf8").replace(/^---[\s\S]*?---/, "").replace(/^## .+$/gm, "").replace(DIAGRAM, "");
     const words = body.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
     expect(words, file).toBeGreaterThanOrEqual(180);
     expect(words, file).toBeLessThanOrEqual(350);
