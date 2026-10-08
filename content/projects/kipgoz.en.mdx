@@ -24,7 +24,7 @@ Each feature talks to an abstract repository. Today the implementations are mock
 
 The backend is a separate repository with three layers: the Flutter client, a NestJS API with Prisma, and PostgreSQL 16 in Docker. It has a health check, the Prisma connection and Swagger docs.
 
-<FlowDiagram label="Backend layers" steps={["Flutter client", "HTTP/JSON", "NestJS", "Prisma", "PostgreSQL 16 in Docker"]} />
+<FlowDiagram label="Backend layers" steps={["Flutter client", "NestJS", "Prisma", "PostgreSQL 16 in Docker"]} />
 
 ## Decisions
 

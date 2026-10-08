@@ -19,7 +19,7 @@ Yükleme ekranı, mevcut web sayfasını açan bir WebView. Sayfa yüklenince uy
 
 Gönderim Cloud Functions'ta. Callable fonksiyonlar üç durumu karşılıyor: e-posta adresiyle tek kullanıcıya bildirim, bir roldeki herkese bildirim ve belirli bir müşteriye dosya gönderimi. Dosya paylaşıldığında ya da yüklendiğinde iki Firestore trigger'ı çalışıyor. Her fonksiyon bir bildirim kaydı yazıyor ve FCM'in geçersiz dediği token'ları siliyor.
 
-<FlowDiagram label="Bildirim akışı" steps={["Callable fonksiyon ya da Firestore trigger'ı", "Cloud Function", "Bildirim kaydı", "Cihaz token'larına FCM push"]} />
+<FlowDiagram label="Bildirim akışı" steps={["Callable fonksiyon ya da Firestore trigger'ı", "Cloud Function", "Cihaz token'larına FCM push + bildirim kaydı"]} />
 
 ## Kararlar
 

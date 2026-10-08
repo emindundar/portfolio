@@ -13,7 +13,7 @@ pnpm dev · pnpm build · pnpm lint · pnpm typecheck · pnpm test · pnpm e2e (
 ## Rules
 - Locales: en (default), tr. Every user-facing string goes through messages/{en,tr}.json. No hardcoded UI text.
 - Pages and layouts are server components. Only `components/motion`, `components/canvas`, `components/terminal`,
-  toggles and forms are `"use client"`. ESLint blocks gsap/lenis/ogl/motion imports elsewhere.
+  toggles, forms, `components/layout/NavLinks` (usePathname) and `components/media/VideoCover` are `"use client"`. ESLint blocks gsap/lenis/ogl/motion imports elsewhere.
 - Tokens only: bg, surface, line, fg, muted, accent (see app/globals.css). No arbitrary colors. No border-radius. No shadows.
 - Fonts: font-display (Cabinet Grotesk), font-sans (Satoshi), font-mono (JetBrains Mono) via lib/fonts.ts.
 - Content: add a project = `content/projects/<slug>.meta.json` + `<slug>.en.mdx` + `<slug>.tr.mdx`. Schema in content/schema.ts (optional: `cover` {type,src,frame}, `gallery` [{src,alt{en,tr}}], `client` {en,tr}, `credits` {en,tr}, `links.live`).
