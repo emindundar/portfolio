@@ -1,0 +1,31 @@
+---
+title: NotifyX — Role-Based Push around an Existing Web Flow
+summary: A Flutter app that wraps an existing web upload page in a WebView and sends role-based push notifications through Firebase Cloud Functions, for admins and customers in one codebase.
+---
+
+## Problem
+
+The file-upload flow already existed as a web page. A native rewrite would have taken longer than the rest of the app. Mobile was missing: admins had to send files and messages to one customer or a whole role, and customers needed a push notification when something arrived.
+
+## Role
+
+I built it alone: app, Firestore data model and Cloud Functions.
+
+## Architecture
+
+The app is Flutter with Riverpod. Sign-in goes through Firebase Auth, and each user has a Firestore document with a role, admin or customer, and an approval flag. Customers wait for admin approval. Every device stores its FCM token in a `devices` subcollection under the user and updates it on refresh.
+
+The upload screen is a WebView that loads the existing web page. Once it loads, the app passes the signed-in user's identity to it with injected JavaScript and listens to Firestore for the files that come back.
+
+Sending happens in Cloud Functions. Callable functions cover three cases: notify one user by e-mail address, notify everyone with a role, and send a file to a specific customer. Two Firestore triggers fire when a file is shared or uploaded. Each function writes a notification record and deletes tokens that FCM reports as invalid.
+
+## Decisions
+
+- A WebView around the existing page instead of a native rewrite, because the page already worked and time was better spent on notifications.
+- Sending from Cloud Functions instead of from the client, because role lookups and the messaging credentials stay on the server.
+- One token document per device instead of a single token field on the user, because people sign in on more than one phone and dead tokens can be removed one by one.
+- An `AuthRepository` in front of Firebase instead of calls from widgets, because sign-up, approval and token registration have to happen in a fixed order.
+
+## Outcome
+
+Admins and customers share one app with different screens, and push reaches one user or a whole role. I have no delivery statistics, so I claim none. What I learned: most of the work in push is token hygiene (register, refresh, clean up), not the send call.

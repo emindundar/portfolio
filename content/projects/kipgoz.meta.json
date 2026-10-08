@@ -1,0 +1,11 @@
+{
+  "slug": "kipgoz",
+  "facets": ["mobile", "backend", "data-erp"],
+  "stack": ["Flutter", "Riverpod", "NestJS", "Prisma", "PostgreSQL 16", "Docker Compose", "Swagger"],
+  "year": 2026,
+  "role": "solo",
+  "featured": true,
+  "order": 2,
+  "client": "A special-education institution",
+  "links": {}
+}

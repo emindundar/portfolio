@@ -1,0 +1,12 @@
+{
+  "slug": "notifyx",
+  "facets": ["mobile", "backend"],
+  "stack": ["Flutter", "Riverpod", "Firebase Cloud Messaging", "Firebase Auth", "Firestore", "Cloud Functions", "WebView"],
+  "year": 2025,
+  "role": "solo",
+  "featured": false,
+  "order": 6,
+  "links": {
+    "repo": ["https://github.com/emindundar/notification_app"]
+  }
+}

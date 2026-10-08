@@ -1,16 +1,37 @@
 {
   "slug": "geotrack",
-  "facets": ["mobile", "backend"],
-  "stack": ["Flutter", "Riverpod", "OSRM", "Nominatim", "Node.js"],
+  "facets": [
+    "mobile",
+    "backend"
+  ],
+  "stack": [
+    "Flutter",
+    "Riverpod",
+    "flutter_map",
+    "OSRM",
+    "Nominatim",
+    "Geolocator",
+    "Node.js",
+    "NestJS",
+    "Socket.IO",
+    "PostgreSQL",
+    "JWT"
+  ],
   "year": 2026,
   "role": "solo",
   "featured": true,
   "order": 1,
-  "cover": { "type": "image", "src": "/media/geotrack/cover", "frame": "phone" },
+  "cover": {
+    "type": "image",
+    "src": "/media/geotrack/cover",
+    "frame": "phone"
+  },
   "links": {
     "repo": [
       "https://github.com/emindundar/map_tracking",
-      "https://github.com/emindundar/map_tracking_backend"
+      "https://github.com/emindundar/map_tracking_backend",
+      "https://github.com/emindundar/map_backend_api",
+      "https://github.com/emindundar/map-tracking-admin-app"
     ]
   }
 }

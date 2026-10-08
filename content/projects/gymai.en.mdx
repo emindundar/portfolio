@@ -1,0 +1,28 @@
+---
+title: GymAI — AI-Assisted Gym Assistant
+summary: Bachelor's thesis app. Gemini builds a training programme from the member's goal, QR codes on the machines open the exercise video, and live occupancy drives appointments.
+---
+
+## Problem
+
+The thesis starts from three complaints of gym members: the floor is crowded at the hours they can come, they are not sure what to do on which machine, and nothing records what they actually did. A printed programme answers none of these.
+
+## Role
+
+I led a two-person team with Beyzanur Eren. GymAI was our B.Sc. thesis at Pamukkale University, Management Information Systems, in 2025, advised by Assoc. Prof. Ömer Güleç.
+
+## Architecture
+
+GymAI is a Flutter app on Firebase. After registration the member picks a goal, the number of training days per week and an experience level. Those answers go into a prompt for the Gemini API, which returns a day-by-day programme with sets, repetitions and effort level for each exercise.
+
+On the gym floor each machine carries a QR code. Scanning it opens that exercise's video with a timer, and the member marks the exercise complete when the time is up. A chatbot answers fitness questions and, on request, analyses the member's last seven days of training. Another screen shows how busy the gym is hour by hour, and members book appointments from it.
+
+## Decisions
+
+- A prompt built from the member's goal and level instead of static programme templates, because goal, frequency and experience multiply into more combinations than a template set can cover.
+- QR codes on the machines instead of in-app search, because the member is already at the machine and scanning is one step.
+- Firebase's real-time database instead of our own backend, because occupancy and appointments must update for everyone at once and a two-person team should not run servers.
+
+## Outcome
+
+We delivered a working app and presented it in 2025. The thesis reports these findings: the appointment system lets members train in a more planned way, personal programmes support individual progress, chatbot feedback helps motivation, and the videos can lower the injury risk that comes from doing an exercise wrong. These are the thesis's own conclusions, not results of a controlled study. What I took from it: an AI feature earns its place when its output leads to the user's next action.

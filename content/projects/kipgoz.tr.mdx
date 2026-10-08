@@ -1,0 +1,36 @@
+---
+title: Kipgöz — Özel Eğitim Kurumu için BEP Takibi
+summary: Öğrenciden BEP hedefine, hedeften tarihli uygulama kaydına uzanan zinciri öğretmen ve veli için tek yerde toplayan Flutter uygulaması; NestJS ve Prisma backend'i yolda.
+metrics:
+  - label: Commit
+    value: "44"
+  - label: Dart dosyası
+    value: "123"
+---
+
+## Problem
+
+Özel eğitimde her öğrencinin bir BEP'i (Bireyselleştirilmiş Eğitim Programı) olur: gelişim alanı, uzun dönemli amaç, 4/5 gibi bir ölçütü olan kısa dönemli hedef ve her hedefin altında tarihli uygulama kayıtları. Birlikte çalıştığım kurumda bu zincir Word ve Excel şablonlarında, bir kısmı da kâğıtta duruyor. Öğretmen aynı bilgiyi birden fazla kez yazıyor, veli ise görüşmeler arasında çocuğunun gelişimini pek göremiyor.
+
+## Rol
+
+Veri modelinden ekranlara kadar tek başıma geliştiriyorum. Müşteri bir özel eğitim kurumu; proje devam ediyor.
+
+## Mimari
+
+Mobil uygulama feature-first: her özelliğin `data`, `domain` ve `presentation` klasörleri var. State tarafında kod üretimli Riverpod, entity'lerde JSON serileştirmeli freezed, yönlendirmede go_router kullanıyorum. İki rol var. Öğretmen öğrenci listesini, günün seanslarını, ev programı atamayı, BEP ilerleme girişini ve mesajları görüyor; veli günün görevlerini, gelişimi ve mesajları.
+
+Her özellik soyut bir repository ile konuşuyor. Şimdilik implementasyonlar tek bir demo veri setinden beslenen mock'lar; gerçek API'ye geçiş her özellikte tek bir provider dosyasından yapılacak.
+
+Backend ayrı bir repoda ve üç bağımsız katmandan oluşuyor: Flutter → HTTP/JSON → NestJS → Prisma → Docker'da PostgreSQL 16. Şu an iskelet hazır: health check, Prisma bağlantısı ve Swagger dokümanı.
+
+## Kararlar
+
+- Önce API yazmak yerine arayüzlerin arkasında mock repository; çünkü veritabanı şemasını dondurmadan önce BEP modelinin gerçek ekranlarda oturmasını istedim.
+- Düz Express yerine NestJS; çünkü modül, controller ve service düzeni büyüyen bir domain'i derli toplu tutuyor.
+- Elle SQL yerine Prisma; çünkü migration'lar ve tipli sorgular için tek doğru kaynak `schema.prisma`.
+- PostgreSQL'i elle kurmak yerine Docker Compose; çünkü aynı dosya VPS'te de çalışacak.
+
+## Sonuç
+
+Mobil repoda 44 commit ve 123 Dart dosyası var; iki rol de demo verisiyle baştan sona gezilebiliyor. API iskeleti çalışıyor; sırada kimlik doğrulama ve çekirdek şema, ardından mock'ların özellik özellik değiştirilmesi var. Öğrendiğim şey: önce hiyerarşiyi modellemek işe yaradı. Hedef ve kayıt doğru şekle girince öğretmen ve veli ekranları aynı verinin iki görünümüne dönüştü.

@@ -1,0 +1,12 @@
+{
+  "slug": "gymai",
+  "facets": ["mobile", "ai"],
+  "stack": ["Flutter", "Firebase", "Google Gemini API", "QR"],
+  "year": 2025,
+  "role": "lead",
+  "featured": true,
+  "order": 3,
+  "cover": { "type": "image", "src": "/media/gymai/cover", "frame": "none" },
+  "credits": "B.Sc. thesis, Pamukkale University MIS (2025), with Beyzanur Eren; advisor Assoc. Prof. Ömer Güleç",
+  "links": {}
+}

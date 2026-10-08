@@ -1,12 +1,31 @@
 ---
 title: GeoTrack — Real-Time Field Operations & Routing
-summary: Live tracking of vehicles and field staff on an OpenStreetMap stack, with no Google Maps dependency.
+summary: Location tracking, address search and routing for field teams on an OpenStreetMap stack, with a NestJS backend for the live channel. No Google Maps dependency.
 ---
 
 ## Problem
 
-Field teams needed live positions, routing and address lookup without paying per-request map fees.
+A field team needs three things from a map: where everyone is now, how to reach the next address, and a way to find it by typing. The default answer, the Google Maps SDK, bills per request and ties the product to one vendor. I wanted to see how far an OpenStreetMap stack goes.
 
 ## Role
 
-Solo developer: mobile app, routing layer and backend.
+I built it alone: the Flutter app, two iterations of the backend and a separate admin app.
+
+## Architecture
+
+The mobile app is MVVM on Riverpod. A `MapViewModel` owns one immutable `MapState` (position, search results, route, navigation mode) and a `MapService` calls Nominatim for address search and a self-hosted OSRM instance for driving routes. Tiles come from OpenStreetMap through flutter_map, and search input is debounced before it reaches Nominatim. The position stream runs only while navigation is on.
+
+The backend began as a single-file Express API with JWT, roles and PostgreSQL. I rewrote it in NestJS with TypeORM and a Socket.IO gateway: the token is verified on the handshake, every user gets a room, and admins subscribe to the users they follow. The admin app is a second Flutter app for admin accounts only.
+
+## Decisions
+
+- OpenStreetMap, OSRM and Nominatim instead of the Google Maps SDK, because there is no per-request fee and I can host routing myself.
+- A 10-metre distance filter on the Geolocator stream instead of a fixed timer, because a parked vehicle should cost neither battery nor traffic.
+- Broadcasting every position but writing to PostgreSQL at most once a minute per user, instead of storing every fix, because the live view needs freshness and the history does not.
+- NestJS instead of growing the Express file, because guards, validation and the WebSocket gateway needed module boundaries.
+
+## Outcome
+
+Search, routing and navigation mode work on a map stack with no licence fee. The NestJS backend has the live channel with rate limiting and unit tests, and the admin app lists trackable users. Connecting both clients to the gateway is the remaining step. What I learned: a free map stack moves the cost from invoices to operations. I run OSRM myself and must respect Nominatim's usage policy.
+
+*Map data © OpenStreetMap contributors*

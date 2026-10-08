@@ -1,0 +1,29 @@
+---
+title: Karaoke Sync — Sesle Aynı Anda Akan Sözler
+summary: Canlı etkinlikler için karaoke web uygulaması. Ses ve LRC sözler Cloudflare R2'den geliyor, satırlar ses saatini izliyor, mikrofon dalga formunu ve kelime eşleşme puanını besliyor.
+---
+
+## Problem
+
+Canlı etkinlikteki bir karaoke ekranının üç işi var. Doğru satırı doğru anda göstermeli. Şarkının ortasında ağ ya da sunucu bir dakikalığına aksasa bile çalmaya devam etmeli. Ve ses dosyalarını adresi bilen herkese açmamalı.
+
+## Rol
+
+Tek başıma geliştirdim: Next.js uygulaması, API route'ları, depolama ve Docker imajı.
+
+## Mimari
+
+Uygulama TypeScript ile Next.js App Router üzerinde çalışıyor; bütün sayfalar ve API route'ları giriş arkasında. Ses ve LRC söz dosyaları Cloudflare R2'de duruyor. Şarkı seçildiğinde tek bir API route oturumu kontrol ediyor, rate limit uyguluyor, parçayı katalogda doğruluyor ve ses ile söz için presigned URL döndürüyor. Şarkı bitene kadar backend'e başka çağrı yapılmıyor.
+
+Tarayıcıda küçük bir LRC parser her zaman damgasını milisaniyeye çevirip satırları sıralıyor. Sahne bileşeni audio elementinin saatini okuyup aktif satırı seçiyor, `LyricsFlow` da o satıra kaydırıyor. Mikrofon açıkken Web Audio analyser dalga formunu çiziyor; tarayıcının konuşma tanıması söylenen kelimeleri aktif satırla eşleştirip puan üretiyor.
+
+## Kararlar
+
+- Hazır kütüphane yerine kendi LRC parser'ım; çünkü format tek bir regex'ten ibaret ve iki ya da üç haneli kesirler dahil çıktının şeklini kendim belirlemek istedim.
+- Medyayı uygulama üzerinden geçirmek yerine on iki saat geçerli presigned R2 URL'leri; çünkü çalma sunucuma bağlı olmamalı ve bağlantı etkinlik boyunca yaşamalı.
+- Redis yerine uygulama katmanında bellek içi rate limiter; çünkü dağıtım tek instance.
+- İlk sürümdeki YouTube tabanlı oynatıcı yerine kendi dosyalarımla HTML5 audio; çünkü ilk dönemdeki hataların çoğu üçüncü taraf servislerin erişilebilirliğinden kaynaklanıyordu.
+
+## Sonuç
+
+Uygulama yayında; bağlantı giriş sayfasına açılıyor. Söz zaman damgaları milisaniye hassasiyetinde ayrıştırılıyor, satır geçişleri ise audio elementinin zaman güncellemelerini izliyor; yani fiilî hassasiyet tarayıcının saat olayları kadar. Öğrendiğim şey: "çalma sırasında backend çağrısı yok" kuralını en başta yazınca depolama, kimlik doğrulama ve rate limit kararları kendiliğinden bu kuraldan çıktı.

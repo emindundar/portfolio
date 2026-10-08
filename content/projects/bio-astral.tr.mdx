@@ -1,0 +1,28 @@
+---
+title: Bio-Astral — Astronomi Sunucuda, Biyometri Tek Arayüzün Arkasında
+summary: Doğum haritasını uyku ve stres verisiyle yan yana getiren, erken aşamadaki bir uygulama. Swiss Ephemeris Docker'daki bir Node servisinde çalışıyor; biyometrik verinin kaynağını bir repository arayüzü gizliyor.
+---
+
+## Problem
+
+Fikir günlük bir "yaşam radarı": doğum haritasını kullanıcının nasıl uyuduğu ve ne kadar stresli olduğuyla birlikte okumak. Daha başta iki engel çıktı. Gezegen konumları için Swiss Ephemeris gerekiyor; kendi veri dosyaları olan native bir kütüphane, telefon uygulamasının içine gömmek de derlemek de zahmetli. Biyometrik verinin ise tek bir kaynağı yok: bazı kullanıcıların HealthKit ya da Google Fit'i besleyen bir saati var, bazılarının hiçbir şeyi yok.
+
+## Rol
+
+Flutter istemcisini de backend'i de tek başıma geliştiriyorum. Proje erken aşamada.
+
+## Mimari
+
+Backend, Express üzerinde Node 20 ve TypeScript ile yazılmış bir servis; Docker Compose ile paketli. Tek endpoint olan `POST /api/v1/chart/natal` doğum tarihi ve koordinat alıyor; gezegen konumlarını, Placidus evlerini ve gezegenler arası açıları Swiss Ephemeris ile hesaplayıp döndürüyor.
+
+İstemcide `BiometricRepository` arayüzü dört çağrı tanımlıyor: bir tarihin uyku verisi, o anki stres seviyesi, veri kaynağı olup olmadığı ve izin isteği. İki implementasyon var. Biri giyilebilir cihazlar için. Diğeri cihazı olmayanlar için: kullanıcı bir arketip kartı seçiyor, seçim bir stres skoruna karşılık geliyor.
+
+## Kararlar
+
+- Haritayı cihazda hesaplamak yerine sunucuda; çünkü native kütüphane ve ephemeris dosyaları uygulama paketine girmiyor, iOS ve Android de tek implementasyonu paylaşıyor.
+- Yerel kurulum yerine derleme araçları içeren Alpine imajı ve mount edilen volume'un dışında tutulan `node_modules`; çünkü native modül benim bilgisayarımın değil container'ın mimarisine göre derlenmeli.
+- Sağlık SDK'larını arayüzden çağırmak yerine repository arayüzü; çünkü saati olmayan kullanıcı da aynı ekranları farklı bir kaynakla görmeli.
+
+## Sonuç
+
+Doğum haritası endpoint'i Docker'da çalışıyor. İstemcide arayüz ve manuel giriş yolu hazır; giyilebilir cihaz implementasyonu, sağlık eklentisi bağlanana kadar yer tutucu veri döndürüyor. Hesabı sunucuya taşımanın istemcideki kazancını henüz ölçmedim, o yüzden rakam vermiyorum. Öğrendiğim şey: arayüzü iki veri kaynağı da ortada yokken tanımlamak, önce manuel yolla ilerlememi sağladı.

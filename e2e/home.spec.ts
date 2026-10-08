@@ -14,7 +14,7 @@ test.describe("home page", () => {
     const cells = page.getByTestId("capability");
     await expect(cells).toHaveCount(5);
     await expect(cells.first()).toContainText("Mobile");
-    await expect(cells.first()).toContainText("1 project");
+    await expect(cells.first()).toContainText("5 projects");
     await expect(cells.first()).toHaveAttribute("href", /\/en\/work\?f=mobile$/);
   });
 
@@ -78,5 +78,7 @@ test.describe("home page", () => {
     await page.goto("/tr");
     await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("Ürünü uçtan uca kurarım.");
     await expect(page.getByText("Yetkinlikler")).toBeVisible();
+    await expect(page.getByTestId("capability").first()).toContainText("5 proje");
+    await expect(page.getByTestId("project")).toHaveCount(4);
   });
 });
