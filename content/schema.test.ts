@@ -56,10 +56,15 @@ describe("projectMetaSchema", () => {
   it("rejects cover.src with a file extension", () => {
     expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" } }).success).toBe(false);
   });
-  it("accepts a gallery of media bases and rejects extensions or an empty list", () => {
-    const ok = projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster", "/media/gymai/screens-right"] });
-    expect(ok.success).toBe(true);
-    expect(projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster-640.webp"] }).success).toBe(false);
+  it("accepts a gallery of { src, alt per locale } and rejects extensions, missing or short alts, or an empty list", () => {
+    const alt = { en: "Thesis poster", tr: "Tez posteri" };
+    const item = { src: "/media/gymai/poster", alt };
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [item, { src: "/media/gymai/screens-right", alt }] }).success).toBe(true);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ ...item, src: "/media/gymai/poster-640.webp" }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster"] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src, alt: { en: "Thesis poster" } }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src, alt: { en: "abc", tr: "Tez posteri" } }] }).success).toBe(false);
     expect(projectMetaSchema.safeParse({ ...valid, gallery: [] }).success).toBe(false);
     expect(projectMetaSchema.parse(valid).gallery).toBeUndefined();
   });

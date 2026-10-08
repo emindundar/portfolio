@@ -20,8 +20,16 @@ export const projectMetaSchema = s.object({
       frame: s.enum(["phone", "browser", "none"]),
     })
     .optional(),
-  /** Extra image bases (keys of lib/media-manifest.json) shown below the case body. */
-  gallery: s.array(s.string().regex(MEDIA_BASE, "gallery: /media/<slug>/<name> without extension")).min(1).optional(),
+  /** Extra images shown below the case body: a manifest base (lib/media-manifest.json) and a described alt per locale. */
+  gallery: s
+    .array(
+      s.object({
+        src: s.string().regex(MEDIA_BASE, "gallery.src: /media/<slug>/<name> without extension"),
+        alt: s.object({ en: s.string().min(5), tr: s.string().min(5) }),
+      }),
+    )
+    .min(1)
+    .optional(),
   client: s.string().max(80).optional(),
   credits: s.string().max(200).optional(),
   links: s

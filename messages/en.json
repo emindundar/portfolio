@@ -89,7 +89,8 @@
     "nav": "Case navigation",
     "gallery": "Gallery",
     "video": "Video",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "newTab": "opens in a new tab"
   },
   "About": {
     "title": "About",

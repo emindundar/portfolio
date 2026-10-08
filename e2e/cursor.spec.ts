@@ -3,10 +3,22 @@ import { test, expect } from "@playwright/test";
 test.describe("custom cursor", () => {
   test("desktop with motion: cursor root exists and body opts out of native cursor", async ({ page, isMobile }) => {
     test.skip(isMobile, "fine pointer only");
+    const resetWarnings: string[] = [];
+    page.on("console", (m) => {
+      if (/not eligible for reset/i.test(m.text())) resetWarnings.push(m.text());
+    });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
     await expect(page.locator("[data-cursor-root]")).toHaveCount(1);
     await expect(page.locator("body")).toHaveAttribute("data-cursor", "custom");
+    // Moving onto a link scales the ring; GSAP must not warn about an unset starting scale.
+    const link = page.getByRole("link", { name: /explore work/i });
+    await page.mouse.move(5, 300);
+    await link.hover();
+    await expect
+      .poll(() => page.locator("[data-cursor-root] > div").last().evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a))
+      .toBeGreaterThan(1.5);
+    expect(resetWarnings).toEqual([]);
   });
 
   test("mobile (coarse pointer): no custom cursor", async ({ page, isMobile }) => {

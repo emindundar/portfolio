@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { slugify } from "@/lib/slugify";
 import { FlowDiagram } from "@/components/ui/FlowDiagram";
@@ -14,11 +15,13 @@ function textOf(node: React.ReactNode): string {
 
 function A({ href = "", children, ...rest }: ComponentProps<"a">) {
   const cls = "text-accent underline underline-offset-4";
+  const t = useTranslations("Case");
   const external = /^(https?:)?\/\//.test(href);
   if (external) {
     return (
       <a href={href} className={cls} target="_blank" rel="noreferrer noopener" {...rest}>
         {children}
+        <span className="sr-only"> ({t("newTab")})</span>
       </a>
     );
   }

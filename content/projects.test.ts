@@ -37,7 +37,7 @@ const metas = slugs.map((slug) => JSON.parse(readFileSync(join(dir, `${slug}.met
   featured?: boolean;
   order: number;
   cover?: { src: string };
-  gallery?: string[];
+  gallery?: { src: string; alt: { en: string; tr: string } }[];
 });
 
 describe("project content cross-references", () => {
@@ -49,15 +49,23 @@ describe("project content cross-references", () => {
     const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, unknown>;
     for (const m of metas) if (m.cover) expect(Object.keys(manifest), m.slug).toContain(m.cover.src);
   });
-  it("every gallery base is an image entry in the media manifest with its file on disk", () => {
+  it("every gallery image is in the media manifest with its file on disk and a distinct alt per locale", () => {
     const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, { widths?: number[] }>;
     for (const m of metas)
-      for (const base of m.gallery ?? []) {
-        const widths = manifest[base]?.widths ?? [];
-        expect(widths.length, `${m.slug}: ${base}`).toBeGreaterThan(0);
-        for (const w of widths) expect(existsSync(join("public", `${base}-${w}.webp`)), `${base}-${w}.webp`).toBe(true);
+      for (const g of m.gallery ?? []) {
+        const widths = manifest[g.src]?.widths ?? [];
+        expect(widths.length, `${m.slug}: ${g.src}`).toBeGreaterThan(0);
+        for (const w of widths) expect(existsSync(join("public", `${g.src}-${w}.webp`)), `${g.src}-${w}.webp`).toBe(true);
+        expect(g.alt.en.length, `${g.src} alt.en`).toBeGreaterThanOrEqual(5);
+        expect(g.alt.tr.length, `${g.src} alt.tr`).toBeGreaterThanOrEqual(5);
+        expect(g.alt.tr, `${g.src}: tr alt is a translation`).not.toBe(g.alt.en);
       }
-    expect(metas.find((m) => m.slug === "gymai")?.gallery).toEqual(["/media/gymai/poster", "/media/gymai/screens-right"]);
+    expect(metas.find((m) => m.slug === "gymai")?.gallery?.map((g) => g.src)).toEqual(["/media/gymai/poster", "/media/gymai/screens-right"]);
+  });
+  it("gymai thesis poster is the cropped one (header with names and e-mail addresses cut off)", () => {
+    // The uncropped 746×1054 source renders at 640×904; the crop starts below the header block.
+    const manifest = JSON.parse(readFileSync("lib/media-manifest.json", "utf8")) as Record<string, { height: number }>;
+    expect(manifest["/media/gymai/poster"]?.height).toBeLessThan(900);
   });
   it("featured set is geotrack, kipgoz, gymai, karaoke-sync", () => {
     expect(metas.filter((m) => m.featured).map((m) => m.slug).sort()).toEqual(["geotrack", "gymai", "karaoke-sync", "kipgoz"]);

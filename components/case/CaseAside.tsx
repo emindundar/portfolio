@@ -12,11 +12,12 @@ function repoName(url: string): string {
   return new URL(url).pathname.split("/").filter(Boolean).pop() ?? url;
 }
 
-function External({ href, children }: { href: string; children: React.ReactNode }) {
+function External({ href, newTab, children }: { href: string; newTab: string; children: React.ReactNode }) {
   return (
     <a href={href} target="_blank" rel="noreferrer noopener" className={LINK}>
       {children}
       <span aria-hidden="true">↗</span>
+      <span className="sr-only"> ({newTab})</span>
     </a>
   );
 }
@@ -68,14 +69,14 @@ export async function CaseAside({ project, className }: { project: Project; clas
           <ul className="m-0 mt-1 list-none p-0">
             {links.repo?.map((href) => (
               <li key={href}>
-                <External href={href}>
+                <External href={href} newTab={t("newTab")}>
                   {t("repo")}: {repoName(href)}
                 </External>
               </li>
             ))}
             {single.map(({ key, href }) => (
               <li key={key}>
-                <External href={href}>
+                <External href={href} newTab={t("newTab")}>
                   {t(key)}: {new URL(href).host}
                 </External>
               </li>

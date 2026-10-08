@@ -7,7 +7,22 @@
   "featured": true,
   "order": 3,
   "cover": { "type": "image", "src": "/media/gymai/cover", "frame": "none" },
-  "gallery": ["/media/gymai/poster", "/media/gymai/screens-right"],
+  "gallery": [
+    {
+      "src": "/media/gymai/poster",
+      "alt": {
+        "en": "GymAI thesis poster: goal, method and results sections",
+        "tr": "GymAI tez posteri: amaç, yöntem ve sonuç bölümleri"
+      }
+    },
+    {
+      "src": "/media/gymai/screens-right",
+      "alt": {
+        "en": "GymAI screens: fitness chatbot and gym occupancy with appointment booking",
+        "tr": "GymAI ekranları: fitness sohbet botu ve salon yoğunluğu ile randevu oluşturma"
+      }
+    }
+  ],
   "credits": "B.Sc. thesis, Pamukkale University MIS (2025), with Beyzanur Eren; advisor Assoc. Prof. Ömer Güleç",
   "links": {}
 }

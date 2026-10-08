@@ -16,8 +16,8 @@ import { CaseNav } from "@/components/case/CaseNav";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Every case page is complete static output. For a slug that was not prerendered the request waits for the full
-// render instead of streaming into a 200 fallback shell, so `notFound()` below is a real 404 status.
+// Forces the whole route to be prerendered; with cacheComponents this also makes unknown slugs return a real 404
+// (pinned by e2e/case.spec.ts).
 export const ensureStatic = "navigation";
 
 export function generateStaticParams() {
@@ -59,11 +59,11 @@ export default async function CasePage({ params }: Props) {
           {t("fallbackNote")}
         </p>
       )}
-      {/* The <h1> stays above the cover: it is the LCP element, the cover never is on a video case. */}
+      {/* The <h1> stays above the cover and is the LCP element; the cover is never fetched with priority. */}
       <CaseHeader project={project} facetLabels={facetLabels} />
       <div className={HERO_BOX}>
         <ViewTransition name={`cover-${project.slug}`} share="morph" default="none">
-          <MediaCover project={project} kind="hero" facetLabels={facetLabels} priority={project.cover?.type === "image"} />
+          <MediaCover project={project} kind="hero" facetLabels={facetLabels} />
         </ViewTransition>
       </div>
       <div className="mt-12 grid gap-12 md:mt-16 md:grid-cols-12 md:gap-x-6">
@@ -72,7 +72,7 @@ export default async function CasePage({ params }: Props) {
         </article>
         <CaseAside project={project} className="md:col-span-4" />
       </div>
-      {project.gallery && <CaseGallery title={project.title} bases={project.gallery} />}
+      {project.gallery && <CaseGallery items={project.gallery} locale={locale} />}
       <CaseNav prev={all[idx - 1]} next={all[idx + 1]} />
     </main>
   );

@@ -20,7 +20,7 @@ test.describe("/work/[slug]", () => {
     const repos = page.getByRole("link", { name: /repository/i });
     await expect(repos).toHaveCount(4);
     await expect(repos.first()).toHaveAttribute("href", /github\.com\/emindundar\/map_tracking$/);
-    const named = page.getByRole("link", { name: "Repository: map_tracking", exact: true });
+    const named = page.getByRole("link", { name: "Repository: map_tracking (opens in a new tab)", exact: true });
     await expect(named).toHaveAttribute("target", "_blank");
     await expect(named).toHaveAttribute("rel", "noreferrer noopener");
     await page.goto("/en/work/karaoke-sync");
@@ -72,7 +72,10 @@ test.describe("/work/[slug]", () => {
     await expect(page.locator("[data-case-credits]")).toContainText("Pamukkale");
     const gallery = page.locator("[data-case-gallery] img");
     await expect(gallery).toHaveCount(2);
-    await expect(gallery.first()).toHaveAttribute("alt", /— 1$/);
+    await expect(gallery.first()).toHaveAttribute("alt", "GymAI tez posteri: amaç, yöntem ve sonuç bölümleri");
+    await page.goto("/en/work/gymai");
+    await expect(gallery.first()).toHaveAttribute("alt", "GymAI thesis poster: goal, method and results sections");
+    await expect(gallery.last()).toHaveAttribute("alt", "GymAI screens: fitness chatbot and gym occupancy with appointment booking");
     await expect(gallery.first()).toHaveAttribute("loading", "lazy");
   });
 

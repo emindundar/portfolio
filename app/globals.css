@@ -122,6 +122,15 @@
     font-weight: 700;
     color: var(--fg);
   }
+  .prose-brutal pre {
+    margin-block: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
   .prose-brutal :not(pre) > code {
     border: 1px solid var(--line);
     background-color: var(--surface);
