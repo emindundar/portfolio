@@ -14,7 +14,7 @@ describe("imageFor", () => {
   it("keeps real intrinsic size for narrow single-width images", () => {
     expect(imageFor("/media/gymai/cover")).toEqual({
       src: "/media/gymai/cover-640.webp",
-      srcSet: "/media/gymai/cover-640.webp 640w",
+      srcSet: "/media/gymai/cover-640.webp 368w",
       width: 368,
       height: 244,
     });

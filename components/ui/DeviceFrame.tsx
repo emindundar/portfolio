@@ -1,7 +1,7 @@
 export function DeviceFrame({ frame, children }: { frame: "phone" | "browser" | "none"; children: React.ReactNode }) {
   if (frame === "none") {
     return (
-      <div data-frame="none" className="border border-line bg-surface">
+      <div data-frame="none" className="flex justify-center border border-line bg-surface">
         {children}
       </div>
     );

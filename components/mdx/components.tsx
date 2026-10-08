@@ -1,17 +1,9 @@
 import type { ComponentProps } from "react";
+import { Link } from "@/i18n/navigation";
+import { slugify } from "@/lib/slugify";
 import { FlowDiagram } from "@/components/ui/FlowDiagram";
 import { Metrics } from "@/components/ui/Metrics";
 import { DeviceFrame } from "@/components/ui/DeviceFrame";
-
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/ı/g, "i")
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function textOf(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -21,22 +13,33 @@ function textOf(node: React.ReactNode): string {
 }
 
 function A({ href = "", children, ...rest }: ComponentProps<"a">) {
-  const external = /^https?:\/\//.test(href);
+  const cls = "text-accent underline underline-offset-4";
+  const external = /^(https?:)?\/\//.test(href);
+  if (external) {
+    return (
+      <a href={href} className={cls} target="_blank" rel="noreferrer noopener" {...rest}>
+        {children}
+      </a>
+    );
+  }
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={cls}>
+        {children}
+      </Link>
+    );
+  }
   return (
-    <a
-      href={href}
-      className="text-accent underline underline-offset-4"
-      {...(external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
-      {...rest}
-    >
+    <a href={href} className={cls} {...rest}>
       {children}
     </a>
   );
 }
 
 function H2({ children, ...rest }: ComponentProps<"h2">) {
+  const id = slugify(textOf(children));
   return (
-    <h2 id={slugify(textOf(children))} className="mt-12 mb-4 font-display text-2xl md:text-3xl" {...rest}>
+    <h2 id={id || undefined} className="mt-12 mb-4 font-display text-2xl md:text-3xl" {...rest}>
       {children}
     </h2>
   );

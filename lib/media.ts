@@ -16,7 +16,7 @@ export function imageFor(base: string): ImageSource | null {
   const largest = widths[widths.length - 1];
   return {
     src: `${base}-${largest}.webp`,
-    srcSet: widths.map((w) => `${base}-${w}.webp ${w}w`).join(", "),
+    srcSet: widths.map((w) => `${base}-${w}.webp ${Math.min(w, e.width)}w`).join(", "),
     width: e.width,
     height: e.height,
   };

@@ -12,9 +12,10 @@ type Props = {
   height: number;
   alt: string;
   className?: string;
+  priority?: boolean;
 };
 
-export function VideoCover({ mp4, webm, poster, width, height, alt, className }: Props) {
+export function VideoCover({ mp4, webm, poster, width, height, alt, className, priority = false }: Props) {
   const reduced = useReducedMotion();
   const ref = useRef<HTMLVideoElement>(null);
 
@@ -31,7 +32,7 @@ export function VideoCover({ mp4, webm, poster, width, height, alt, className }:
   if (reduced) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- pre-generated static poster
-      <img src={poster} alt={alt} width={width} height={height} loading="lazy" decoding="async" data-video-poster className={className} />
+      <img src={poster} alt={alt} width={width} height={height} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} decoding="async" data-video-poster className={className} />
     );
   }
   return (

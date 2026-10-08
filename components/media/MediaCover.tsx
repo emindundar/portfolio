@@ -28,7 +28,7 @@ export function MediaCover({
     if (!v) return typo;
     return (
       <DeviceFrame frame={c.frame}>
-        <VideoCover {...v} alt={alt} className={cls} />
+        <VideoCover {...v} alt={alt} className={cls} priority={priority} />
       </DeviceFrame>
     );
   }
