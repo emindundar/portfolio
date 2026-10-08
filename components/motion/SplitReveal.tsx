@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useState, type ElementType } from "react";
+import { lazy, Suspense, useCallback, useState, type ElementType } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
 type Tag = "h1" | "h2" | "h3" | "p";
@@ -22,17 +22,24 @@ const Impl = lazy(() =>
 );
 
 export function SplitReveal({ as: Tag = "h1", className, delay = 0, children }: Props) {
-  const [el, setEl] = useState<HTMLElement | null>(null);
+  // The heading and its attach time (wrapper mount) are captured together in the ref callback; the impl's
+  // late-arrival guard is measured from here, not from navigation start.
+  const [mount, setMount] = useState<{ el: HTMLElement; at: number } | null>(null);
+  // Stable identity: an inline callback would be re-invoked (null, then node) on every render and loop.
+  const attach = useCallback(
+    (node: HTMLElement | null) => setMount(node ? { el: node, at: performance.now() } : null),
+    [],
+  );
   const reduced = useReducedMotion();
   const Comp: ElementType = Tag;
   return (
     <>
-      <Comp ref={setEl} className={className}>
+      <Comp ref={attach} className={className}>
         {children}
       </Comp>
-      {!reduced && el && (
+      {!reduced && mount && (
         <Suspense fallback={null}>
-          <Impl el={el} delay={delay} text={children} />
+          <Impl el={mount.el} delay={delay} text={children} mountedAt={mount.at} />
         </Suspense>
       )}
     </>
