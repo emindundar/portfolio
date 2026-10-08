@@ -48,11 +48,12 @@ test.describe("/contact", () => {
     await expect(page.locator('[data-contact-status="success"]')).toBeFocused();
   });
 
-  test("honeypot filled: looks like success, and is invisible and unreachable for people", async ({ page }) => {
+  test("honeypot filled: looks like success even for invalid input, and is invisible to people", async ({ page }) => {
     await open(page);
     const trap = page.locator('input[name="contact_ref"]');
     await expect(trap).not.toBeInViewport();
-    await fill(page);
+    // An invalid e-mail would normally be refused; success proves the bot branch skipped validation.
+    await fill(page, { "E-mail": "not-an-email" });
     await trap.evaluate((el: HTMLInputElement) => { el.value = "Acme Bots Ltd"; });
     await send(page);
     await expect(page.locator('[data-contact-status="success"]')).toBeVisible();
@@ -120,8 +121,9 @@ test.describe("/contact", () => {
   test("home and services CTAs reach the page (no more dead link)", async ({ page }) => {
     for (const from of ["/en", "/en/services"]) {
       await page.goto(from);
-      const res = await page.request.get(await page.locator('main a[href="/en/contact"]').first().getAttribute("href") as string);
-      expect(res.status()).toBe(200);
+      await page.locator('main a[href="/en/contact"]').first().click();
+      await expect(page).toHaveURL(/\/en\/contact$/);
+      await expect(page.getByRole("heading", { level: 1, name: "Contact" })).toBeVisible();
     }
   });
 });

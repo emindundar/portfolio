@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
 import { BUDGETS, HONEYPOT_FIELD, type ContactState } from "@/lib/contact";
 
-const state = vi.hoisted(() => ({ current: { status: "idle" } as ContactState, pending: false }));
+const state = vi.hoisted(() => ({ current: { status: "idle" } as ContactState, pending: false, recover: false }));
 vi.mock("react", async (orig) => ({
   ...(await orig<typeof import("react")>()),
   useActionState: () => [state.current, vi.fn(), state.pending],
@@ -15,8 +15,12 @@ vi.mock("@/app/[locale]/contact/actions", () => ({ sendContact: vi.fn() }));
 vi.mock("@/i18n/navigation", () => ({ Link: "a" }));
 // Stands in for a blocked Cloudflare script: the widget reports itself unavailable as soon as it mounts.
 vi.mock("./Turnstile", () => ({
-  Turnstile: ({ onUnavailable }: { onUnavailable: () => void }) => {
-    useEffect(() => onUnavailable(), [onUnavailable]);
+  Turnstile: ({ onUnavailable, onAvailable }: { onUnavailable: () => void; onAvailable: () => void }) => {
+    useEffect(() => {
+      onUnavailable();
+      // A transient error followed by a successful challenge (the widget's success callback).
+      if (state.recover) onAvailable();
+    }, [onUnavailable, onAvailable]);
     return <div data-turnstile />;
   },
 }));
@@ -87,6 +91,15 @@ describe("ContactForm", () => {
     expect(alert).toHaveTextContent("The bot check did not complete.");
     expect(alert.querySelector("a")).toHaveAttribute("href", LINKEDIN);
     expect(alert.querySelector("a")).toHaveAttribute("rel", "noreferrer noopener");
+  });
+  it("bot check recovers after a transient error: the alert goes away", () => {
+    state.recover = true;
+    try {
+      show({ status: "idle" }, { siteKey: "site-key" });
+      expect(screen.queryByRole("alert")).toBeNull();
+    } finally {
+      state.recover = false;
+    }
   });
   it("success: form replaced by a status message that takes focus", () => {
     const { container } = show({ status: "success" });

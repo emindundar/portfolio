@@ -36,6 +36,7 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
   const alertRef = useRef<HTMLParagraphElement>(null);
   const successRef = useRef<HTMLParagraphElement>(null);
   const onUnavailable = useCallback(() => setBotCheckDown(true), []);
+  const onAvailable = useCallback(() => setBotCheckDown(false), []);
 
   // After each server answer move focus to the result: the success message, the first invalid field,
   // or the alert when no single field is at fault.
@@ -138,7 +139,7 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
       </div>
       <noscript><p className="text-sm text-muted">{t.rich("noScript", { link: linkedin })}</p></noscript>
       <div>
-        {siteKey && <Turnstile siteKey={siteKey} locale={locale} onUnavailable={onUnavailable} />}
+        {siteKey && <Turnstile siteKey={siteKey} locale={locale} onUnavailable={onUnavailable} onAvailable={onAvailable} />}
         <button type="submit" disabled={pending} className={buttonClasses("primary", "cursor-pointer disabled:cursor-wait disabled:opacity-60")}>
           {pending ? t("sending") : t("submit")}
         </button>

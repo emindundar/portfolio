@@ -30,13 +30,13 @@ function loadScript(): Promise<void> {
   return loading;
 }
 
-type Props = { siteKey: string; locale: string; onUnavailable: () => void };
+type Props = { siteKey: string; locale: string; onUnavailable: () => void; onAvailable: () => void };
 
 /**
  * Renders the widget inside the surrounding <form>; Cloudflare adds the hidden `cf-turnstile-response` input itself.
  * A token is single-use: the parent remounts this component after every server answer to get a fresh one.
  */
-export function Turnstile({ siteKey, locale, onUnavailable }: Props) {
+export function Turnstile({ siteKey, locale, onUnavailable, onAvailable }: Props) {
   const host = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,6 +56,8 @@ export function Turnstile({ siteKey, locale, onUnavailable }: Props) {
           // The widget is 0px tall unless Cloudflare needs the visitor to act; only then does it get spacing.
           "before-interactive-callback": () => host.current?.setAttribute("data-interactive", ""),
           "after-interactive-callback": () => host.current?.removeAttribute("data-interactive"),
+          // A token was issued: the widget works, so a transient error must not leave the alert up.
+          callback: () => onAvailable(),
           "error-callback": () => {
             onUnavailable();
             return true; // handled: keeps Cloudflare from logging the same failure to the console
@@ -69,7 +71,7 @@ export function Turnstile({ siteKey, locale, onUnavailable }: Props) {
       cancelled = true;
       if (id && window.turnstile) window.turnstile.remove(id);
     };
-  }, [siteKey, locale, onUnavailable]);
+  }, [siteKey, locale, onUnavailable, onAvailable]);
 
   return <div ref={host} data-turnstile className="data-[interactive]:mb-6" />;
 }
