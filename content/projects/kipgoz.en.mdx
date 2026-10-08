@@ -10,27 +10,27 @@ metrics:
 
 ## Problem
 
-In special education every student has an individualised education programme (IEP, "BEP" in Turkish): development area, long-term goal, short-term objective with a criterion such as 4 out of 5, and dated practice records under each objective. At the institution I work with, that chain lives in Word and Excel templates and on paper. Teachers enter the same information twice, and parents see little of it between meetings.
+In special education every student has an individualised education programme (IEP, "BEP" in Turkish): development area, long-term goal, short-term objective with a criterion such as 4 out of 5, and dated practice records under each objective. At this institution that chain lives in Word and Excel templates and on paper. Teachers enter the same information twice, and parents see little of it between meetings.
 
 ## Role
 
-I work on it alone, from data model to screens. The client is a special-education institution; work is ongoing.
+I work on it alone, from data model to screens. The client is a special-education institution.
 
 ## Architecture
 
 The mobile app is feature-first: every feature has `data`, `domain` and `presentation` folders. State is Riverpod with code generation, entities are freezed classes with JSON serialisation, and navigation is go_router. There are two roles. Teachers get students, sessions, home-programme assignment, IEP progress entry and messages; parents get today's tasks, progress and messages.
 
-Each feature talks to an abstract repository. Today the implementations are mocks fed from one demo dataset, and a single providers file per feature is the point where the real API will be swapped in.
+Each feature talks to an abstract repository. Today the implementations are mocks fed from one demo dataset; one providers file per feature is where the real API gets swapped in.
 
-The backend is a separate repository with three independent layers: Flutter → HTTP/JSON → NestJS → Prisma → PostgreSQL 16 in Docker. So far it is a skeleton: health check, Prisma connection, Swagger docs.
+The backend is a separate repository with three independent layers: Flutter → HTTP/JSON → NestJS → Prisma → PostgreSQL 16 in Docker. It has a health check, the Prisma connection and Swagger docs.
 
 ## Decisions
 
-- Mock repositories behind interfaces first instead of starting with the API, because I wanted the IEP model to settle on real screens before freezing a database schema.
-- NestJS instead of plain Express, because its module, controller and service layout keeps a growing domain in order.
-- Prisma instead of hand-written SQL, because `schema.prisma` is the single source of truth for migrations and typed queries.
-- Docker Compose for PostgreSQL instead of a manual install, because the same file will run on the VPS.
+- Mock repositories behind interfaces instead of starting with the API, because I wanted the IEP model to settle on real screens before freezing a schema.
+- NestJS instead of plain Express, because the student → IEP → goal → record hierarchy maps onto one module per level.
+- Prisma instead of hand-written SQL, because migrations and typed queries are both generated from the one `schema.prisma` file.
+- Docker Compose for PostgreSQL instead of a manual install, because the plan is to run the same file on the VPS.
 
 ## Outcome
 
-The mobile repository has 44 commits and 123 Dart files, and both roles can be walked through end to end on demo data. Authentication and the core schema come next, then the mocks are replaced feature by feature. What I learned: once objectives and records had the right shape, the teacher and parent screens became two views of the same data.
+In progress: the mobile repository has 44 commits and 123 Dart files, and both roles run end to end on demo data. Authentication and the core schema come next, then the mocks are replaced feature by feature. What I learned: once objectives and records had the right shape, the teacher and parent screens became two views of the same data.

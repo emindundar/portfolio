@@ -13,7 +13,7 @@ I built it alone, from the Next.js app to the Docker image.
 
 ## Architecture
 
-The app runs on the Next.js App Router with TypeScript, and every page and API route sits behind sign-in. Audio and LRC lyric files live in Cloudflare R2. When a singer picks a track, one API route checks the session, applies a rate limit, validates the track against the catalogue and returns presigned URLs for the audio and the lyrics. That is the last backend call until the song ends.
+The app runs on the Next.js App Router with TypeScript, and every page and API route sits behind sign-in. Audio and LRC lyric files live in Cloudflare R2. When a singer picks a track, one API route checks the session, applies a rate limit, validates the track against the catalogue and returns presigned URLs for audio and lyrics. That is the last backend call until the song ends.
 
 In the browser, a small LRC parser turns each timestamp into milliseconds and sorts the lines. The stage reads the audio element's clock, picks the active line, and the `LyricsFlow` component scrolls to it. With the microphone on, a Web Audio analyser draws the waveform, and the browser's speech recognition matches sung words against the active line to produce a score.
 
@@ -22,8 +22,8 @@ In the browser, a small LRC parser turns each timestamp into milliseconds and so
 - My own LRC parser instead of a library, because the format is one regular expression and I wanted to control the output, including two- and three-digit fractions.
 - Presigned R2 URLs with a twelve-hour lifetime instead of proxying media through the app, because playback should not depend on my server and the link has to outlive the event.
 - An in-memory rate limiter in the application layer instead of Redis, because the deployment is a single instance.
-- An HTML5 audio element with my own files instead of the YouTube-based player of the first version, because third-party availability caused most of the early failures.
+- An HTML5 audio element with my own files instead of the YouTube-based player of the first version, because the first version depended on third-party players.
 
 ## Outcome
 
-The app is live; the link opens on the sign-in page. Timestamps are parsed to the millisecond, and line changes follow the audio element's time updates, so real precision is that of the browser's clock events. What I learned: writing the rule "no backend calls during playback" first made the storage, auth and rate-limit choices follow.
+The live link opens on a sign-in page; the demo video shows the stage. Timestamps are parsed to the millisecond; the active line follows the audio element's `timeupdate` events, which fire a few times a second. What I learned: writing the rule "no backend calls during playback" first made the storage, auth and rate-limit choices follow.

@@ -14,7 +14,7 @@ metrics:
 
 ## Rol
 
-Veri modelinden ekranlara kadar tek başıma geliştiriyorum. Müşteri bir özel eğitim kurumu; proje devam ediyor.
+Veri modelinden ekranlara kadar tek başıma geliştiriyorum. Müşteri bir özel eğitim kurumu.
 
 ## Mimari
 
@@ -22,15 +22,15 @@ Mobil uygulama feature-first: her özelliğin `data`, `domain` ve `presentation`
 
 Her özellik soyut bir repository ile konuşuyor. Şimdilik implementasyonlar tek bir demo veri setinden beslenen mock'lar; gerçek API'ye geçiş her özellikte tek bir provider dosyasından yapılacak.
 
-Backend ayrı bir repoda ve üç bağımsız katmandan oluşuyor: Flutter → HTTP/JSON → NestJS → Prisma → Docker'da PostgreSQL 16. Şu an iskelet hazır: health check, Prisma bağlantısı ve Swagger dokümanı.
+Backend ayrı bir repoda ve üç bağımsız katmandan oluşuyor: Flutter → HTTP/JSON → NestJS → Prisma → Docker'da PostgreSQL 16. Health check, Prisma bağlantısı ve Swagger dokümanı hazır.
 
 ## Kararlar
 
 - Önce API yazmak yerine arayüzlerin arkasında mock repository; çünkü veritabanı şemasını dondurmadan önce BEP modelinin gerçek ekranlarda oturmasını istedim.
-- Düz Express yerine NestJS; çünkü modül, controller ve service düzeni büyüyen bir domain'i derli toplu tutuyor.
-- Elle SQL yerine Prisma; çünkü migration'lar ve tipli sorgular için tek doğru kaynak `schema.prisma`.
-- PostgreSQL'i elle kurmak yerine Docker Compose; çünkü aynı dosya VPS'te de çalışacak.
+- Düz Express yerine NestJS; çünkü öğrenci → BEP → hedef → kayıt hiyerarşisinin her basamağı bir modüle karşılık geliyor.
+- Elle SQL yerine Prisma; çünkü migration'lar da tipli sorgular da tek bir `schema.prisma` dosyasından üretiliyor.
+- PostgreSQL'i elle kurmak yerine Docker Compose; çünkü plan aynı dosyayı VPS'te de çalıştırmak.
 
 ## Sonuç
 
-Mobil repoda 44 commit ve 123 Dart dosyası var; iki rol de demo verisiyle baştan sona gezilebiliyor. API iskeleti çalışıyor; sırada kimlik doğrulama ve çekirdek şema, ardından mock'ların özellik özellik değiştirilmesi var. Öğrendiğim şey: önce hiyerarşiyi modellemek işe yaradı. Hedef ve kayıt doğru şekle girince öğretmen ve veli ekranları aynı verinin iki görünümüne dönüştü.
+Devam eden iş: mobil repoda 44 commit ve 123 Dart dosyası var; iki rol de demo verisiyle baştan sona gezilebiliyor. Sırada kimlik doğrulama ve çekirdek şema, ardından mock'ların özellik özellik değiştirilmesi var. Öğrendiğim şey: hedef ve kayıt doğru şekle girince öğretmen ve veli ekranları aynı verinin iki görünümüne dönüştü.

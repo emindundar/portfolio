@@ -13,7 +13,7 @@ I built it alone: app, Firestore data model and Cloud Functions.
 
 ## Architecture
 
-The app is Flutter with Riverpod. Sign-in goes through Firebase Auth, and each user has a Firestore document with a role, admin or customer, and an approval flag. Customers wait for admin approval. Every device stores its FCM token in a `devices` subcollection under the user and updates it on refresh.
+The app is Flutter with Riverpod. Sign-in goes through Firebase Auth, and each user has a Firestore document with a role, admin or customer, and an approval flag. Customers cannot sign in until an admin approves them. Every device stores its FCM token in a `devices` subcollection under the user and updates it on refresh.
 
 The upload screen is a WebView that loads the existing web page. Once it loads, the app passes the signed-in user's identity to it with injected JavaScript and listens to Firestore for the files that come back.
 
@@ -28,4 +28,4 @@ Sending happens in Cloud Functions. Callable functions cover three cases: notify
 
 ## Outcome
 
-Admins and customers share one app with different screens, and push reaches one user or a whole role. I have no delivery statistics, so I claim none. What I learned: most of the work in push is token hygiene (register, refresh, clean up), not the send call.
+Admins and customers share one app with different screens, and push reaches one user or a whole role. What I learned: most of the work in push is token hygiene (register, refresh, clean up), not the send call.

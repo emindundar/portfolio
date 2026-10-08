@@ -1,6 +1,6 @@
 ---
-title: Bio-Astral — Astronomi Sunucuda, Biyometri Tek Arayüzün Arkasında
-summary: Doğum haritasını uyku ve stres verisiyle yan yana getiren, erken aşamadaki bir uygulama. Swiss Ephemeris Docker'daki bir Node servisinde çalışıyor; biyometrik verinin kaynağını bir repository arayüzü gizliyor.
+title: Bio-Astral — Doğum Haritası Sunucuda, Biyometri Tek Arayüz Arkasında
+summary: Doğum haritasını uyku ve stres verisiyle yan yana getiren bir uygulama. Swiss Ephemeris Docker'daki bir Node servisinde çalışıyor; biyometrik verinin kaynağını bir repository arayüzü gizliyor.
 ---
 
 ## Problem
@@ -9,7 +9,7 @@ Fikir günlük bir "yaşam radarı": doğum haritasını kullanıcının nasıl 
 
 ## Rol
 
-Flutter istemcisini de backend'i de tek başıma geliştiriyorum. Proje erken aşamada.
+Flutter istemcisini de backend'i de tek başıma geliştiriyorum.
 
 ## Mimari
 
@@ -19,10 +19,10 @@ Backend, Express üzerinde Node 20 ve TypeScript ile yazılmış bir servis; Doc
 
 ## Kararlar
 
-- Haritayı cihazda hesaplamak yerine sunucuda; çünkü native kütüphane ve ephemeris dosyaları uygulama paketine girmiyor, iOS ve Android de tek implementasyonu paylaşıyor.
+- Hesaplamayı cihazda yapmak yerine sunucuya taşımak; çünkü native kütüphane ve ephemeris dosyaları uygulama paketine girmiyor, iOS ve Android de tek implementasyonu paylaşıyor.
 - Yerel kurulum yerine derleme araçları içeren Alpine imajı ve mount edilen volume'un dışında tutulan `node_modules`; çünkü native modül benim bilgisayarımın değil container'ın mimarisine göre derlenmeli.
 - Sağlık SDK'larını arayüzden çağırmak yerine repository arayüzü; çünkü saati olmayan kullanıcı da aynı ekranları farklı bir kaynakla görmeli.
 
 ## Sonuç
 
-Doğum haritası endpoint'i Docker'da çalışıyor. İstemcide arayüz ve manuel giriş yolu hazır; giyilebilir cihaz implementasyonu, sağlık eklentisi bağlanana kadar yer tutucu veri döndürüyor. Hesabı sunucuya taşımanın istemcideki kazancını henüz ölçmedim, o yüzden rakam vermiyorum. Öğrendiğim şey: arayüzü iki veri kaynağı da ortada yokken tanımlamak, önce manuel yolla ilerlememi sağladı.
+Erken aşama: harita endpoint'i Docker'da çalışıyor, arayüz ve manuel giriş yolu hazır, giyilebilir cihaz yolu ise sağlık eklentisi bağlanana kadar bir stub. Öğrendiğim şey: arayüzü iki veri kaynağı da ortada yokken tanımlamak, önce manuel yolla ilerlememi sağladı.

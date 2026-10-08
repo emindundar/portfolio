@@ -1,11 +1,11 @@
 ---
 title: Karaoke Sync — Sesle Aynı Anda Akan Sözler
-summary: Canlı etkinlikler için karaoke web uygulaması. Ses ve LRC sözler Cloudflare R2'den geliyor, satırlar ses saatini izliyor, mikrofon dalga formunu ve kelime eşleşme puanını besliyor.
+summary: Canlı etkinlikler için karaoke web uygulaması. Ses ve LRC sözler Cloudflare R2'den geliyor, satırlar sesin zaman bilgisini izliyor, mikrofon dalga formunu ve kelime eşleşme puanını besliyor.
 ---
 
 ## Problem
 
-Canlı etkinlikteki bir karaoke ekranının üç işi var. Doğru satırı doğru anda göstermeli. Şarkının ortasında ağ ya da sunucu bir dakikalığına aksasa bile çalmaya devam etmeli. Ve ses dosyalarını adresi bilen herkese açmamalı.
+Canlı etkinlikteki bir karaoke ekranının üç işi var. Doğru satırı doğru anda göstermeli. Şarkının ortasında sunucum bir dakikalığına aksasa bile çalmaya devam etmeli. Ve ses dosyalarını adresi bilen herkese açmamalı.
 
 ## Rol
 
@@ -22,8 +22,8 @@ Tarayıcıda küçük bir LRC parser her zaman damgasını milisaniyeye çevirip
 - Hazır kütüphane yerine kendi LRC parser'ım; çünkü format tek bir regex'ten ibaret ve iki ya da üç haneli kesirler dahil çıktının şeklini kendim belirlemek istedim.
 - Medyayı uygulama üzerinden geçirmek yerine on iki saat geçerli presigned R2 URL'leri; çünkü çalma sunucuma bağlı olmamalı ve bağlantı etkinlik boyunca yaşamalı.
 - Redis yerine uygulama katmanında bellek içi rate limiter; çünkü dağıtım tek instance.
-- İlk sürümdeki YouTube tabanlı oynatıcı yerine kendi dosyalarımla HTML5 audio; çünkü ilk dönemdeki hataların çoğu üçüncü taraf servislerin erişilebilirliğinden kaynaklanıyordu.
+- İlk sürümdeki YouTube tabanlı oynatıcı yerine kendi dosyalarımla HTML5 audio; çünkü ilk sürüm üçüncü taraf oynatıcılara bağımlıydı.
 
 ## Sonuç
 
-Uygulama yayında; bağlantı giriş sayfasına açılıyor. Söz zaman damgaları milisaniye hassasiyetinde ayrıştırılıyor, satır geçişleri ise audio elementinin zaman güncellemelerini izliyor; yani fiilî hassasiyet tarayıcının saat olayları kadar. Öğrendiğim şey: "çalma sırasında backend çağrısı yok" kuralını en başta yazınca depolama, kimlik doğrulama ve rate limit kararları kendiliğinden bu kuraldan çıktı.
+Canlı bağlantı giriş sayfasına açılıyor; sahneyi demo videosu gösteriyor. Zaman damgaları milisaniye hassasiyetinde ayrıştırılıyor; aktif satır, audio elementinin saniyede birkaç kez tetiklenen `timeupdate` olaylarını izliyor. Öğrendiğim şey: "çalma sırasında backend çağrısı yok" kuralını en başta yazınca depolama, kimlik doğrulama ve rate limit kararları bu kuraldan çıktı.

@@ -1,6 +1,6 @@
 ---
-title: Bio-Astral — Astronomy on the Server, Biometrics Behind One Interface
-summary: An early-stage app that pairs a natal chart with sleep and stress data. Swiss Ephemeris runs in a Dockerised Node service, and a repository interface hides where the biometrics come from.
+title: Bio-Astral — Natal Charts on the Server, Biometrics Behind One Interface
+summary: An app that pairs a natal chart with sleep and stress data. Swiss Ephemeris runs in a Dockerised Node service, and a repository interface hides where the biometrics come from.
 ---
 
 ## Problem
@@ -9,7 +9,7 @@ The idea is a daily "life radar": a natal chart read next to how the user slept 
 
 ## Role
 
-I work on it alone, on both the Flutter client and the backend. It is at an early stage.
+I work on it alone, on both the Flutter client and the backend.
 
 ## Architecture
 
@@ -25,4 +25,4 @@ On the client, a `BiometricRepository` interface defines four calls: sleep data 
 
 ## Outcome
 
-The natal chart endpoint works in Docker. On the client, the interface and the manual-input path exist; the wearable implementation still returns placeholder data until the health plugin is wired in. I have not profiled the client-side gain from moving the calculation, so I do not quote a number. What I learned: defining the interface before either data source existed let me build against the manual path first.
+Early stage: the chart endpoint runs in Docker, the interface and the manual-input path are in place, and the wearable path is a stub until the health plugin is wired in. What I learned: defining the interface before either data source existed let me build against the manual path first.

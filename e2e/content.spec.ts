@@ -7,5 +7,5 @@ test("home lists projects from the content pipeline in both locales", async ({ p
   await expect(page.getByTestId("project").first()).toContainText("Mobile · Backend");
 
   await page.goto("/tr");
-  await expect(page.getByTestId("project").first()).toContainText("Gerçek Zamanlı");
+  await expect(page.getByTestId("project").first()).toContainText("Saha Rotalama");
 });

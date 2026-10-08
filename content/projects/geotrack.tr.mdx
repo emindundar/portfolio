@@ -1,21 +1,21 @@
 ---
-title: GeoTrack — Gerçek Zamanlı Saha Operasyonları ve Rota
-summary: Saha ekipleri için OpenStreetMap altyapısında konum takibi, adres arama ve rota; canlı kanal için NestJS backend. Google Maps bağımlılığı yok.
+title: GeoTrack — Saha Rotalama ve Canlı Konum Backend'i
+summary: Saha ekipleri için OpenStreetMap altyapısında adres arama, rota ve navigasyon; canlı konum kanalı olan bir NestJS backend. Google Maps bağımlılığı yok.
 ---
 
 ## Problem
 
-Saha ekibinin haritadan beklediği üç şey var: herkesin şu an nerede olduğunu görmek, bir sonraki adrese nasıl gidileceğini bilmek ve o adresi yazarak bulabilmek. Akla ilk gelen çözüm Google Maps SDK; ama istek başına ücret alıyor ve ürünü tek bir sağlayıcıya bağlıyor. Aynı işi OpenStreetMap tabanlı bir yığınla ne kadar ileri götürebileceğimi görmek istedim.
+Sahadaki çalışan adresi yazarak bulmak, oraya rota almak ve navigasyonla gitmek ister. Ofis tarafı ise her çalışanın konumunu canlı taşıyan bir kanala ihtiyaç duyar. Akla ilk gelen çözüm Google Maps SDK; ama istek başına ücret alıyor ve ürünü tek bir sağlayıcıya bağlıyor. Aynı işi OpenStreetMap tabanlı bir yığınla ne kadar ileri götürebileceğimi görmek istedim.
 
 ## Rol
 
-Projeyi tek başıma geliştirdim: Flutter uygulaması, arama ve rota katmanı, backend'in iki sürümü ve ayrı bir admin uygulaması.
+Projeyi tek başıma geliştirdim: Flutter uygulaması, backend'in iki sürümü ve ayrı bir admin uygulaması.
 
 ## Mimari
 
-Mobil tarafta Riverpod üzerinde MVVM var. `MapViewModel` tek bir değişmez `MapState` tutuyor (konum, arama sonuçları, rota, navigasyon modu); ağ işleri `MapService`'te: adres araması için Nominatim, sürüş rotası için kendi barındırdığım OSRM. Harita karoları flutter_map ile OpenStreetMap'ten geliyor, kamera geçişlerini flutter_map_animations yapıyor. Arama girdisi Nominatim'e gitmeden önce debounce ediliyor. Konum stream'i navigasyon başlayınca açılıyor, durunca kapanıyor.
+Mobil tarafta Riverpod üzerinde MVVM var. `MapViewModel` tek bir değişmez `MapState` tutuyor (konum, arama sonuçları, rota, navigasyon modu); ağ işleri `MapService`'te: adres araması için Nominatim, sürüş rotası için kendi barındırdığım OSRM. Harita karoları flutter_map ile OpenStreetMap'ten geliyor. Arama girdisi Nominatim'e gitmeden önce debounce ediliyor. Konum stream'i navigasyon başlayınca açılıyor, durunca kapanıyor.
 
-Backend tek dosyalık bir Express API olarak başladı: JWT, bcrypt, admin ve user rolleri, PostgreSQL. Sonra NestJS ile yeniden yazdım; TypeORM, Swagger ve bir Socket.IO gateway ekledim. Token bağlantı anında doğrulanıyor, her kullanıcının kendi odası var, admin'ler takip ettikleri kullanıcılara abone oluyor. Admin uygulaması ise yalnızca admin hesaplarının giriş yapabildiği ikinci bir Flutter uygulaması.
+Backend tek dosyalık bir Express API olarak başladı: JWT, roller, PostgreSQL. Sonra NestJS ile yeniden yazdım; TypeORM ve bir Socket.IO gateway ekledim. Token bağlantı anında doğrulanıyor, her kullanıcının kendi odası var, admin'ler takip ettikleri kullanıcılara abone oluyor. Admin uygulaması ise yalnızca admin hesaplarının giriş yapabildiği ikinci bir Flutter uygulaması.
 
 ## Kararlar
 
@@ -26,6 +26,6 @@ Backend tek dosyalık bir Express API olarak başladı: JWT, bcrypt, admin ve us
 
 ## Sonuç
 
-Uygulamada arama, rota ve navigasyon modu lisans ücreti olmayan bir harita yığınında çalışıyor. NestJS backend'de canlı kanal, rate limiting ve birim testleri hazır; admin uygulaması takip edilebilir kullanıcıları listeliyor. Sıradaki adım iki istemciyi gateway'e bağlamak. Öğrendiğim şey: ücretsiz harita yığını maliyeti faturadan operasyona taşıyor. OSRM'i ben çalıştırıyorum ve Nominatim'in kullanım politikasına uymam gerekiyor.
+Uygulamada arama, rota ve navigasyon modu lisans ücreti olmayan bir harita yığınında çalışıyor. Admin uygulaması takip edilebilir kullanıcıları listeliyor. Canlı kanal backend'de yazıldı ve test edildi; sırada iki istemciyi bu kanala bağlamak var. Öğrendiğim şey: ücretsiz harita yığını maliyeti faturadan operasyona taşıyor. OSRM'i ben çalıştırıyorum ve Nominatim'in kullanım politikasına uymam gerekiyor.
 
 *Harita verisi © OpenStreetMap katkıcıları*

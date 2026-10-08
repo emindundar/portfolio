@@ -54,10 +54,10 @@ describe("project content cross-references", () => {
   it("order values are 1..7 and unique", () => {
     expect(metas.map((m) => m.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
-  it.each(slugs.flatMap((slug) => [`${slug}.en.mdx`, `${slug}.tr.mdx`]))("%s body is 150-380 words", (file) => {
+  it.each(slugs.flatMap((slug) => [`${slug}.en.mdx`, `${slug}.tr.mdx`]))("%s body is 180-350 words", (file) => {
     const body = readFileSync(join(dir, file), "utf8").replace(/^---[\s\S]*?---/, "").replace(/^## .+$/gm, "");
     const words = body.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
-    expect(words, file).toBeGreaterThanOrEqual(150);
-    expect(words, file).toBeLessThanOrEqual(380);
+    expect(words, file).toBeGreaterThanOrEqual(180);
+    expect(words, file).toBeLessThanOrEqual(350);
   });
 });
