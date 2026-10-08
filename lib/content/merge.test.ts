@@ -10,7 +10,7 @@ const meta = (slug: string, order: number): ProjectMeta => ({
   role: "solo",
   featured: false,
   order,
-  cover: { type: "image", src: `/media/${slug}/cover.webp`, frame: "phone" },
+  cover: { type: "image", src: `/media/${slug}/cover`, frame: "phone" },
   links: {},
 });
 

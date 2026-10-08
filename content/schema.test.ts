@@ -11,7 +11,7 @@ const valid = {
   role: "solo",
   featured: true,
   order: 1,
-  cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" },
+  cover: { type: "image", src: "/media/geotrack/cover", frame: "phone" },
   links: { repo: ["https://github.com/emindundar/map_tracking"] },
 };
 
@@ -40,6 +40,21 @@ describe("projectMetaSchema", () => {
     const r = projectMetaSchema.parse(rest);
     expect(r.featured).toBe(false);
     expect(r.links).toEqual({});
+  });
+  it("accepts a project without cover and with client/credits/live", () => {
+    const rest: Partial<typeof valid> = { ...valid };
+    delete rest.cover;
+    const r = projectMetaSchema.safeParse({ ...rest, client: "x", credits: "y", links: { live: "https://a.b" } });
+    expect(r.success).toBe(true);
+  });
+  it("rejects cover without a known type", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "gif", src: "/media/a/cover", frame: "none" } }).success).toBe(false);
+  });
+  it("requires cover.src to start with /media/", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "cover", frame: "none" } }).success).toBe(false);
+  });
+  it("rejects cover.src with a file extension", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" } }).success).toBe(false);
   });
   it("exposes exactly five facets", () => {
     expect(FACETS).toEqual(["mobile", "web", "backend", "ai", "data-erp"]);

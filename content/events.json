@@ -1,0 +1,5 @@
+[
+  { "slug": "devfest-izmir-24", "date": "2024-12-07", "place": "İzmir", "lat": 38.4514, "lng": 27.1705, "photo": "/media/events/devfest-izmir-24", "en": { "title": "DevFest İzmir '24", "caption": "GDG İzmir — attendee." }, "tr": { "title": "DevFest İzmir '24", "caption": "GDG İzmir — katılımcı." } },
+  { "slug": "gymai-thesis-2025", "date": "2025-06-02", "place": "Denizli", "lat": 37.7380, "lng": 29.1065, "photo": "/media/events/gymai-thesis-2025", "en": { "title": "GymAI thesis poster", "caption": "Pamukkale University MIS — poster session." }, "tr": { "title": "GymAI tez posteri", "caption": "Pamukkale Üniversitesi YBS — poster sunumu." } },
+  { "slug": "devfest-denizli-25", "date": "2025-11-29", "place": "Denizli", "lat": 37.7618, "lng": 29.0528, "photo": "/media/events/devfest-denizli-25", "en": { "title": "DevFest Denizli 2025", "caption": "GDG Denizli — attendee." }, "tr": { "title": "DevFest Denizli 2025", "caption": "GDG Denizli — katılımcı." } }
+]

@@ -11,15 +11,19 @@ export const projectMetaSchema = s.object({
   role: s.enum(["solo", "lead", "contributor"]),
   featured: s.boolean().default(false),
   order: s.number().int(),
-  cover: s.object({
-    type: s.enum(["video", "image"]),
-    src: s.string().min(1),
-    poster: s.string().optional(),
-    frame: s.enum(["phone", "browser", "none"]),
-  }),
+  cover: s
+    .object({
+      type: s.enum(["video", "image"]),
+      src: s.string().regex(/^\/media\/[a-z0-9-]+\/[a-z0-9-]+$/, "cover.src: /media/<slug>/<name> without extension"),
+      frame: s.enum(["phone", "browser", "none"]),
+    })
+    .optional(),
+  client: s.string().max(80).optional(),
+  credits: s.string().max(200).optional(),
   links: s
     .object({
       repo: s.array(s.string().url()).optional(),
+      live: s.string().url().optional(),
       demo: s.string().url().optional(),
       video: s.string().url().optional(),
       store: s.string().url().optional(),

@@ -3,6 +3,7 @@ import type { Locale } from "@/i18n/routing";
 import { mergeProjects, type Project } from "./merge";
 
 export type { Project };
+export { getTimeline, getServices, getEvents } from "./site";
 
 export function getProjects(locale: Locale): Project[] {
   return mergeProjects(projectMeta, projectContent, locale);

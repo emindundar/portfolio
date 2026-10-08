@@ -12,7 +12,9 @@
     "lang": "Language",
     "theme": "Theme",
     "themeDark": "Dark",
-    "themeLight": "Light"
+    "themeLight": "Light",
+    "colophon": "Colophon",
+    "primary": "Primary"
   },
   "Home": {
     "projectsHeading": "Selected work",
@@ -56,5 +58,68 @@
   },
   "Footer": {
     "rights": "Emin Dündar"
+  },
+  "Work": {
+    "title": "Work",
+    "description": "Selected projects across mobile, web, backend, AI and data.",
+    "filterAll": "All",
+    "filterLabel": "Filter by capability",
+    "count": "{count, plural, =0 {no projects} one {# project} other {# projects}}",
+    "empty": "Nothing here yet.",
+    "viewCase": "View case"
+  },
+  "Case": {
+    "role": "Role",
+    "roleSolo": "Solo",
+    "roleLead": "Lead",
+    "roleContributor": "Contributor",
+    "stack": "Stack",
+    "links": "Links",
+    "repo": "Repository",
+    "live": "Live",
+    "demo": "Demo",
+    "store": "Store",
+    "client": "Client",
+    "credits": "Credits",
+    "prev": "Previous",
+    "next": "Next",
+    "backToWork": "All work",
+    "fallbackNote": "This case study is available in English only for now."
+  },
+  "About": {
+    "title": "About",
+    "description": "Who I am, where I've worked, what I've learned.",
+    "intro": "I'm Emin — a Management Information Systems graduate who builds mobile apps, web products and the backends behind them, with a habit of wiring AI into the workflow. Based in Istanbul.",
+    "timelineHeading": "Timeline",
+    "certsHeading": "Certificates",
+    "howHeading": "How I work",
+    "how1": "Spec first. I write the problem down before the code.",
+    "how2": "End to end. The app, the API and the data are one system.",
+    "how3": "AI as a tool, not a shortcut. Every generated line is reviewed and tested.",
+    "how4": "Ship small, measure, iterate.",
+    "eventsHeading": "Community & events",
+    "cvHeading": "CV",
+    "cvDownloadEn": "Download CV (EN)",
+    "cvDownloadTr": "Download CV (TR)"
+  },
+  "Services": {
+    "title": "Services",
+    "description": "What I build for clients.",
+    "intro": "Available for freelance and project work. Four things I do well:",
+    "cta": "Start a project",
+    "seeCase": "See a case"
+  },
+  "Colophon": {
+    "title": "Colophon",
+    "description": "How this site was built.",
+    "p1": "This site is a case study in itself. It was designed as a written spec first, then planned task by task and implemented with Claude Code acting as a subagent team: one agent implements, a fresh one reviews, and I rule on every disagreement.",
+    "p2": "Stack: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, Velite for git-based MDX content, GSAP + Lenis for motion, OGL for the hero shader.",
+    "p3": "Every animation degrades to a static page under reduced motion; motion code loads only after hydration, so the first-load JavaScript stays under 180 KB.",
+    "p4": "Quality gates run on every pull request: unit tests, Playwright end-to-end tests on desktop and mobile, and Lighthouse budgets for performance, accessibility and SEO.",
+    "p5": "The specs, plans and review ledgers are public in the repository.",
+    "p6": "Fonts: Cabinet Grotesk, Satoshi and JetBrains Mono.",
+    "stackHeading": "Stack",
+    "processHeading": "Process",
+    "repo": "Source on GitHub"
   }
 }

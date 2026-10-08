@@ -1,5 +1,6 @@
 import { defineConfig, defineCollection, s } from "velite";
 import { projectMetaSchema } from "./content/schema";
+import { timelineSchema, servicesSchema, eventsSchema } from "./content/schema-site";
 
 const projectMeta = defineCollection({
   name: "ProjectMeta",
@@ -28,6 +29,24 @@ const projectContent = defineCollection({
     }),
 });
 
+const timeline = defineCollection({
+  name: "Timeline",
+  pattern: "timeline.json",
+  schema: timelineSchema,
+});
+
+const services = defineCollection({
+  name: "Service",
+  pattern: "services.json",
+  schema: servicesSchema,
+});
+
+const events = defineCollection({
+  name: "Event",
+  pattern: "events.json",
+  schema: eventsSchema,
+});
+
 export default defineConfig({
   root: "content",
   output: {
@@ -37,5 +56,5 @@ export default defineConfig({
     name: "[name]-[hash:6].[ext]",
     clean: true,
   },
-  collections: { projectMeta, projectContent },
+  collections: { projectMeta, projectContent, timeline, services, events },
 });
