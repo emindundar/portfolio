@@ -92,7 +92,9 @@
     "video": "Video",
     "videoPause": "Pause video",
     "videoPlay": "Play video",
-    "metrics": "Metrics",
+    "metrics": "Metrics"
+  },
+  "Common": {
     "newTab": "opens in a new tab"
   },
   "About": {

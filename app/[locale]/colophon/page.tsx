@@ -31,7 +31,7 @@ export default async function ColophonPage({ params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Colophon" });
-  const tc = await getTranslations({ locale, namespace: "Case" });
+  const tc = await getTranslations({ locale, namespace: "Common" });
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
       <h1 className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-none">{t("title")}</h1>

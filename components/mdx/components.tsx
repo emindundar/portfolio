@@ -15,7 +15,7 @@ function textOf(node: React.ReactNode): string {
 
 function A({ href = "", children, ...rest }: ComponentProps<"a">) {
   const cls = "text-accent underline underline-offset-4";
-  const t = useTranslations("Case");
+  const t = useTranslations("Common");
   const external = /^(https?:)?\/\//.test(href);
   if (external) {
     return (

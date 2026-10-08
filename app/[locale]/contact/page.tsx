@@ -29,7 +29,7 @@ export default async function ContactPage({ params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Contact" });
-  const tc = await getTranslations({ locale, namespace: "Case" });
+  const tc = await getTranslations({ locale, namespace: "Common" });
   const links = [
     { href: LINKEDIN_URL, label: "LinkedIn" },
     { href: GITHUB_URL, label: "GitHub" },

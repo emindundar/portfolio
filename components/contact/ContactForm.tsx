@@ -24,7 +24,7 @@ type Props = { locale: string; siteKey: string; linkedinUrl: string; budgets: re
 
 export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotField }: Props) {
   const t = useTranslations("Contact");
-  const tc = useTranslations("Case");
+  const tc = useTranslations("Common");
   const [state, action, pending] = useActionState<ContactState, FormData>(sendContact, INITIAL);
   // Every server answer is a new state object. Counting them during render (not in an effect) gives the
   // form a new key per answer: it remounts, so defaultValue shows what the server sent back and the

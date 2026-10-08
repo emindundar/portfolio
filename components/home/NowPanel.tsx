@@ -6,7 +6,7 @@ import { getNowStats } from "@/lib/now";
 
 export async function NowPanel({ locale }: { locale: Locale }) {
   const t = await getTranslations("Now");
-  const tc = await getTranslations("Case");
+  const tc = await getTranslations("Common");
   const now = getNow(locale);
   const stats = await getNowStats();
   return (

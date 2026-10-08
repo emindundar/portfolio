@@ -11,12 +11,26 @@ pnpm lint && pnpm typecheck && pnpm test
 pnpm build && pnpm e2e && pnpm lhci
 
 ## Pages
-`/` home, `/work` (filterable list), `/work/[slug]` case studies, `/about`, `/services`, `/colophon`, `/[locale]/cv` (redirect to the PDF). All under `/en` and `/tr`.
+`/` home, `/work` (filterable list), `/work/[slug]` case studies, `/about`, `/services`, `/contact`, `/colophon`, `/[locale]/cv` (redirect to the PDF). All under `/en` and `/tr`.
 
 ## Add a project
 1. `content/projects/<slug>.meta.json`: `slug`, `facets` (1-3 from `content/facet-list.ts`), `stack`, `year`, `role`, `order`, optional `featured`, `cover`, `gallery`, `client` and `credits` (both `{ "en": …, "tr": … }`), `links`. Schema: `content/schema.ts`.
 2. `content/projects/<slug>.en.mdx` and `<slug>.tr.mdx`, each with the five fixed `##` headings, 180-350 words, one `<FlowDiagram label="…" steps={[…]} />` (3-6 steps) in the Architecture/Mimari section, claims verifiable in the repo.
 3. Optional media in `media-src/<slug>/`, then `pnpm media` (writes `public/media/` and `lib/media-manifest.json`). Blur or crop e-mails, QR codes and third-party faces in the source.
 4. `pnpm test` (content integrity test) and `pnpm build`.
+
+## Configuration
+
+All variables are optional. Copy `.env.example` to `.env.local`.
+
+| Variable | Used by | Without it |
+|---|---|---|
+| `RESEND_API_KEY`, `CONTACT_TO` | contact form mail | form answers "not available", points to LinkedIn |
+| `CONTACT_FROM` | sender address | `Portfolio <onboarding@resend.dev>` |
+| `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | bot check | form answers "not available" |
+| `CONTACT_DRY_RUN=1` | local work and e2e | — (ignored when `VERCEL_ENV=production`) |
+| `NEXT_PUBLIC_UMAMI_ID` | analytics | no analytics script |
+
+The home page "now" panel reads `content/now.json` (edit the text and the `updated` date by hand) and, once an hour, two unauthenticated GitHub API endpoints. If GitHub does not answer, only the hand-written line is shown.
 
 Design specs and plans live in `docs/superpowers/`.

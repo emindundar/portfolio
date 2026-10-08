@@ -92,7 +92,9 @@
     "video": "Video",
     "videoPause": "Videoyu duraklat",
     "videoPlay": "Videoyu oynat",
-    "metrics": "Rakamlar",
+    "metrics": "Rakamlar"
+  },
+  "Common": {
     "newTab": "yeni sekmede açılır"
   },
   "About": {

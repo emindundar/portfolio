@@ -10,7 +10,7 @@ const linkClass = "inline-flex min-h-11 items-center hover:text-fg";
 export async function Footer() {
   const t = await getTranslations("Footer");
   const tn = await getTranslations("Nav");
-  const tc = await getTranslations("Case");
+  const tc = await getTranslations("Common");
   const externals = [
     { href: GITHUB_URL, label: "GitHub" },
     { href: LINKEDIN_URL, label: "LinkedIn" },
