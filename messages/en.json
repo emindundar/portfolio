@@ -169,7 +169,7 @@
     "fieldInvalid": "This does not look right.",
     "elsewhere": "Elsewhere",
     "noScript": "The bot check needs JavaScript. Without it, please reach me on <link>LinkedIn</link>.",
-    "privacy": "Your name, e-mail and message are sent to my inbox through Resend and used only to reply. Cloudflare Turnstile checks that you are not a bot and sees your IP address. No cookies, nothing is stored on this site."
+    "privacy": "Your name, e-mail and message are sent to my inbox through Resend and used only to reply. Cloudflare Turnstile checks that you are not a bot and sees your IP address. No tracking cookies; the site keeps no copy of your message. The only thing stored in your browser is your theme choice."
   },
   "Now": {
     "heading": "Now",

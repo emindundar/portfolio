@@ -169,7 +169,7 @@
     "fieldInvalid": "Bu değer geçerli görünmüyor.",
     "elsewhere": "Diğer kanallar",
     "noScript": "Bot doğrulaması JavaScript gerektirir. JavaScript kapalıysa lütfen bana <link>LinkedIn'den</link> ulaşın.",
-    "privacy": "Adınız, e-posta adresiniz ve mesajınız Resend aracılığıyla gelen kutuma iletilir ve yalnızca size yanıt vermek için kullanılır. Cloudflare Turnstile bot olmadığınızı doğrular ve IP adresinizi görür. Çerez kullanılmaz, bu sitede hiçbir veri saklanmaz."
+    "privacy": "Adınız, e-posta adresiniz ve mesajınız Resend aracılığıyla gelen kutuma iletilir ve yalnızca size yanıt vermek için kullanılır. Cloudflare Turnstile bot olmadığınızı doğrular ve IP adresinizi görür. İzleme çerezi kullanılmaz; mesajınızın kopyası bu sitede tutulmaz. Tarayıcınızda yalnızca tema tercihiniz saklanır."
   },
   "Now": {
     "heading": "Şu an",

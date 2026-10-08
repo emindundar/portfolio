@@ -38,7 +38,7 @@ All variables are optional. Copy `.env.example` to `.env.local`.
 - After configuring, send one message on the production URL and check that it arrives with the visitor as reply-to. On failure search the Vercel logs for `contact:`; the line carries the missing variable, the Cloudflare error code or the provider's HTTP status (never visitor data).
 - Limits: 5 messages per hour per client (IPv4 address or IPv6 /64) and 30 per hour in total, per server instance.
 
-Data flows: a submitted name, e-mail address and message are sent as an e-mail through Resend and stored nowhere else; Cloudflare Turnstile runs the bot check and receives the visitor's IP address. The form says so under the submit button. Analytics, when enabled, is Umami Cloud: no cookies, no personal data, Do Not Track respected, so there is no consent banner.
+Data flows: a submitted name, e-mail address and message are sent as an e-mail through Resend and stored nowhere else; Cloudflare Turnstile runs the bot check and receives the visitor's IP address. The form says so under the submit button. The site itself sets one first-party cookie, `theme`, when the theme toggle is used. Analytics, when enabled, is Umami Cloud: no cookies, no personal data, Do Not Track respected, so there is no consent banner.
 
 The home page "now" panel reads `content/now.json` (edit the text and the `updated` date by hand) and, once an hour, two unauthenticated GitHub API endpoints. If GitHub does not answer, only the hand-written line is shown.
 

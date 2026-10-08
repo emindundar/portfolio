@@ -61,7 +61,7 @@ describe("ContactForm", () => {
     const note = container.querySelector("[data-contact-privacy]")!;
     expect(note).toHaveTextContent(/through Resend and used only to reply/);
     expect(note).toHaveTextContent(/Cloudflare Turnstile .* sees your IP address/);
-    expect(note).toHaveTextContent(/No cookies/);
+    expect(note).toHaveTextContent(/No tracking cookies/);
     const button = screen.getByRole("button", { name: "Send message" });
     expect(button.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.querySelector("form")).toContainElement(note as HTMLElement);
