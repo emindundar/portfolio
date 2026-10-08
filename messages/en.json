@@ -150,7 +150,7 @@
     "budget1k5k": "$1,000 – $5,000",
     "budget5k15k": "$5,000 – $15,000",
     "budgetGt15k": "Over $15,000",
-    "company": "Company (leave this empty)",
+    "trap": "Leave this field empty",
     "submit": "Send message",
     "sending": "Sending…",
     "success": "Message sent. I will reply to the address you gave.",

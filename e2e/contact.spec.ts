@@ -50,7 +50,7 @@ test.describe("/contact", () => {
 
   test("honeypot filled: looks like success, and is invisible and unreachable for people", async ({ page }) => {
     await open(page);
-    const trap = page.locator('input[name="company"]');
+    const trap = page.locator('input[name="contact_ref"]');
     await expect(trap).not.toBeInViewport();
     await fill(page);
     await trap.evaluate((el: HTMLInputElement) => { el.value = "Acme Bots Ltd"; });

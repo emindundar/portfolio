@@ -150,7 +150,7 @@
     "budget1k5k": "1.000 – 5.000 $",
     "budget5k15k": "5.000 – 15.000 $",
     "budgetGt15k": "15.000 $ üzeri",
-    "company": "Şirket (bu alanı boş bırakın)",
+    "trap": "Bu alanı boş bırakın",
     "submit": "Mesajı gönder",
     "sending": "Gönderiliyor…",
     "success": "Mesajınız gönderildi. Verdiğiniz adrese dönüş yapacağım.",

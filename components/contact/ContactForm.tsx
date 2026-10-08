@@ -104,8 +104,8 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
       )}
       <input type="hidden" name="locale" value={locale} />
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
-        <label htmlFor="contact-company">{t("company")}</label>
-        <input id="contact-company" name={honeypotField} type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+        <label htmlFor="contact-trap">{t("trap")}</label>
+        <input id="contact-trap" name={honeypotField} type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div>

@@ -1,14 +1,14 @@
 import { describe, it, expect, vi } from "vitest";
 import {
-  BUDGETS, buildEmail, createRateLimiter, createResendSender, createTurnstileVerifier,
+  HONEYPOT_FIELD, UNKNOWN_IP, buildEmail, createRateLimiter, createResendSender, createTurnstileVerifier,
   parseContact, submitContact, type ContactDeps,
 } from "./contact";
 
-function form(over: Record<string, string> = {}): FormData {
+function form(over: Record<string, string | File> = {}): FormData {
   const f = new FormData();
   const base = {
     name: "Ada Lovelace", email: "ada@example.com", message: "I would like to talk about a project.",
-    budget: "", locale: "en", company: "", "cf-turnstile-response": "tok",
+    budget: "", locale: "en", contact_ref: "", "cf-turnstile-response": "tok",
   };
   for (const [k, v] of Object.entries({ ...base, ...over })) f.set(k, v);
   return f;
@@ -52,7 +52,37 @@ describe("parseContact", () => {
     const r = parseContact(form({ locale: "xx" }));
     expect(r.ok && r.data.locale).toBe("en");
   });
-  it("exposes four budgets", () => expect(BUDGETS).toHaveLength(4));
+  it("uses an autofill-safe honeypot name", () => expect(HONEYPOT_FIELD).toBe("contact_ref"));
+  it.each(["name", "email", "message"] as const)("a File in %s → required, no throw", (field) => {
+    const r = parseContact(form({ [field]: new File(["x"], "a.txt") }));
+    expect(!r.ok && r.fieldErrors[field]).toBe("required");
+  });
+  it("whitespace-only message → required", () => {
+    const r = parseContact(form({ message: "   \n\t  " }));
+    expect(!r.ok && r.fieldErrors.message).toBe("required");
+  });
+  it("accepts boundary lengths: name 2 and 80, message 10 and 2000, e-mail 254", () => {
+    const email254 = `${"a".repeat(64)}@${"b".repeat(63)}.${"c".repeat(63)}.${"d".repeat(57)}.com`;
+    expect(email254).toHaveLength(254);
+    for (const over of <Record<string, string>[]>[{ name: "Ad" }, { name: "x".repeat(80) }, { message: "x".repeat(10) }, { message: "x".repeat(2000) }, { email: email254 }]) {
+      expect(parseContact(form(over)).ok).toBe(true);
+    }
+    const r = parseContact(form({ email: `a${email254}` }));
+    expect(!r.ok && r.fieldErrors.email).toBeDefined();
+  });
+  it("a budget with surrounding spaces → invalid", () => {
+    const r = parseContact(form({ budget: " 1k-5k " }));
+    expect(!r.ok && r.fieldErrors.budget).toBe("invalid");
+  });
+  it.each(["\u0085", "\u2028", "\u2029"])("line separator %j in the name → invalid", (sep) => {
+    const r = parseContact(form({ name: `Ada${sep}Bcc` }));
+    expect(!r.ok && r.fieldErrors.name).toBe("invalid");
+  });
+  it("pre-guard: over 5000 chars → tooLong, values truncated to 5000", () => {
+    const r = parseContact(form({ name: "x".repeat(6000), email: "y".repeat(5001), message: "z".repeat(9000) }));
+    expect(!r.ok && r.fieldErrors).toEqual({ name: "tooLong", email: "tooLong", message: "tooLong" });
+    expect(!r.ok && [r.values.name.length, r.values.email.length, r.values.message.length]).toEqual([5000, 5000, 5000]);
+  });
 });
 
 describe("createRateLimiter", () => {
@@ -71,7 +101,20 @@ describe("createRateLimiter", () => {
     const l = createRateLimiter(1, 1000);
     for (let i = 0; i < 50; i++) l.hit(`k${i}`, 0);
     l.hit("late", 5000);
-    expect(l.size()).toBe(1);
+    expect(l.size(5000)).toBe(1);
+  });
+  it("size() sweeps expired keys itself, even if no hit happens afterwards", () => {
+    const l = createRateLimiter(1, 1000);
+    for (let i = 0; i < 10_000; i++) l.hit(`k${i}`, 0);
+    expect(l.size(999)).toBe(10_000);
+    expect(l.size(1000)).toBe(0);
+    expect(l.hit("fresh", 1000)).toBe(true);
+    expect(l.size(1000)).toBe(1);
+  });
+  it("an expired caller is allowed again without waiting for a sweep", () => {
+    const l = createRateLimiter(1, 1000);
+    expect(l.hit("a", 0)).toBe(true);
+    expect(l.hit("a", 1000)).toBe(true);
   });
 });
 
@@ -100,6 +143,17 @@ describe("createTurnstileVerifier", () => {
     expect(url).toBe("https://challenges.cloudflare.com/turnstile/v0/siteverify");
     const body = init.body as URLSearchParams;
     expect([body.get("secret"), body.get("response"), body.get("remoteip")]).toEqual(["sec", "tok", "1.2.3.4"]);
+  });
+  it("omits remoteip for an unknown client address", async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify({ success: true })));
+    await createTurnstileVerifier("sec", f as unknown as typeof fetch)("tok", UNKNOWN_IP);
+    const body = (f.mock.calls[0] as unknown as [string, RequestInit])[1].body as URLSearchParams;
+    expect(body.has("remoteip")).toBe(false);
+  });
+  it("rejects a token over 2048 characters without a network call", async () => {
+    const f = vi.fn();
+    expect(await createTurnstileVerifier("sec", f as unknown as typeof fetch)("t".repeat(2049), "1.2.3.4")).toBe(false);
+    expect(f).not.toHaveBeenCalled();
   });
   it("is false for an empty token without calling the network", async () => {
     const f = vi.fn();
@@ -144,10 +198,10 @@ describe("submitContact", () => {
   });
   it("honeypot filled → silent success, nothing verified or sent, no rate-limit slot used", async () => {
     const d = deps();
-    expect(await submitContact(form({ company: "Acme" }), d)).toEqual({ status: "success" });
+    expect(await submitContact(form({ contact_ref: "Acme" }), d)).toEqual({ status: "success" });
     expect(d.verifyToken).not.toHaveBeenCalled();
     expect(d.send).not.toHaveBeenCalled();
-    expect(d.limiter.size()).toBe(0);
+    expect(d.limiter.size(d.now())).toBe(0);
   });
   it("invalid fields → error with field codes and values; no network", async () => {
     const d = deps();
@@ -180,8 +234,65 @@ describe("submitContact", () => {
     if (key === "verifyToken") expect(d.send).not.toHaveBeenCalled();
   });
   it("dry run: validates and rate-limits but never verifies or sends", async () => {
-    const d = deps({ dryRun: true, verifyToken: null, send: null });
+    const verifyToken = vi.fn(async () => true);
+    const send = vi.fn(async () => true);
+    const d = deps({ dryRun: true, verifyToken, send });
     expect(await submitContact(form({ "cf-turnstile-response": "" }), d)).toEqual({ status: "success" });
+    expect(verifyToken).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
+    expect(d.limiter.size(d.now())).toBe(1);
     expect((await submitContact(form({ name: "" }), d)).status).toBe("error");
+    for (let i = 0; i < 4; i++) expect((await submitContact(form(), d)).status).toBe("success");
+    expect(await submitContact(form(), d)).toMatchObject({ status: "error", code: "rate" });
+    expect(verifyToken).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
+  });
+  it("non-dry-run twin: verifier and sender are called, and the sixth call is rate limited", async () => {
+    const d = deps();
+    for (let i = 0; i < 5; i++) await submitContact(form(), d);
+    expect(d.verifyToken).toHaveBeenCalledTimes(5);
+    expect(d.send).toHaveBeenCalledTimes(5);
+    expect(d.limiter.size(d.now())).toBe(1);
+    expect(await submitContact(form(), d)).toMatchObject({ code: "rate" });
+  });
+  it("six invalid submissions do not consume rate slots", async () => {
+    const d = deps();
+    for (let i = 0; i < 6; i++) expect(await submitContact(form({ email: "x" }), d)).toMatchObject({ code: "invalid" });
+    expect(await submitContact(form(), d)).toEqual({ status: "success" });
+  });
+  it("whitespace-only and File honeypots are bots → silent success", async () => {
+    for (const trap of ["   ", new File(["x"], "a.txt")]) {
+      const d = deps();
+      expect(await submitContact(form({ contact_ref: trap }), d)).toEqual({ status: "success" });
+      expect(d.verifyToken).not.toHaveBeenCalled();
+      expect(d.send).not.toHaveBeenCalled();
+    }
+  });
+  it("unknown client address outside dry run → unavailable, logged, nothing verified or sent", async () => {
+    const d = deps({ ip: UNKNOWN_IP });
+    expect(await submitContact(form(), d)).toMatchObject({ status: "error", code: "unavailable" });
+    expect(d.log).toHaveBeenCalledWith("contact: client address unavailable");
+    expect(d.verifyToken).not.toHaveBeenCalled();
+    expect(d.send).not.toHaveBeenCalled();
+    expect(d.limiter.size(d.now())).toBe(0);
+  });
+  it("unknown client address in dry run is fine", async () => {
+    expect(await submitContact(form(), deps({ ip: UNKNOWN_IP, dryRun: true }))).toEqual({ status: "success" });
+  });
+  it("later errors return the raw typed values, not trimmed ones", async () => {
+    const d = deps({ verifyToken: vi.fn(async () => false) });
+    const r = await submitContact(form({ name: "  Ada  ", message: "  a long enough message  " }), d);
+    expect(r).toMatchObject({ code: "turnstile", values: { name: "  Ada  ", message: "  a long enough message  " } });
+  });
+  it("logs never contain the name, e-mail or message", async () => {
+    for (const d of [deps({ send: vi.fn(async () => false) }), deps({ verifyToken: vi.fn(async () => false) })]) {
+      await submitContact(form(), d);
+      const logs = (d.log as ReturnType<typeof vi.fn>).mock.calls.map((c) => String(c[0])).join("\n");
+      expect(logs.length).toBeGreaterThan(0);
+      for (const secret of ["Ada", "ada@example.com", "I would like to talk"]) expect(logs).not.toContain(secret);
+    }
+    const t = deps({ verifyToken: vi.fn(async () => false) });
+    await submitContact(form(), t);
+    expect(t.log).toHaveBeenCalledWith("contact: turnstile rejected");
   });
 });

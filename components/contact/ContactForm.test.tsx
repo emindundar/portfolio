@@ -43,7 +43,7 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText("E-mail")).toHaveAttribute("type", "email");
     expect(screen.getByLabelText("Message")).toHaveAttribute("maxlength", "2000");
     expect(screen.getByLabelText("Message")).toHaveAttribute("aria-describedby", "contact-message-hint");
-    const trap = container.querySelector('input[name="company"]')!;
+    const trap = container.querySelector('input[name="contact_ref"]')!;
     expect(trap).toHaveAttribute("tabindex", "-1");
     expect(trap).toHaveAttribute("autocomplete", "off");
     expect(trap.closest("[aria-hidden='true']")).not.toBeNull();

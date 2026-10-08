@@ -12,7 +12,7 @@ export type ContactState =
   | { status: "error"; code: ContactErrorCode; fieldErrors?: Partial<Record<ContactField, FieldError>>; values: ContactValues };
 export type ContactData = { name: string; email: string; message: string; budget?: Budget; locale: "en" | "tr" };
 export type Email = { subject: string; text: string; replyTo: string };
-export type RateLimiter = { hit(key: string, now: number): boolean; size(): number };
+export type RateLimiter = { hit(key: string, now: number): boolean; size(now: number): number };
 export type ContactDeps = {
   ip: string;
   now: () => number;
@@ -23,10 +23,14 @@ export type ContactDeps = {
   log: (message: string) => void;
 };
 
-export const HONEYPOT_FIELD = "company";
+// Not "company": browsers autofill that, and a real visitor would trip the trap.
+export const HONEYPOT_FIELD = "contact_ref";
+export const UNKNOWN_IP = "unknown";
+const MAX_RAW = 5000;
+const MAX_TOKEN = 2048;
 export const TOKEN_FIELD = "cf-turnstile-response";
 
-const NO_LINE_BREAK = /^[^\r\n]*$/;
+const NO_LINE_BREAK = /^[^\r\n\u0085\u2028\u2029]*$/;
 // zod issue messages carry our own FieldError codes, so the UI never shows zod's English text.
 const schema = z.object({
   name: z.string().trim().min(1, "required").min(2, "tooShort").max(80, "tooLong").regex(NO_LINE_BREAK, "invalid"),
@@ -40,18 +44,35 @@ const text = (form: FormData, key: string) => {
   return typeof v === "string" ? v : "";
 };
 
+const GUARDED = ["name", "email", "message"] as const;
+
+/** What the visitor typed, untouched (capped at MAX_RAW), for refilling the form. */
+export function typedValues(form: FormData): ContactValues {
+  const cap = (v: string) => v.slice(0, MAX_RAW);
+  return { name: cap(text(form, "name")), email: cap(text(form, "email")), message: cap(text(form, "message")), budget: text(form, "budget") };
+}
+
 export function parseContact(form: FormData):
   | { ok: true; data: ContactData }
   | { ok: false; fieldErrors: Partial<Record<ContactField, FieldError>>; values: ContactValues } {
-  const values: ContactValues = { name: text(form, "name"), email: text(form, "email"), message: text(form, "message"), budget: text(form, "budget") };
-  const parsed = schema.safeParse({ ...values, budget: values.budget === "" ? undefined : values.budget });
-  if (!parsed.success) {
+  const values = typedValues(form);
+  // Pre-guard: never run zod (trim/regex/email) over a huge string.
+  const tooLong = GUARDED.filter((f) => text(form, f).length > MAX_RAW);
+  const parsed = schema.safeParse({
+    ...values,
+    ...Object.fromEntries(tooLong.map((f) => [f, ""])),
+    budget: values.budget === "" ? undefined : values.budget,
+  });
+  if (!parsed.success || tooLong.length) {
     const fieldErrors: Partial<Record<ContactField, FieldError>> = {};
-    for (const issue of parsed.error.issues) {
-      const field = issue.path[0] as ContactField;
-      // First issue per field wins: "required" before "tooShort".
-      fieldErrors[field] ??= issue.message as FieldError;
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as ContactField;
+        // First issue per field wins: "required" before "tooShort".
+        fieldErrors[field] ??= issue.message as FieldError;
+      }
     }
+    for (const f of tooLong) fieldErrors[f] = "tooLong";
     return { ok: false, fieldErrors, values };
   }
   return { ok: true, data: { ...parsed.data, locale: text(form, "locale") === "tr" ? "tr" : "en" } };
@@ -59,20 +80,32 @@ export function parseContact(form: FormData):
 
 export function createRateLimiter(max: number, windowMs: number): RateLimiter {
   const hits = new Map<string, number[]>();
+  let nextSweep = 0;
+  const sweep = (now: number) => {
+    for (const [k, times] of hits) {
+      const live = times.filter((t) => now - t < windowMs);
+      if (live.length) hits.set(k, live);
+      else hits.delete(k);
+    }
+    nextSweep = now + windowMs;
+  };
   return {
     hit(key, now) {
-      // Sweep expired keys on every call; the map only ever holds IPs seen within one window.
-      for (const [k, times] of hits) {
-        const live = times.filter((t) => now - t < windowMs);
-        if (live.length) hits.set(k, live);
-        else hits.delete(k);
+      // Full sweep at most once per window; otherwise only the caller's own entries are filtered.
+      if (now >= nextSweep) sweep(now);
+      const mine = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+      if (mine.length >= max) {
+        hits.set(key, mine);
+        return false;
       }
-      const mine = hits.get(key) ?? [];
-      if (mine.length >= max) return false;
-      hits.set(key, [...mine, now]);
+      mine.push(now);
+      hits.set(key, mine);
       return true;
     },
-    size: () => hits.size,
+    size(now) {
+      sweep(now);
+      return hits.size;
+    },
   };
 }
 
@@ -85,11 +118,11 @@ export function buildEmail(data: Omit<ContactData, "locale"> & { locale: string 
 
 export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch) {
   return async (token: string, ip: string): Promise<boolean> => {
-    if (!token) return false;
+    if (!token || token.length > MAX_TOKEN) return false;
     try {
       const res = await fetchImpl("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
         method: "POST",
-        body: new URLSearchParams({ secret, response: token, remoteip: ip }),
+        body: new URLSearchParams({ secret, response: token, ...(ip === UNKNOWN_IP ? {} : { remoteip: ip }) }),
         signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) return false;
@@ -119,17 +152,25 @@ export function createResendSender(cfg: { apiKey: string; from: string; to: stri
 
 export async function submitContact(form: FormData, deps: ContactDeps): Promise<ContactState> {
   // 1. Honeypot: bots get a success they cannot distinguish from a real one.
-  if (text(form, HONEYPOT_FIELD) !== "") return { status: "success" };
+  // Any non-empty value (even whitespace or a File) marks a bot.
+  const trap = form.get(HONEYPOT_FIELD);
+  if (trap !== null && trap !== "") return { status: "success" };
 
   // 2. Validation first: a typo must not cost the visitor a rate-limit slot or a bot-check token.
   const parsed = parseContact(form);
   if (!parsed.ok) return { status: "error", code: "invalid", fieldErrors: parsed.fieldErrors, values: parsed.values };
-  const values: ContactValues = { name: parsed.data.name, email: parsed.data.email, message: parsed.data.message, budget: parsed.data.budget ?? "" };
+  const values = typedValues(form);
   const fail = (code: ContactErrorCode): ContactState => ({ status: "error", code, values });
 
   // 3. Fail closed when the deployment is not configured.
   if (!deps.dryRun && (!deps.verifyToken || !deps.send)) {
     deps.log("contact: not configured (missing Turnstile secret or mail settings)");
+    return fail("unavailable");
+  }
+
+  // Without a client address one bucket would be shared by everyone (or none): fail closed.
+  if (!deps.dryRun && deps.ip === UNKNOWN_IP) {
+    deps.log("contact: client address unavailable");
     return fail("unavailable");
   }
 
@@ -142,7 +183,10 @@ export async function submitContact(form: FormData, deps: ContactDeps): Promise<
   }
 
   // 5. Bot check, 6. send.
-  if (!(await deps.verifyToken!(text(form, TOKEN_FIELD), deps.ip))) return fail("turnstile");
+  if (!(await deps.verifyToken!(text(form, TOKEN_FIELD), deps.ip))) {
+    deps.log("contact: turnstile rejected");
+    return fail("turnstile");
+  }
   if (!(await deps.send!(buildEmail(parsed.data)))) {
     deps.log("contact: mail provider rejected the message");
     return fail("send");
