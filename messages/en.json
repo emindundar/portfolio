@@ -166,5 +166,12 @@
     "fieldInvalid": "This does not look right.",
     "elsewhere": "Elsewhere",
     "noScript": "The bot check needs JavaScript. Without it, please reach me on <link>LinkedIn</link>."
+  },
+  "Now": {
+    "heading": "Now",
+    "updated": "Updated",
+    "lastPush": "Last push",
+    "commits": "{count, plural, =0 {No public commits} one {# public commit} other {# public commits}} in the last 30 days",
+    "source": "Live from GitHub"
   }
 }

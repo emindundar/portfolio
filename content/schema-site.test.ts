@@ -1,7 +1,7 @@
 // @vitest-environment node
 // velite imports esbuild, which fails its TextEncoder invariant under jsdom.
 import { describe, it, expect } from "vitest";
-import { timelineSchema, servicesSchema, eventsSchema } from "./schema-site";
+import { timelineSchema, servicesSchema, eventsSchema, nowSchema } from "./schema-site";
 
 describe("site schemas", () => {
   it("timeline entry needs kind, from, en/tr titles", () => {
@@ -50,5 +50,15 @@ describe("site schemas", () => {
     expect(eventsSchema.safeParse({ ...base, date: "2024-12-32" }).success).toBe(false);
     expect(eventsSchema.safeParse({ ...base, date: "2024-12-00" }).success).toBe(false);
     expect(eventsSchema.safeParse({ ...base, date: "2024-12-31" }).success).toBe(true);
+  });
+});
+
+describe("nowSchema", () => {
+  const ok = { updated: "2026-10-08", en: { text: "Building something useful." }, tr: { text: "Faydalı bir şey geliştiriyorum." } };
+  it("accepts a dated bilingual line", () => expect(nowSchema.safeParse(ok).success).toBe(true));
+  it("rejects a missing translation, a bad date and an over-long line", () => {
+    expect(nowSchema.safeParse({ ...ok, tr: undefined }).success).toBe(false);
+    expect(nowSchema.safeParse({ ...ok, updated: "October" }).success).toBe(false);
+    expect(nowSchema.safeParse({ ...ok, en: { text: "x".repeat(161) } }).success).toBe(false);
   });
 });

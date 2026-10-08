@@ -44,3 +44,9 @@ export const eventsSchema = s.object({
   en: localized,
   tr: localized,
 });
+
+export const nowSchema = s.object({
+  updated: s.string().regex(FULL_DATE),
+  en: s.object({ text: s.string().min(10).max(160) }),
+  tr: s.object({ text: s.string().min(10).max(160) }),
+});

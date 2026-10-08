@@ -166,5 +166,12 @@
     "fieldInvalid": "Bu değer geçerli görünmüyor.",
     "elsewhere": "Diğer kanallar",
     "noScript": "Bot kontrolü JavaScript gerektirir. JavaScript kapalıysa lütfen <link>LinkedIn</link>'den ulaşın."
+  },
+  "Now": {
+    "heading": "Şu an",
+    "updated": "Güncelleme:",
+    "lastPush": "Son push",
+    "commits": "Son 30 günde {count, plural, =0 {herkese açık commit yok} other {# herkese açık commit}}",
+    "source": "GitHub'dan canlı"
   }
 }
