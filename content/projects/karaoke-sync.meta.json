@@ -1,0 +1,14 @@
+{
+  "slug": "karaoke-sync",
+  "facets": ["web", "backend"],
+  "stack": ["Next.js", "TypeScript", "Cloudflare R2", "Web Audio API", "Web Speech API", "Docker", "Rate limiting"],
+  "year": 2025,
+  "role": "solo",
+  "featured": true,
+  "order": 4,
+  "cover": { "type": "video", "src": "/media/karaoke-sync/cover", "frame": "browser" },
+  "links": {
+    "repo": ["https://github.com/emindundar/evreka_karaoke"],
+    "live": "https://evrekakaraoke.vercel.app"
+  }
+}

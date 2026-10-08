@@ -1,0 +1,15 @@
+{
+  "slug": "bio-astral",
+  "facets": ["mobile", "backend"],
+  "stack": ["Flutter", "Riverpod", "Node.js", "TypeScript", "Express", "Docker", "Swiss Ephemeris"],
+  "year": 2026,
+  "role": "solo",
+  "featured": false,
+  "order": 5,
+  "links": {
+    "repo": [
+      "https://github.com/emindundar/astro-biometric-life-radar",
+      "https://github.com/emindundar/astro_backend"
+    ]
+  }
+}

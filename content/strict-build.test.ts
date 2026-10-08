@@ -27,7 +27,7 @@ beforeAll(() => {
       year: 2026,
       role: "solo",
       order: 1,
-      cover: { type: "image", src: "/x.webp", frame: "phone" },
+      cover: { type: "image", src: "/media/bad/cover", frame: "phone" },
     }),
   );
   writeFileSync(

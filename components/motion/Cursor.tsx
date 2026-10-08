@@ -30,7 +30,15 @@ export function Cursor() {
       const dy = gsap.quickTo(dotEl, "y", { duration: 0.08 });
       const rx = gsap.quickTo(ringEl, "x", { duration: 0.35, ease: "power3.out" });
       const ry = gsap.quickTo(ringEl, "y", { duration: 0.35, ease: "power3.out" });
-      const scaleTo = gsap.quickTo(ringEl, "scale", { duration: 0.25 });
+      // quickTo drives one numeric property; "scale" is an alias for two, which GSAP rejects
+      // ("scale not eligible for reset") and then never scales. Hence one setter per axis.
+      gsap.set(ringEl, { scale: 1 });
+      const sx = gsap.quickTo(ringEl, "scaleX", { duration: 0.25 });
+      const sy = gsap.quickTo(ringEl, "scaleY", { duration: 0.25 });
+      const scaleTo = (v: number) => {
+        sx(v);
+        sy(v);
+      };
       let hovering = false;
       let visible = false;
       const show = (v: boolean) => {

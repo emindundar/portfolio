@@ -1,0 +1,12 @@
+{
+  "slug": "cursor-notion-mcp",
+  "facets": ["ai"],
+  "stack": ["Python", "MCP", "Notion API", "Git"],
+  "year": 2026,
+  "role": "solo",
+  "featured": false,
+  "order": 7,
+  "links": {
+    "repo": ["https://github.com/emindundar/cursor-notion-mcp"]
+  }
+}

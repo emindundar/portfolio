@@ -11,11 +11,11 @@ vi.mock("@/lib/motion", async (importOriginal) => {
 
 import { SplitRevealImpl } from "./SplitReveal.impl";
 
-function renderImpl() {
+function renderImpl(mountedAt = 0) {
   const h1 = document.createElement("h1");
   h1.textContent = "I build products end to end.";
   document.body.appendChild(h1);
-  render(<SplitRevealImpl el={h1} delay={0} text="I build products end to end." />);
+  render(<SplitRevealImpl el={h1} delay={0} text="I build products end to end." mountedAt={mountedAt} />);
   return h1;
 }
 
@@ -35,12 +35,18 @@ describe("SplitRevealImpl late-arrival guard", () => {
     expect(create).toHaveBeenCalledTimes(1);
   });
 
-  it("skips the entrance when the chunk arrives after the text was already readable", () => {
-    vi.spyOn(performance, "now").mockReturnValue(1500);
-    const h1 = renderImpl();
+  it("skips the entrance when the chunk arrives more than 1200 ms after the wrapper mounted", () => {
+    vi.spyOn(performance, "now").mockReturnValue(5000);
+    const h1 = renderImpl(3000);
     expect(create).not.toHaveBeenCalled();
     expect(h1.children).toHaveLength(0);
     expect(h1.textContent).toBe("I build products end to end.");
+  });
+
+  it("splits when the chunk arrives within 1200 ms of wrapper mount even on a long-lived page", () => {
+    vi.spyOn(performance, "now").mockReturnValue(60_400);
+    renderImpl(60_000);
+    expect(create).toHaveBeenCalledTimes(1);
   });
 
   it("skips the entrance when the page is already scrolled", () => {

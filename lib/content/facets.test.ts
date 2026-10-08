@@ -6,7 +6,7 @@ import type { Project } from "./merge";
 
 const p = (slug: string, facets: Project["facets"]): Project =>
   ({ slug, facets, stack: [], year: 2026, role: "solo", featured: false, order: 1,
-     cover: { type: "image", src: "", frame: "none" }, links: {},
+     cover: { type: "image", src: "/media/x/cover", frame: "none" }, links: {},
      title: slug, summary: "", code: "", locale: "en", fallback: false }) as Project;
 
 describe("facetCounts", () => {

@@ -79,3 +79,91 @@
     outline-offset: 2px;
   }
 }
+
+@layer components {
+  /* Case-study body (MDX). Direct children only, so embedded components (FlowDiagram, Metrics) keep their own lists. */
+  .prose-brutal {
+    max-width: 68ch;
+  }
+  /* Important: the MDX h2 carries its own margin utility, and utilities outrank this layer. */
+  .prose-brutal > :first-child {
+    margin-top: 0 !important;
+  }
+  .prose-brutal > h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    font-family: var(--font-display);
+    line-height: 1.1;
+  }
+  .prose-brutal > p {
+    margin-block: 1rem;
+    line-height: 1.7;
+  }
+  .prose-brutal > ul {
+    margin-block: 1rem;
+    padding-left: 1.75rem;
+    list-style-type: "—  ";
+    line-height: 1.7;
+  }
+  .prose-brutal > ul > li {
+    margin-block: 0.75rem;
+  }
+  .prose-brutal > ul > li::marker {
+    color: var(--muted);
+  }
+  .prose-brutal a {
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 4px;
+  }
+  .prose-brutal strong {
+    font-weight: 700;
+    color: var(--fg);
+  }
+  .prose-brutal pre {
+    margin-block: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  .prose-brutal :not(pre) > code {
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    padding: 0.1em 0.35em;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+}
+
+/* View transitions (React <ViewTransition>, Next.js guide). Clicks pass through the overlay while one runs. */
+::view-transition {
+  pointer-events: none;
+}
+/* Shared cover: /work row thumbnail ↔ /work/[slug] hero (name `cover-<slug>`, class `morph`). */
+::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+/* The header is a fixed spatial anchor: no cross-fade, no movement, above everything that animates. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

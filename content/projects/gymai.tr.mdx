@@ -1,0 +1,30 @@
+---
+title: GymAI — Yapay Zekâ Destekli Spor Asistanı
+summary: Lisans tezi uygulaması. Gemini üyenin hedefine göre antrenman programı çıkarıyor, makinelerdeki QR kodlar egzersiz videosunu açıyor, anlık doluluk bilgisi randevuya dönüşüyor.
+---
+
+## Problem
+
+Tez, spor salonu üyelerinin üç şikâyetinden yola çıkıyor: gelebildikleri saatlerde salon kalabalık, hangi makinede ne yapacaklarını bilmiyorlar ve yaptıklarının kaydı tutulmuyor. Kâğıda basılı program bu sorunların hiçbirini çözmüyor.
+
+## Rol
+
+Beyzanur Eren ile iki kişilik ekibin liderliğini yaptım. GymAI, Pamukkale Üniversitesi Yönetim Bilişim Sistemleri bölümünde 2025'te sunduğumuz lisans tezi; danışmanımız Doç. Dr. Ömer Güleç.
+
+## Mimari
+
+GymAI, Firebase üzerinde çalışan bir Flutter uygulaması. Üye kayıt olduktan sonra hedefini, haftada kaç gün antrenman yapacağını ve deneyim seviyesini seçiyor. Bu cevaplar Gemini API'ye giden prompt'u oluşturuyor; dönen sonuç her egzersiz için set, tekrar ve zorluk seviyesi içeren gün gün bir program.
+
+Salonda her makinenin üzerinde bir QR kod var. Kodu okutan üye o egzersizin videosunu ve bir süre sayacını görüyor; süre dolunca egzersizi tamamlandı olarak işaretliyor. Chatbot fitness sorularını cevaplıyor ve istenirse son yedi günün antrenman geçmişini analiz ediyor. Ayrı bir ekran salonun saat saat doluluğunu gösteriyor, üye randevusunu buradan alıyor.
+
+<FlowDiagram label="Program üretimi" steps={["Hedef, haftalık gün sayısı, deneyim seviyesi", "Prompt", "Gemini API", "Gün gün program"]} />
+
+## Kararlar
+
+- Sabit program şablonları yerine üyenin hedefi ve seviyesiyle kurulan prompt; çünkü hedef, sıklık ve deneyim kombinasyonları bir şablon setinin karşılayamayacağı kadar çoğalıyor.
+- Egzersizi uygulamada aratmak yerine makinede QR kod; çünkü üye zaten makinenin başında ve okutmak tek adım.
+- Kendi backend'imiz yerine Firebase'in gerçek zamanlı veritabanı; çünkü doluluk ve randevu herkeste aynı anda güncellenmeli, iki kişilik bir tez ekibi de sunucu işletmemeli.
+
+## Sonuç
+
+Çalışan bir uygulama teslim ettik ve 2025'te sunduk. Tezin bulguları şöyle: randevu sistemi üyelerin daha planlı spor yapmasını sağlıyor, kişiye özel programlar bireysel gelişimi destekliyor, chatbot geri bildirimi motivasyonu destekliyor, videolar da egzersizi yanlış yapmaktan doğan sakatlanma riskini azaltabiliyor. Bunlar tezin bulguları, kontrollü bir çalışma değil. Benim çıkardığım ders: bir AI özelliği, ancak çıktısı kullanıcının bir sonraki adımına bağlandığında anlam kazanıyor.

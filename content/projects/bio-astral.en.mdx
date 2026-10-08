@@ -1,0 +1,30 @@
+---
+title: Bio-Astral — Natal Charts on the Server, Biometrics Behind One Interface
+summary: An app that pairs a natal chart with sleep and stress data. Swiss Ephemeris runs in a Dockerised Node service, and a repository interface hides where the biometrics come from.
+---
+
+## Problem
+
+The idea is a daily "life radar": a natal chart read next to how the user slept and how stressed they are. Two things got in the way early. Planetary positions need Swiss Ephemeris, a native library with its own data files, which is heavy to ship and build inside a phone app. And biometric data has no single source: some users wear a watch that feeds HealthKit or Google Fit, others have nothing.
+
+## Role
+
+I work on it alone, on both the Flutter client and the backend.
+
+## Architecture
+
+The backend is a Node 20 and TypeScript service on Express, packaged with Docker Compose. One endpoint, `POST /api/v1/chart/natal`, takes a birth date and coordinates and returns planetary positions, Placidus houses and the aspects between planets, all computed with Swiss Ephemeris.
+
+On the client, a `BiometricRepository` interface defines four calls: sleep data for a date, current stress level, whether a data source exists, and a permission request. There are two implementations. One is for wearables. The other is for users without one: they pick an archetype card and the choice maps to a stress score.
+
+<FlowDiagram label="Natal chart request" steps={["Birth date and coordinates", "POST /api/v1/chart/natal", "Swiss Ephemeris", "Positions, Placidus houses, aspects"]} />
+
+## Decisions
+
+- Calculating the chart on the server instead of on the device, because the native library and its ephemeris files stay out of the app bundle and iOS and Android share one implementation.
+- An Alpine image with build tools, with `node_modules` kept out of the mounted volume, instead of a local install, because the native module has to compile for the container's architecture and not my laptop's.
+- A repository interface instead of calling health SDKs from the UI, because users without a wearable need the same screens with a different source.
+
+## Outcome
+
+Early stage: the chart endpoint runs in Docker, the interface and the manual-input path are in place, and the wearable path is a stub until the health plugin is wired in. What I learned: defining the interface before either data source existed let me build against the manual path first.

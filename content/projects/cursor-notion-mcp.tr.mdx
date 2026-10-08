@@ -1,0 +1,31 @@
+---
+title: Cursor Notion MCP — IDE'den Çıkmadan Not ve Günlük Rapor
+summary: Cursor ajanının Notion'a not, görev ve kod parçası kaydetmesini, çalışma alanında arama yapmasını ve günün git geçmişini rapor için toplamasını sağlayan küçük bir Python MCP sunucusu.
+---
+
+## Problem
+
+Kod yazarken küçük şeyleri kaybediyordum: bir fikir, sonraya kalan bir görev, saklamaya değer bir kod parçası. Kaydetmek için Notion'a geçmek, sayfayı bulmak ve yapıştırmak gerekiyordu. Gün sonunda ikinci bir angarya vardı: rapor yazabilmek için o gün gerçekte ne yaptığımı çıkarmak. İkisi de mekanik işler; editördeki asistan, elinde araç olsa ikisini de yapabilirdi.
+
+## Rol
+
+Tek başıma yazdım; Türkçe ve İngilizce kurulum rehberleriyle yayınladım.
+
+## Mimari
+
+Resmî MCP Python SDK'sındaki FastMCP üzerine kurulu tek bir Python dosyası. Cursor onu `mcp.json` üzerinden yerel bir süreç olarak başlatıyor; Notion API anahtarı ve hedef sayfa kimliği açılışta `.env` dosyasından okunuyor. Biri eksikse sunucu anlaşılır bir mesajla hemen duruyor.
+
+Beş araç sunuyor. `add_note`, `add_todo` ve `save_code_snippet` yapılandırılan sayfaya başlık, yapılacak ve kod blokları ekliyor. `search_in_notion` çalışma alanında arayıp başlıkları bağlantılarıyla döndürüyor. `get_git_summary` verilen yolun bir git reposu olduğunu kontrol ediyor, sonra belirtilen zamandan itibaren `git log --patch` çalıştırıp ham çıktıyı döndürüyor. Özeti editördeki model yazıyor, ikinci bir araç çağrısı da onu not olarak kaydediyor.
+
+<FlowDiagram label="Günlük rapor akışı" steps={["Cursor ajanı", "get_git_summary: git log --patch", "Özeti model yazar", "add_note", "Notion sayfası"]} />
+
+## Kararlar
+
+- Editör eklentisi yerine MCP; çünkü araç sunucusu standart bir arayüz ve aynı dosya protokolü konuşan her istemcide çalışıyor.
+- Yeni bir not aracı yerine Notion; çünkü notlarım ve görev listelerim zaten oradaydı.
+- Özeti Python'da çıkarmak yerine ham git çıktısını döndürüp işi modele bırakmak; çünkü sunucuda model anahtarı da prompt mantığı da bulunmuyor.
+- Veritabanı yönetmek yerine yapılandırılmış tek bir sayfaya blok eklemek; çünkü entegrasyona tek sayfa için erişim vermek yetiyor.
+
+## Sonuç
+
+Python 3.10 ya da üstü kuruluysa kurulum yaklaşık beş dakika sürüyor. Günlük rapor iki prompt: git özetini al, sonra Notion'a kaydet. Bilinen bir sınır: yoğun bir günün patch'i bütün hâlinde dönüyor. Öğrendiğim şey: her araç tek bir iş yapıp düşünmeyi modele bıraktığında, işe yarar bir MCP sunucusu 150 satır civarında olabiliyor.

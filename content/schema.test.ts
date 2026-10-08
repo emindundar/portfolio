@@ -11,7 +11,7 @@ const valid = {
   role: "solo",
   featured: true,
   order: 1,
-  cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" },
+  cover: { type: "image", src: "/media/geotrack/cover", frame: "phone" },
   links: { repo: ["https://github.com/emindundar/map_tracking"] },
 };
 
@@ -40,6 +40,40 @@ describe("projectMetaSchema", () => {
     const r = projectMetaSchema.parse(rest);
     expect(r.featured).toBe(false);
     expect(r.links).toEqual({});
+  });
+  it("accepts a project without cover and with client/credits/live", () => {
+    const rest: Partial<typeof valid> = { ...valid };
+    delete rest.cover;
+    const both = { en: "x", tr: "y" };
+    const r = projectMetaSchema.safeParse({ ...rest, client: both, credits: both, links: { live: "https://a.b" } });
+    expect(r.success).toBe(true);
+  });
+  it("client and credits are localized: a plain string or a missing locale is rejected", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, client: "x" }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, credits: "y" }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, client: { en: "x" } }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, credits: { en: "x", tr: "" } }).success).toBe(false);
+  });
+  it("rejects cover without a known type", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "gif", src: "/media/a/cover", frame: "none" } }).success).toBe(false);
+  });
+  it("requires cover.src to start with /media/", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "cover", frame: "none" } }).success).toBe(false);
+  });
+  it("rejects cover.src with a file extension", () => {
+    expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "image", src: "/media/geotrack/cover.webp", frame: "phone" } }).success).toBe(false);
+  });
+  it("accepts a gallery of { src, alt per locale } and rejects extensions, missing or short alts, or an empty list", () => {
+    const alt = { en: "Thesis poster", tr: "Tez posteri" };
+    const item = { src: "/media/gymai/poster", alt };
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [item, { src: "/media/gymai/screens-right", alt }] }).success).toBe(true);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ ...item, src: "/media/gymai/poster-640.webp" }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: ["/media/gymai/poster"] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src, alt: { en: "Thesis poster" } }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [{ src: item.src, alt: { en: "abc", tr: "Tez posteri" } }] }).success).toBe(false);
+    expect(projectMetaSchema.safeParse({ ...valid, gallery: [] }).success).toBe(false);
+    expect(projectMetaSchema.parse(valid).gallery).toBeUndefined();
   });
   it("exposes exactly five facets", () => {
     expect(FACETS).toEqual(["mobile", "web", "backend", "ai", "data-erp"]);

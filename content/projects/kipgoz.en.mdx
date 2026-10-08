@@ -1,0 +1,38 @@
+---
+title: Kipgöz — IEP Tracking for a Special-Education Institution
+summary: A Flutter app for teachers and parents that keeps the chain from student to IEP goal to dated practice record in one place, with a NestJS and Prisma backend underway.
+metrics:
+  - label: Commits
+    value: "44"
+  - label: Dart files
+    value: "123"
+---
+
+## Problem
+
+In special education every student has an individualised education programme (IEP, "BEP" in Turkish): development area, long-term goal, short-term objective with a criterion such as 4 out of 5, and dated practice records under each objective. At this institution that chain lives in Word and Excel templates and on paper. Teachers enter the same information twice, and parents see little of it between meetings.
+
+## Role
+
+I work on it alone, from data model to screens. The client is a special-education institution.
+
+## Architecture
+
+The mobile app is feature-first: every feature has `data`, `domain` and `presentation` folders. State is Riverpod with code generation, entities are freezed classes with JSON serialisation, and navigation is go_router. There are two roles. Teachers get students, sessions, home-programme assignment, IEP progress entry and messages; parents get today's tasks, progress and messages.
+
+Each feature talks to an abstract repository. Today the implementations are mocks fed from one demo dataset; one providers file per feature is where the real API gets swapped in.
+
+The backend is a separate repository with three layers: the Flutter client, a NestJS API with Prisma, and PostgreSQL 16 in Docker. It has a health check, the Prisma connection and Swagger docs.
+
+<FlowDiagram label="Backend layers" steps={["Flutter client", "NestJS", "Prisma", "PostgreSQL 16 in Docker"]} />
+
+## Decisions
+
+- Mock repositories behind interfaces instead of starting with the API, because I wanted the IEP model to settle on real screens before freezing a schema.
+- NestJS instead of plain Express, because the student → IEP → goal → record hierarchy maps onto one module per level.
+- Prisma instead of hand-written SQL, because migrations and typed queries are both generated from the one `schema.prisma` file.
+- Docker Compose for PostgreSQL instead of a manual install, because the plan is to run the same file on the VPS.
+
+## Outcome
+
+In progress: the mobile repository has 44 commits and 123 Dart files, and both roles run end to end on demo data. Authentication and the core schema come next, then the mocks are replaced feature by feature. What I learned: once objectives and records had the right shape, the teacher and parent screens became two views of the same data.

@@ -1,0 +1,61 @@
+{
+  "/media/events/devfest-denizli-25": {
+    "widths": [
+      640
+    ],
+    "width": 640,
+    "height": 752
+  },
+  "/media/events/devfest-izmir-24": {
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "width": 1920,
+    "height": 1440
+  },
+  "/media/events/gymai-thesis-2025": {
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "width": 1920,
+    "height": 2560
+  },
+  "/media/geotrack/cover": {
+    "widths": [
+      640
+    ],
+    "width": 640,
+    "height": 1391
+  },
+  "/media/gymai/cover": {
+    "widths": [
+      640
+    ],
+    "width": 368,
+    "height": 244
+  },
+  "/media/gymai/poster": {
+    "widths": [
+      640
+    ],
+    "width": 640,
+    "height": 734
+  },
+  "/media/gymai/screens-right": {
+    "widths": [
+      640
+    ],
+    "width": 340,
+    "height": 418
+  },
+  "/media/karaoke-sync/cover": {
+    "video": true,
+    "poster": "/media/karaoke-sync/poster-1280.webp",
+    "width": 1026,
+    "height": 720
+  }
+}

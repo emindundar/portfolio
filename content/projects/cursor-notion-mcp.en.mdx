@@ -1,0 +1,31 @@
+---
+title: Cursor Notion MCP — Notes and Daily Reports without Leaving the IDE
+summary: A small Python MCP server that lets the Cursor agent save notes, tasks and code snippets to Notion, search the workspace, and collect the day's git history for a report.
+---
+
+## Problem
+
+While coding I kept losing small things: an idea, a task, a snippet worth keeping. Saving them meant switching to Notion, finding the page and pasting. At the end of the day came a second chore: working out what I had done, for the report. Both jobs are mechanical; the assistant in my editor could do them given the tools.
+
+## Role
+
+I wrote it alone and published it with Turkish and English setup guides.
+
+## Architecture
+
+It is a single Python file built on FastMCP from the official MCP Python SDK. Cursor starts it as a local process from `mcp.json`, and the Notion API key and target page ID are read from a `.env` file at startup. If either is missing, the server stops with a clear message.
+
+It exposes five tools. `add_note`, `add_todo` and `save_code_snippet` append heading, to-do and code blocks to the configured page. `search_in_notion` queries the workspace and returns titles with links. `get_git_summary` checks that the path is a git repository, then runs `git log --patch` since a given time and returns the raw output. The model in the editor writes the summary, and a second tool call saves it as a note.
+
+<FlowDiagram label="Daily report flow" steps={["Cursor agent", "get_git_summary: git log --patch", "Model writes the summary", "add_note", "Notion page"]} />
+
+## Decisions
+
+- MCP instead of an editor extension, because a tool server is a standard interface: the same file works in any client that speaks the protocol.
+- Notion instead of a new notes store, because my notes and task lists were already there.
+- Returning raw git output and letting the model summarise instead of summarising in Python, because the server stays free of model keys and prompt logic.
+- Appending blocks to one configured page instead of managing databases, because the integration then needs access to a single page.
+
+## Outcome
+
+Setup takes about five minutes with Python 3.10 or newer installed. A daily report is two prompts: get the git summary, then save it to Notion. One known limit: a large day's patch is returned whole. What I learned: a useful MCP server fits in about 150 lines when each tool does one thing and leaves the thinking to the model.
