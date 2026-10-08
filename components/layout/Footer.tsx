@@ -16,7 +16,7 @@ export async function Footer() {
     { href: LINKEDIN_URL, label: "LinkedIn" },
   ];
   return (
-    <footer className="flex flex-col gap-2 border-t border-line px-6 py-4 font-mono text-sm text-muted md:flex-row md:items-center md:justify-between">
+    <footer className="flex flex-col gap-2 border-t border-line px-4 py-4 md:px-6 font-mono text-sm text-muted md:flex-row md:items-center md:justify-between">
       <p>
         © {YEAR} {t("rights")}
       </p>

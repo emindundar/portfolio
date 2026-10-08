@@ -34,6 +34,7 @@ test.describe("nav", () => {
   const primary = (page: import("@playwright/test").Page) => page.getByRole("navigation", { name: /primary|ana gezinme/i });
 
   test("active link carries aria-current", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/en/work");
     await expect(primary(page).getByRole("link", { name: "Work" })).toHaveAttribute("aria-current", "page");
     await page.goto("/en/work/geotrack");
@@ -44,25 +45,33 @@ test.describe("nav", () => {
   });
 
   test("links are at least 44px tall", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/en");
     const links = primary(page).getByRole("link");
     await expect(links).toHaveCount(5);
     for (const l of await links.all()) expect((await l.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   });
 
-  test("links are at least 44px tall and fit within 360px", async ({ page }) => {
-    await page.setViewportSize({ width: 360, height: 740 });
-    await page.goto("/en");
-    const links = primary(page).getByRole("link");
-    await expect(links).toHaveCount(5);
-    for (const l of await links.all()) {
-      const box = (await l.boundingBox())!;
-      expect(box.height).toBeGreaterThanOrEqual(44);
-      expect(box.x + box.width).toBeLessThanOrEqual(360);
-    }
-  });
+  for (const locale of ["en", "tr"]) {
+    test(`${locale}: primary links fit within 360px; Home hidden, visible at 1280`, async ({ page }) => {
+      await page.setViewportSize({ width: 360, height: 740 });
+      await page.goto(`/${locale}`);
+      const links = primary(page).getByRole("link");
+      await expect(links).toHaveCount(4);
+      for (const l of await links.all()) {
+        const box = (await l.boundingBox())!;
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(360);
+      }
+      expect(await primary(page).evaluate((n) => n.scrollWidth <= n.clientWidth)).toBe(true);
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await expect(primary(page).getByRole("link")).toHaveCount(5);
+    });
+  }
 
   test("tr labels", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/tr");
     const nav = primary(page);
     for (const name of ["Ana sayfa", "İşler", "Hakkımda", "Hizmetler", "İletişim"]) {
