@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { alternatesFor } from "@/lib/seo";
 import { BUDGETS, HONEYPOT_FIELD } from "@/lib/contact";
-import { GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
+import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -45,6 +45,11 @@ export default async function ContactPage({ params }: Props) {
         <aside className="md:col-span-4">
           <h2 className="mb-4 font-mono text-xs uppercase tracking-wide text-muted">{t("elsewhere")}</h2>
           <ul className="grid gap-1 font-mono text-sm">
+            <li>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="inline-flex min-h-11 items-center break-all underline underline-offset-4">
+                {CONTACT_EMAIL}
+              </a>
+            </li>
             {links.map((l) => (
               <li key={l.href}>
                 <a href={l.href} target="_blank" rel="noreferrer noopener" className="inline-flex min-h-11 items-center underline underline-offset-4">

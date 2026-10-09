@@ -102,6 +102,9 @@ test.describe("/contact", () => {
     const button = await page.getByRole("button", { name: "Send message" }).boundingBox();
     expect((await note.boundingBox())!.y).toBeGreaterThanOrEqual(button!.y + button!.height);
     await expect(page.getByRole("complementary").getByRole("link", { name: "LinkedIn (opens in a new tab)", exact: true })).toBeVisible();
+    const mail = page.getByRole("complementary").getByRole("link", { name: /@/ });
+    await expect(mail).toHaveAttribute("href", /^mailto:[^@\s]+@[^@\s]+$/);
+    await expect(mail).not.toHaveAttribute("target", "_blank");
     await open(page, "/tr/contact");
     await expect(page.locator("[data-contact-privacy]")).toContainText("Resend aracılığıyla");
     await expect(page.locator("[data-contact-privacy]")).toContainText("Cloudflare Turnstile");

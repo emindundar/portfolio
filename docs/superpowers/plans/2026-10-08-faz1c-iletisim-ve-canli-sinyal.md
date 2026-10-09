@@ -18,7 +18,7 @@
 - `cacheComponents: true`: no `new Date()`, `fetch`, `cookies()` or `headers()` in page/layout render outside a `"use cache"` scope. `headers()` is allowed inside the Server Action.
 - Contact pipeline order is fixed by spec §4.4: honeypot filled → silent success; Turnstile verified on the server; zod: name 2–80, e-mail, message 10–2000, budget optional enum; rate limit 5 submissions/hour per IP, in-memory `Map`.
 - Fail closed: if a required secret is missing in a non-dry-run environment the form reports "unavailable"; it never sends unverified mail and never pretends success.
-- No e-mail address, API key or site id is committed. Recipient and sender come from environment variables.
+- No API key or site id is committed. Form recipient and sender come from environment variables; the public contact address lives in `lib/site.ts` (owner decision).
 - Performance budget: first-load JS ≤ 180 KB gz; LHCI total script ≤ 256 KB; CLS ≤ 0.05 (error gate); a11y ≥ 0.95; SEO = 1.
 - Touch targets ≥ 44 px (`min-h-11`), visible focus, WCAG 2.1 AA.
 - Tests: a test with every behaviour change; e2e waits on state, never on fixed sleeps. `pnpm build` before `pnpm e2e`. Ports 3100 (Playwright) / 3101 (LHCI).
@@ -30,7 +30,7 @@
 2. **Commit count comes from the commit search API**, not from the `events` feed. GitHub removed commit lists from public `PushEvent` payloads, so the feed can no longer be summed. Two unauthenticated requests per hour: `GET /users/emindundar/repos?sort=pushed&per_page=1` and `GET /search/commits?q=author:emindundar+author-date:>=<30 days ago>&per_page=1`.
 3. **Sender address is configurable.** Spec says `contact@emindundar.dev`; the domain is not bought yet. `CONTACT_FROM` defaults to Resend's shared sender `onboarding@resend.dev`, which delivers only to the Resend account owner — exactly the recipient here.
 4. **GitHub panel moves from Faz 1.5 to this phase** (already agreed when Faz 1 was split).
-5. **No e-mail link on the contact page.** Spec §2.1 lists "Form + e-posta/LinkedIn/GitHub"; the page shows the form plus LinkedIn and GitHub only. A published address gets harvested, and this branch keeps the rule that no personal address is committed. Publishing one is the owner's call.
+5. **E-mail link on the contact page.** Initially left out (a published address gets harvested); the owner decided on 2026-10-09 to publish it, so the page lists the address (`CONTACT_EMAIL` in `lib/site.ts`) next to LinkedIn and GitHub, as spec §2.1 says.
 
 ## Review Focus
 

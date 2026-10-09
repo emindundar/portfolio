@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/lib/site";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
@@ -23,9 +24,11 @@ describe("contact page", () => {
       expect(link.querySelector(".sr-only")!.textContent).toBe("(opens in a new tab)");
     }
   });
-  it("publishes no e-mail address (plan deviation 5)", async () => {
+  it("publishes the contact address as a plain mailto link (owner decision, plan deviation 5)", async () => {
     const { container } = render(await ContactPage({ params: Promise.resolve({ locale: "en" }) }));
-    expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
-    expect(container.textContent).not.toMatch(/[\w.+-]+@[\w-]+\.\w+/);
+    const mail = container.querySelector('a[href^="mailto:"]')!;
+    expect(mail).toHaveAttribute("href", `mailto:${CONTACT_EMAIL}`);
+    expect(mail).toHaveTextContent(CONTACT_EMAIL);
+    expect(mail).not.toHaveAttribute("target");
   });
 });
