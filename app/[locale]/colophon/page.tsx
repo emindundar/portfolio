@@ -12,7 +12,7 @@ const STACK = [
   "Next.js 16", "React 19", "TypeScript", "Tailwind CSS v4", "next-intl", "Velite", "GSAP",
   "Lenis", "OGL", "Vitest", "Playwright", "Lighthouse CI", "Vercel",
 ];
-const PARAGRAPHS = ["p1", "p2", "p3", "p4", "p5", "p6"] as const;
+const PARAGRAPHS = ["p1", "p2", "p3", "p4", "p5", "p6", "p7"] as const;
 const PROCESS = ["process1", "process2", "process3", "process4"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -31,7 +31,7 @@ export default async function ColophonPage({ params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Colophon" });
-  const tc = await getTranslations({ locale, namespace: "Case" });
+  const tc = await getTranslations({ locale, namespace: "Common" });
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
       <h1 className="font-display text-[clamp(2.5rem,8vw,6rem)] leading-none">{t("title")}</h1>

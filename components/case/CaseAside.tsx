@@ -24,6 +24,7 @@ function External({ href, newTab, children }: { href: string; newTab: string; ch
 
 export async function CaseAside({ project, className }: { project: Project; className?: string }) {
   const t = await getTranslations("Case");
+  const tc = await getTranslations("Common");
   const { links } = project;
   // Follows the language of the body (project.locale), so an English fallback page stays consistently English.
   const client = project.client?.[project.locale];
@@ -72,14 +73,14 @@ export async function CaseAside({ project, className }: { project: Project; clas
           <ul className="m-0 mt-1 list-none p-0">
             {links.repo?.map((href) => (
               <li key={href}>
-                <External href={href} newTab={t("newTab")}>
+                <External href={href} newTab={tc("newTab")}>
                   {t("repo")}: {repoName(href)}
                 </External>
               </li>
             ))}
             {single.map(({ key, href }) => (
               <li key={key}>
-                <External href={href} newTab={t("newTab")}>
+                <External href={href} newTab={tc("newTab")}>
                   {t(key)}: {new URL(href).host}
                 </External>
               </li>

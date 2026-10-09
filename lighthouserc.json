@@ -9,7 +9,8 @@
         "http://localhost:3101/en/work",
         "http://localhost:3101/en/work/geotrack",
         "http://localhost:3101/en/work/karaoke-sync",
-        "http://localhost:3101/en/about"
+        "http://localhost:3101/en/about",
+        "http://localhost:3101/en/contact"
       ],
       "numberOfRuns": 2,
       "settings": {

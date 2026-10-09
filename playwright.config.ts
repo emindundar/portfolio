@@ -27,7 +27,10 @@ export default defineConfig({
   webServer: {
     command: "pnpm exec next start -p 3100",
     url: `${baseURL}/en`,
+    // A reused server (local runs) must have been started with CONTACT_DRY_RUN=1, or the contact tests would hit Cloudflare/Resend.
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // The contact action validates and rate-limits but never calls Cloudflare or Resend.
+    env: { CONTACT_DRY_RUN: "1" },
   },
 });

@@ -92,7 +92,9 @@
     "video": "Video",
     "videoPause": "Videoyu duraklat",
     "videoPlay": "Videoyu oynat",
-    "metrics": "Rakamlar",
+    "metrics": "Rakamlar"
+  },
+  "Common": {
     "newTab": "yeni sekmede açılır"
   },
   "About": {
@@ -128,6 +130,7 @@
     "p4": "Kalite kontrolleri her pull request'te çalışır: birim testleri, masaüstü ve mobilde Playwright ile uçtan uca testler, performans, erişilebilirlik ve SEO için Lighthouse bütçeleri.",
     "p5": "Spec ve planlar repoda herkese açık.",
     "p6": "Yazı tipleri: Cabinet Grotesk, Satoshi ve JetBrains Mono.",
+    "p7": "Ziyaretler Umami ile sayılır: çerez kullanılmaz, kişisel veri toplanmaz ve Do Not Track tercihine uyulur.",
     "stackHeading": "Teknolojiler",
     "processHeading": "Süreç",
     "repo": "Kaynak kod GitHub'da",
@@ -135,5 +138,44 @@
     "process2": "Görev görev plan",
     "process3": "Bir ajan uygular, bir başkası inceler",
     "process4": "Kararlar ilerledikçe kaydedilir"
+  },
+  "Contact": {
+    "title": "İletişim",
+    "description": "Bir pozisyondan ya da projeden bahsedin. İki iş günü içinde dönüş yaparım.",
+    "intro": "Bir pozisyon, freelance bir proje ya da geliştirdiğim bir işle ilgili bir soru: birkaç satır yazın, size dönüş yapayım.",
+    "name": "Ad soyad",
+    "email": "E-posta",
+    "message": "Mesaj",
+    "messageHint": "10-2000 karakter.",
+    "budget": "Bütçe (isteğe bağlı)",
+    "budgetNone": "Henüz belli değil",
+    "budgetLt1k": "1.000 $'ın altında",
+    "budget1k5k": "1.000 – 5.000 $",
+    "budget5k15k": "5.000 – 15.000 $",
+    "budgetGt15k": "15.000 $'ın üzerinde",
+    "trap": "Bu alanı boş bırakın",
+    "submit": "Mesajı gönder",
+    "sending": "Gönderiliyor…",
+    "success": "Mesajınız gönderildi. Verdiğiniz adrese dönüş yapacağım.",
+    "sendAnother": "Yeni mesaj gönder",
+    "errorInvalid": "Bazı alanların düzeltilmesi gerekiyor.",
+    "errorTurnstile": "Bot doğrulaması tamamlanamadı. Tekrar deneyin ya da bana <link>LinkedIn'den</link> ulaşın.",
+    "errorRate": "Bu bağlantıdan çok fazla mesaj gönderildi. Bir saat sonra tekrar deneyin.",
+    "errorUnavailable": "Form şu anda kullanılamıyor. Lütfen bana <link>LinkedIn'den</link> ulaşın.",
+    "errorSend": "Mesaj gönderilemedi. Tekrar deneyin ya da bana <link>LinkedIn'den</link> ulaşın.",
+    "fieldRequired": "Bu alan zorunlu.",
+    "fieldTooShort": "Bu alan çok kısa.",
+    "fieldTooLong": "Bu alan çok uzun.",
+    "fieldInvalid": "Bu değer geçerli görünmüyor.",
+    "elsewhere": "Diğer kanallar",
+    "noScript": "Bot doğrulaması JavaScript gerektirir. JavaScript kapalıysa lütfen bana <link>LinkedIn'den</link> ulaşın.",
+    "privacy": "Adınız, e-posta adresiniz ve mesajınız Resend aracılığıyla gelen kutuma iletilir ve yalnızca size yanıt vermek için kullanılır. Cloudflare Turnstile bot olmadığınızı doğrular ve IP adresinizi görür. İzleme çerezi kullanılmaz; mesajınızın kopyası bu sitede tutulmaz. Tarayıcınızda yalnızca tema tercihiniz saklanır."
+  },
+  "Now": {
+    "heading": "Şu an",
+    "updated": "Güncellendi:",
+    "lastPush": "Son push",
+    "commits": "Son 30 günde {count, plural, =0 {herkese açık commit yok} other {# herkese açık commit}}",
+    "source": "GitHub'dan"
   }
 }

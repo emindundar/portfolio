@@ -7,6 +7,7 @@ import { fontClassNames } from "@/lib/fonts";
 import { SITE_URL } from "@/lib/seo";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
+import { Analytics } from "@/components/layout/Analytics";
 import { ThemeScript } from "@/components/layout/ThemeScript";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "../globals.css";
@@ -45,6 +46,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <Footer />
           </MotionProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
