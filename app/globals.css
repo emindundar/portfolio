@@ -1,6 +1,10 @@
-@import "tailwindcss";
-@source not "../docs";
-@source not "../design-system";
+/* Explicit sources only: automatic detection scanned docs/ on some Vercel builds despite `@source not`,
+   and plan documents quote class names such as bg-[url(...)] that compile to an unresolvable url(). */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+@source "../lib";
+@source "../content";
 
 /* Koyu tema varsayılan; açık tema sistem tercihi veya data-theme="light" ile */
 :root {

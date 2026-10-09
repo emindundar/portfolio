@@ -745,7 +745,7 @@ export function HeroShaderLoader() {
 }
 ```
 
-Not: `bg-[url(...)]` arbitrary value Tailwind v4'te geçerli. `webgl === null` (hydration öncesi) → poster, canvas gelince poster kaybolur; CLS yok (ikisi de `absolute inset-0`).
+Not: Arbitrary `url()` background value Tailwind v4'te geçerli. `webgl === null` (hydration öncesi) → poster, canvas gelince poster kaybolur; CLS yok (ikisi de `absolute inset-0`).
 
 - [ ] **Step 6: e2e**
 

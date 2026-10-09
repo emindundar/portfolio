@@ -29,7 +29,7 @@ pnpm dev · pnpm build · pnpm lint · pnpm typecheck · pnpm test · pnpm e2e (
 lenis autoRaf:false; gsap.ticker.add(t => lenis.raf(t*1000)); lenis.on('scroll', ScrollTrigger.update); gsap.ticker.lagSmoothing(0)
 
 ## Learned constraints
-- Tailwind v4 is wired via `turbopack.rules["*.css"]` with `@tailwindcss/turbopack` in `next.config.ts`; there is no postcss.config. Never add one.
+- Tailwind v4 is wired via `turbopack.rules["*.css"]` with `@tailwindcss/turbopack` in `next.config.ts`; there is no postcss.config. Never add one. Tailwind sources are explicit: `@import "tailwindcss" source(none)` + `@source` for `app`, `components`, `lib`, `content` in `app/globals.css`; class names used anywhere else are not generated, so add a `@source` line for a new top-level folder. `experimental.turbopackFileSystemCacheForBuild` is `false` in `next.config.ts`: Vercel restored a Turbopack cache holding an old Tailwind output (classes quoted in `docs/`, e.g. an unresolvable `url()`), and production builds failed with `Module not found` in `globals.css` even after the source was gone. Never quote arbitrary-`url()` class names in docs.
 - `cacheComponents: true`: `new Date()`/`fetch`/cookies in render make the build fail (`blocking-prerender-current-time`). Compute build-time constants at module scope (see `components/layout/Footer.tsx`); never call `cookies()` in layouts.
 - Under cacheComponents the localized 404 is client-rendered (server sends a 404 shell). Known gap; do not add assertions on 404 `<html lang>`. Revisit in Faz 1.5 with a bilingual `global-not-found`.
 - Theme toggle accessible name is `"<Theme>: <Light|Dark>"` (WCAG 2.5.3); tests select it with `/theme/i`.
