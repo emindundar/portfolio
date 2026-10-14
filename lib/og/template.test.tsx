@@ -14,6 +14,14 @@ describe("fitTitle", () => {
     expect(out.text.endsWith("…")).toBe(true);
     expect(out.text).not.toMatch(/\s…$/);
   });
+  it("cuts an over-long title without spaces at the limit, never down to one character", () => {
+    const out = fitTitle("x".repeat(200));
+    expect(out.text).toBe(`${"x".repeat(120)}…`);
+  });
+  it("ignores a word boundary that would drop more than half of the title", () => {
+    const title = `a ${"x".repeat(200)}`;
+    expect(fitTitle(title).text).toBe(`${title.slice(0, 120)}…`);
+  });
   it("keeps Turkish characters intact", () => expect(fitTitle("Saha Rotalama ve Canlı Konum Backend'i").text).toContain("ı"));
 });
 

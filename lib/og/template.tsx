@@ -7,7 +7,9 @@ export function fitTitle(title: string): { fontSize: number; text: string } {
   let text = title.trim();
   if (text.length > MAX_CHARS) {
     const cut = text.slice(0, MAX_CHARS);
-    text = `${cut.slice(0, Math.max(cut.lastIndexOf(" "), 1)).trimEnd()}…`;
+    // Prefer the last word boundary, unless there is none or it would throw away more than half of the limit.
+    const space = cut.lastIndexOf(" ");
+    text = `${(space >= MAX_CHARS / 2 ? cut.slice(0, space) : cut).trimEnd()}…`;
   }
   const n = text.length;
   return { fontSize: n <= 24 ? 112 : n <= 48 ? 88 : n <= 80 ? 68 : 56, text };

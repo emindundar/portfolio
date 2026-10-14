@@ -28,7 +28,7 @@ test("every sitemap URL resolves on this server and has hreflang pairs", async (
 
 for (const locale of ["en", "tr"] as const) {
   for (const page of PAGES) {
-    test(`${locale}${page || "/"}: canonical, hreflang and Open Graph are complete and self-consistent`, async ({ page: p }) => {
+    test(`${locale}${page || "/"}: canonical, hreflang and Open Graph are complete and self-consistent`, async ({ page: p, request }) => {
       await p.goto(`/${locale}${page}`);
       const canonical = await p.locator('link[rel="canonical"]').getAttribute("href");
       expect(new URL(canonical!).pathname).toBe(`/${locale}${page}`);
@@ -50,6 +50,16 @@ for (const locale of ["en", "tr"] as const) {
       expect(desc!.length).toBeGreaterThanOrEqual(50);
       expect(desc!.length).toBeLessThanOrEqual(170);
       await expect(p.locator('meta[property="og:description"]')).toHaveAttribute("content", desc!);
+      // Preview image: one og:image on the canonical host, the same URL for Twitter/X, and it really is a PNG.
+      const ogImage = p.locator('meta[property="og:image"]');
+      await expect(ogImage).toHaveCount(1);
+      const image = new URL((await ogImage.getAttribute("content"))!);
+      expect(image.origin).toBe(new URL(canonical!).origin);
+      await expect(p.locator('meta[name="twitter:image"]')).toHaveAttribute("content", image.href);
+      // The absolute URL names the configured site origin (localhost:3000 in local builds); fetch it from this server.
+      const res = await request.get(image.pathname + image.search);
+      expect(res.status(), image.pathname).toBe(200);
+      expect(res.headers()["content-type"]).toBe("image/png");
     });
   }
 }
