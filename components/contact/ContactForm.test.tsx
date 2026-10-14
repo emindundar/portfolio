@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
 import { BUDGETS, HONEYPOT_FIELD, type ContactState } from "@/lib/contact";
@@ -103,6 +103,8 @@ describe("ContactForm", () => {
   });
   it("bot check cannot load: alert with the LinkedIn fallback instead of a dead button", () => {
     show({ status: "idle" }, { siteKey: "site-key" });
+    expect(screen.queryByRole("alert")).toBeNull(); // the widget mounts on the first interaction
+    fireEvent.focusIn(screen.getByLabelText("Name"));
     const alert = screen.getByRole("alert");
     expect(alert).toHaveTextContent("The bot check did not complete.");
     expect(alert.querySelector("a")).toHaveAttribute("href", LINKEDIN);
@@ -112,6 +114,8 @@ describe("ContactForm", () => {
     state.recover = true;
     try {
       show({ status: "idle" }, { siteKey: "site-key" });
+      fireEvent.focusIn(screen.getByLabelText("Name"));
+      expect(document.querySelector("[data-turnstile]")).not.toBeNull();
       expect(screen.queryByRole("alert")).toBeNull();
     } finally {
       state.recover = false;

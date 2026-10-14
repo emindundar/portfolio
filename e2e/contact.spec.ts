@@ -167,3 +167,30 @@ test.describe("/contact without JavaScript", () => {
     await expect(page.getByLabel("Name", { exact: true })).toHaveValue("Ada Lovelace");
   });
 });
+
+// Needs a build with NEXT_PUBLIC_TURNSTILE_SITE_KEY set (Cloudflare's always-pass test key, shell only) and the same
+// variable in the e2e shell; CI builds without a key, so this is skipped there. The server is still dry-run.
+test.describe("/contact with the Turnstile widget", () => {
+  test.skip(!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY, "build without a Turnstile site key");
+  test("Cloudflare is not contacted before the first interaction; the submit carries a token", async ({ page }) => {
+    const cloudflare: string[] = [];
+    let posts = 0;
+    page.on("request", (r) => {
+      if (r.url().includes("challenges.cloudflare.com")) cloudflare.push(r.url());
+      if (r.method() === "POST" && new URL(r.url()).pathname === "/en/contact") posts++;
+    });
+    await open(page);
+    await page.waitForLoadState("networkidle");
+    expect(cloudflare).toEqual([]);
+    await fill(page);
+    await expect.poll(() => cloudflare.length).toBeGreaterThan(0);
+    const post = page.waitForRequest((r) => r.method() === "POST" && new URL(r.url()).pathname === "/en/contact");
+    // Submitted right after typing: if the token is not there yet the form waits for it (one request).
+    await send(page);
+    const body = (await post).postDataBuffer()?.toString("utf8") ?? "";
+    const token = /name="[^"]*cf-turnstile-response"\r\n\r\n([^\r\n]*)/.exec(body)?.[1];
+    expect(token).toBeTruthy();
+    await expect(page.locator('[data-contact-status="success"]')).toBeVisible();
+    expect(posts).toBe(1);
+  });
+});
