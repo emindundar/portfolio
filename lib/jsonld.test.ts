@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { caseLd, knowsAboutFrom, personLd, serializeLd, websiteLd } from "./jsonld";
+import { caseLd, personLd, serializeLd, websiteLd } from "./jsonld";
 import { SITE_URL } from "./seo";
 
 const PERSON_ID = `${SITE_URL}/#person`;
@@ -27,23 +27,16 @@ describe("websiteLd", () => {
 });
 
 describe("caseLd", () => {
-  const project = { slug: "geotrack", title: "GeoTrack", summary: "S", year: 2026, stack: ["Flutter", "NestJS"] };
-  it("is a CreativeWork by the person, with keywords from the stack", () => {
+  const project = { slug: "geotrack", title: "GeoTrack", description: "D", year: 2026, stack: ["Flutter", "NestJS"] };
+  it("is a CreativeWork by the person, with the meta description and keywords from the stack", () => {
     expect(caseLd({ locale: "tr", project, image: "/tr/work/geotrack/opengraph-image" })).toMatchObject({
       "@type": "CreativeWork", "@id": `${SITE_URL}/tr/work/geotrack#work`, url: `${SITE_URL}/tr/work/geotrack`,
-      name: "GeoTrack", description: "S", inLanguage: "tr", dateCreated: "2026", keywords: "Flutter, NestJS",
+      name: "GeoTrack", description: "D", inLanguage: "tr", dateCreated: "2026", keywords: "Flutter, NestJS",
       author: { "@id": PERSON_ID }, image: `${SITE_URL}/tr/work/geotrack/opengraph-image`,
     });
   });
   it("omits image when none is given", () => {
     expect(caseLd({ locale: "en", project })).not.toHaveProperty("image");
-  });
-});
-
-describe("knowsAboutFrom", () => {
-  it("puts facet labels first, de-duplicates by first appearance and caps", () => {
-    expect(knowsAboutFrom(["Mobile", "Web"], [["Flutter", "Web"], ["Flutter", "NestJS"]])).toEqual(["Mobile", "Web", "Flutter", "NestJS"]);
-    expect(knowsAboutFrom(["A"], [Array.from({ length: 50 }, (_, i) => `s${i}`)])).toHaveLength(30);
   });
 });
 

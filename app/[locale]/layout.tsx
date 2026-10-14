@@ -5,10 +5,10 @@ import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { fontClassNames } from "@/lib/fonts";
 import { SITE_URL, openGraphFor } from "@/lib/seo";
-import { getProjects } from "@/lib/content";
 import { FACETS } from "@/content/facet-list";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
-import { knowsAboutFrom, personLd, websiteLd } from "@/lib/jsonld";
+import { personLd, websiteLd } from "@/lib/jsonld";
+import { KNOWS_ABOUT } from "@/lib/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -40,10 +40,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   const tm = await getTranslations({ locale, namespace: "Meta" });
   const tc = await getTranslations({ locale, namespace: "Capabilities" });
-  const knowsAbout = knowsAboutFrom(
-    FACETS.map((f) => tc(FACET_LABEL_KEYS[f])),
-    getProjects(locale).map((p) => p.stack),
-  );
+  const knowsAbout = [...new Set([...FACETS.map((f) => tc(FACET_LABEL_KEYS[f])), ...KNOWS_ABOUT])];
 
   return (
     <html lang={locale} className={fontClassNames} suppressHydrationWarning>

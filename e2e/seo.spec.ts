@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const PAGES = ["", "/work", "/about", "/services", "/colophon", "/contact", "/work/geotrack"];
+const CASES = ["bio-astral", "cursor-notion-mcp", "geotrack", "gymai", "karaoke-sync", "kipgoz", "notifyx"];
+const PAGES = ["", "/work", "/about", "/services", "/colophon", "/contact", ...CASES.map((slug) => `/work/${slug}`)];
 
 test("robots.txt allows everything and names the sitemap", async ({ request }) => {
   const res = await request.get("/robots.txt");
@@ -31,16 +32,22 @@ for (const locale of ["en", "tr"] as const) {
       expect(new URL(canonical!).pathname).toBe(`/${locale}${page}`);
       const ogUrl = await p.locator('meta[property="og:url"]').getAttribute("content");
       expect(ogUrl).toBe(canonical);
-      for (const l of ["en", "tr", "x-default"]) await expect(p.locator(`link[rel="alternate"][hreflang="${l}" i]`)).toHaveCount(1);
+      for (const [l, target] of [["en", "en"], ["tr", "tr"], ["x-default", "en"]] as const) {
+        const alt = p.locator(`link[rel="alternate"][hreflang="${l}" i]`);
+        await expect(alt).toHaveCount(1);
+        expect(new URL((await alt.getAttribute("href"))!, p.url()).pathname, l).toBe(`/${target}${page}`);
+      }
       await expect(p.locator('meta[property="og:locale"]')).toHaveAttribute("content", locale === "tr" ? "tr_TR" : "en_US");
       await expect(p.locator('meta[property="og:site_name"]')).toHaveAttribute("content", "Emin Dündar");
       await expect(p.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
       const title = await p.title();
       const ogTitle = await p.locator('meta[property="og:title"]').getAttribute("content");
       expect(title).toContain(ogTitle!.replace(/ — Emin Dündar$/, ""));
+      expect(title.length, title).toBeLessThanOrEqual(70);
       const desc = await p.locator('meta[name="description"]').getAttribute("content");
       expect(desc!.length).toBeGreaterThanOrEqual(50);
       expect(desc!.length).toBeLessThanOrEqual(170);
+      await expect(p.locator('meta[property="og:description"]')).toHaveAttribute("content", desc!);
     });
   }
 }

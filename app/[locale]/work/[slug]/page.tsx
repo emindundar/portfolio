@@ -31,10 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!hasLocale(routing.locales, locale)) return {};
   const p = getProject(locale, slug);
   if (!p) return {};
+  // Search metadata: a shorter title where the full one would overflow 70 characters, and a 120-160 character
+  // description; the page itself shows `title` and `summary`.
+  const title = p.seoTitle ?? p.title;
   return {
-    title: p.title, description: p.summary,
+    title, description: p.description,
     alternates: alternatesFor(`/work/${slug}`, locale),
-    ...openGraphFor({ path: `/work/${slug}`, locale, title: p.title, description: p.summary, type: "article" }),
+    ...openGraphFor({ path: `/work/${slug}`, locale, title, description: p.description, type: "article" }),
   };
 }
 

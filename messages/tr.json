@@ -100,7 +100,7 @@
   },
   "About": {
     "title": "Hakkımda",
-    "description": "Kimim, nerelerde çalıştım ve mobil, web, backend ve AI ürünleri geliştirirken neler öğrendim.",
+    "description": "Kimim, nerelerde çalıştım; mobil, web, backend ve AI ürünleri geliştirirken neler öğrendim.",
     "intro": "Ben Emin — mobil uygulamalar, web ürünleri ve arkalarındaki backend'leri geliştiren bir Yönetim Bilişim Sistemleri mezunuyum; AI'ı iş akışına bağlamak da alışkanlığım. İstanbul'dayım.",
     "timelineHeading": "Zaman çizelgesi",
     "certsHeading": "Sertifikalar",
@@ -117,7 +117,7 @@
   },
   "Services": {
     "title": "Hizmetler",
-    "description": "Müşterilerim için neler geliştiriyorum: mobil uygulama, web ürünü, backend sistemleri ve AI entegrasyonları, ilk taslaktan yayına.",
+    "description": "Müşteriler için geliştirdiklerim: mobil uygulama, web ürünü, backend sistemleri ve AI entegrasyonları; ilk taslaktan yayına kadar.",
     "intro": "Freelance ve proje bazlı işlere açığım. İyi yaptığım dört şey:",
     "cta": "Proje başlat",
     "seeCase": "İlgili çalışmayı incele"

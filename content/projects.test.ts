@@ -100,3 +100,31 @@ describe("project content cross-references", () => {
     expect(words, file).toBeLessThanOrEqual(350);
   });
 });
+
+const SUFFIX = " — Emin Dündar";
+const front = (file: string, key: string): string | undefined => {
+  const fm = /^---\n([\s\S]*?)\n---/.exec(readFileSync(join(dir, file), "utf8"))?.[1] ?? "";
+  return new RegExp(`^${key}: (.+)$`, "m").exec(fm)?.[1]?.trim();
+};
+
+describe("project search metadata", () => {
+  const files = slugs.flatMap((slug) => [`${slug}.en.mdx`, `${slug}.tr.mdx`]);
+  it.each(files)("%s has a 120-160 character description distinct from the summary", (file) => {
+    const description = front(file, "description");
+    expect(description, file).toBeDefined();
+    expect(description!.length, file).toBeGreaterThanOrEqual(120);
+    expect(description!.length, file).toBeLessThanOrEqual(160);
+    expect(description, file).not.toBe(front(file, "summary"));
+  });
+  it.each(files)("%s meta title (seoTitle ?? title) fits 70 characters with the site suffix", (file) => {
+    const title = front(file, "seoTitle") ?? front(file, "title") ?? "";
+    expect(title.length, file).toBeGreaterThan(0);
+    expect((title + SUFFIX).length, `${file}: ${title}`).toBeLessThanOrEqual(70);
+  });
+  it.each(files)("%s seoTitle, when present, keeps the product name of the title first", (file) => {
+    const seo = front(file, "seoTitle");
+    if (!seo) return;
+    const product = (front(file, "title") ?? "").split(" — ")[0]!;
+    expect(seo.startsWith(`${product} — `), file).toBe(true);
+  });
+});

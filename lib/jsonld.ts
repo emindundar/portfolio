@@ -21,19 +21,14 @@ export function websiteLd(input: { locale: Locale; description: string }): Ld {
   };
 }
 
-export function caseLd(input: { locale: Locale; project: Pick<Project, "slug" | "title" | "summary" | "year" | "stack">; image?: string }): Ld {
+export function caseLd(input: { locale: Locale; project: Pick<Project, "slug" | "title" | "description" | "year" | "stack">; image?: string }): Ld {
   const { locale, project, image } = input;
   const url = absoluteUrl(`/${locale}/work/${project.slug}`);
   return {
-    "@context": CONTEXT, "@type": "CreativeWork", "@id": `${url}#work`, url, name: project.title, description: project.summary,
+    "@context": CONTEXT, "@type": "CreativeWork", "@id": `${url}#work`, url, name: project.title, description: project.description,
     inLanguage: locale, dateCreated: String(project.year), keywords: project.stack.join(", "), author: { "@id": PERSON_ID },
     ...(image ? { image: absoluteUrl(image) } : {}),
   };
-}
-
-/** Facet labels first, then every project's stack; de-duplicated in order of first appearance, capped. */
-export function knowsAboutFrom(facetLabels: string[], stacks: string[][], cap = 30): string[] {
-  return [...new Set([...facetLabels, ...stacks.flat()])].slice(0, cap);
 }
 
 const ESCAPES: Record<string, string> = { "<": "\\u003c", ">": "\\u003e", "&": "\\u0026", "\u2028": "\\u2028", "\u2029": "\\u2029" };
