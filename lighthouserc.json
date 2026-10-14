@@ -8,11 +8,13 @@
         "http://localhost:3101/tr",
         "http://localhost:3101/en/work",
         "http://localhost:3101/en/work/geotrack",
+        "http://localhost:3101/tr/work/geotrack",
         "http://localhost:3101/en/work/karaoke-sync",
         "http://localhost:3101/en/about",
+        "http://localhost:3101/en/services",
         "http://localhost:3101/en/contact"
       ],
-      "numberOfRuns": 2,
+      "numberOfRuns": 3,
       "settings": {
         "formFactor": "mobile"
       }
@@ -22,43 +24,50 @@
         "resource-summary:script:size": [
           "error",
           {
-            "maxNumericValue": 262144
+            "maxNumericValue": 262144,
+            "aggregationMethod": "median-run"
           }
         ],
         "largest-contentful-paint": [
           "warn",
           {
-            "maxNumericValue": 2000
+            "maxNumericValue": 2000,
+            "aggregationMethod": "median-run"
           }
         ],
         "cumulative-layout-shift": [
           "error",
           {
-            "maxNumericValue": 0.05
+            "maxNumericValue": 0.05,
+            "aggregationMethod": "median-run"
           }
         ],
         "categories:performance": [
           "error",
           {
-            "minScore": 0.9
+            "minScore": 0.9,
+            "aggregationMethod": "median-run"
           }
         ],
         "categories:accessibility": [
           "error",
           {
-            "minScore": 0.95
+            "minScore": 0.95,
+            "aggregationMethod": "median-run"
           }
         ],
         "categories:seo": [
           "error",
           {
-            "minScore": 1
+            "minScore": 1,
+            "aggregationMethod": "median-run"
           }
         ],
         "categories:best-practices": [
           "warn",
           {
-            "minScore": 0.9
+            "minScore": 0.9,
+            "aggregationMethod": "median-run"
           }
         ]
       }
