@@ -44,3 +44,28 @@ for (const locale of ["en", "tr"] as const) {
     });
   }
 }
+
+async function ld(page: import("@playwright/test").Page) {
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  return blocks.flatMap((b) => { const v = JSON.parse(b); return Array.isArray(v) ? v : [v]; });
+}
+
+test("every page carries Person and WebSite data; a case adds a CreativeWork by that person", async ({ page }) => {
+  await page.goto("/tr");
+  const home = await ld(page);
+  const person = home.find((x) => x["@type"] === "Person");
+  expect(person).toMatchObject({ name: "Emin Dündar", jobTitle: "Yazılım Geliştirici" });
+  expect(person.sameAs).toHaveLength(2);
+  expect(person.knowsAbout.length).toBeGreaterThanOrEqual(5);
+  expect(person.knowsAbout.length).toBeLessThanOrEqual(30);
+  expect(new Set(person.knowsAbout).size).toBe(person.knowsAbout.length);
+  const site = home.find((x) => x["@type"] === "WebSite");
+  expect(site).toMatchObject({ inLanguage: "tr" });
+  expect(site.publisher["@id"]).toBe(person["@id"]);
+
+  await page.goto("/tr/work/geotrack");
+  const work = (await ld(page)).find((x) => x["@type"] === "CreativeWork");
+  expect(work.author["@id"]).toBe(person["@id"]);
+  expect(new URL(work.url).pathname).toBe("/tr/work/geotrack");
+  expect(work.name).toBe(await page.getByRole("heading", { level: 1 }).innerText());
+});

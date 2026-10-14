@@ -7,6 +7,8 @@ import { routing } from "@/i18n/routing";
 import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getProjects, getProject } from "@/lib/content";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
+import { caseLd } from "@/lib/jsonld";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { MDXContent } from "@/components/mdx/MDXContent";
 import { MediaCover } from "@/components/media/MediaCover";
 import { CaseHeader } from "@/components/case/CaseHeader";
@@ -59,6 +61,7 @@ export default async function CasePage({ params }: Props) {
 
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
+      <JsonLd data={caseLd({ locale, project })} />
       {project.fallback && (
         <p role="note" className="mb-6 border border-line px-3 py-2 font-mono text-sm text-muted">
           {t("fallbackNote")}
