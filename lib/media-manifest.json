@@ -1,6 +1,7 @@
 {
   "/media/events/devfest-denizli-25": {
     "widths": [
+      560,
       640
     ],
     "width": 640,
@@ -8,6 +9,7 @@
   },
   "/media/events/devfest-izmir-24": {
     "widths": [
+      560,
       640,
       1280,
       1920
@@ -17,6 +19,7 @@
   },
   "/media/events/gymai-thesis-2025": {
     "widths": [
+      560,
       640,
       1280,
       1920
@@ -26,6 +29,7 @@
   },
   "/media/geotrack/cover": {
     "widths": [
+      560,
       640
     ],
     "width": 640,
@@ -40,6 +44,7 @@
   },
   "/media/gymai/poster": {
     "widths": [
+      560,
       640
     ],
     "width": 640,

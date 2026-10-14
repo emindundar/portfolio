@@ -6,10 +6,13 @@ describe("imageFor", () => {
     expect(imageFor("/media/events/devfest-izmir-24")).toEqual({
       src: "/media/events/devfest-izmir-24-1920.webp",
       srcSet:
-        "/media/events/devfest-izmir-24-640.webp 640w, /media/events/devfest-izmir-24-1280.webp 1280w, /media/events/devfest-izmir-24-1920.webp 1920w",
+        "/media/events/devfest-izmir-24-560.webp 560w, /media/events/devfest-izmir-24-640.webp 640w, /media/events/devfest-izmir-24-1280.webp 1280w, /media/events/devfest-izmir-24-1920.webp 1920w",
       width: 1920,
       height: 1440,
     });
+  });
+  it("phone cover: 560w next to the 640 file (20rem slot at DPR 1.75)", () => {
+    expect(imageFor("/media/geotrack/cover")?.srcSet).toBe("/media/geotrack/cover-560.webp 560w, /media/geotrack/cover-640.webp 640w");
   });
   it("keeps real intrinsic size for narrow single-width images", () => {
     expect(imageFor("/media/gymai/cover")).toEqual({

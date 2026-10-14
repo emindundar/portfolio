@@ -2,10 +2,19 @@ import { readdirSync, readFileSync, mkdirSync, statSync, writeFileSync } from "n
 import { join, parse } from "node:path";
 import { execFileSync } from "node:child_process";
 
-export const SIZES = [640, 1280, 1920] as const;
+// 560 = the 20rem phone-frame cover slot at DPR 1.75 (Lighthouse's emulated phone); without it that device
+// downloads the 640 file for a 560 px slot.
+export const SIZES = [560, 640, 1280, 1920] as const;
 export function targetSizes(srcWidth: number): number[] {
-  const fit = SIZES.filter((w) => w <= srcWidth);
-  return fit.length ? fit : [SIZES[0]];
+  // A source narrower than 640 px still gets a single "-640" file at its own width (never upscaled);
+  // "-560" only exists next to a real 640.
+  if (srcWidth < 640) return [640];
+  return SIZES.filter((w) => w <= srcWidth);
+}
+/** Photo groups keep q78; project covers and screenshots (flat UI, text) are q72 at effort 6, which reads the same 1:1. */
+export const PHOTO_GROUPS = ["events", "about"] as const;
+export function webpOptions(group: string): { quality: number; effort?: number } {
+  return (PHOTO_GROUPS as readonly string[]).includes(group) ? { quality: 78 } : { quality: 72, effort: 6 };
 }
 export function outputName(base: string, width: number) {
   return `${base}-${width}.webp`;
@@ -92,7 +101,7 @@ async function run() {
         for (const w of widths) {
           const out = join(outRoot, group, outputName(name, w));
           if (!isStale(mtime(out), srcMtime)) continue;
-          await sharp(src).rotate().resize({ width: w, withoutEnlargement: true }).webp({ quality: 78 }).toFile(out);
+          await sharp(src).rotate().resize({ width: w, withoutEnlargement: true }).webp(webpOptions(group)).toFile(out);
           console.log("img", out);
         }
         // Real pixel size of the largest emitted file (a "-640" file may be narrower than 640).
