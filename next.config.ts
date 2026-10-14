@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { headerRules } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
+  // Static headers (no nonce), so every page stays prerendered. See lib/security-headers.ts.
+  async headers() {
+    return headerRules({ dev: process.env.NODE_ENV !== "production" });
+  },
   partialPrefetching: true,
   experimental: {
     // Off on purpose. The Tailwind loader scans the file system itself, so Turbopack's persisted cache

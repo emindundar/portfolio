@@ -31,6 +31,31 @@ describe("fetchNowStats", () => {
     );
     for (const c of f.mock.calls) expect((c[1] as RequestInit).headers).toMatchObject({ Accept: "application/vnd.github+json" });
   });
+  it("sends Authorization: Bearer <token> on both requests when a token is given", async () => {
+    const f = routes({});
+    await fetchNowStats("emindundar", f, NOW, "github_pat_secret");
+    expect(f).toHaveBeenCalledTimes(2);
+    for (const c of f.mock.calls) {
+      expect((c[1] as RequestInit).headers).toMatchObject({ Authorization: "Bearer github_pat_secret", Accept: "application/vnd.github+json" });
+    }
+  });
+  it.each([undefined, ""])("sends no Authorization header without a token (%j)", async (token) => {
+    const f = routes({});
+    await fetchNowStats("emindundar", f, NOW, token);
+    expect(f).toHaveBeenCalledTimes(2);
+    for (const c of f.mock.calls) expect((c[1] as RequestInit).headers).not.toHaveProperty("Authorization");
+  });
+  it("never puts the token in a thrown error or a log", async () => {
+    const spies = (["log", "error", "warn", "info", "debug"] as const).map((m) => vi.spyOn(console, m).mockImplementation(() => {}));
+    try {
+      for (const repos of [() => json({ message: "Bad credentials" }, 401), async () => { throw new Error("down"); }]) {
+        await expect(fetchNowStats("emindundar", routes({ repos }), NOW, "github_pat_secret")).resolves.toBeNull();
+      }
+      for (const s of spies) expect(JSON.stringify(s.mock.calls)).not.toContain("github_pat_secret");
+    } finally {
+      for (const s of spies) s.mockRestore();
+    }
+  });
   it("skips forks and takes the next repo", async () => {
     const f = routes({ repos: () => json([repo({ name: "some-fork", fork: true }), repo({ name: "geotrack", html_url: "https://github.com/emindundar/geotrack" })]) });
     expect((await fetchNowStats("emindundar", f, NOW))?.repo.name).toBe("geotrack");

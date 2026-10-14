@@ -170,7 +170,12 @@ export function buildEmail(data: Omit<ContactData, "locale"> & { locale: string 
   return { subject: `Portfolio contact: ${data.name.replace(/[\r\n]+/g, " ")}`, text: lines.join("\n"), replyTo: data.email };
 }
 
-export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch) {
+/**
+ * `allowedHostnames` (optional, case-insensitive, exact match): siteverify must report one of them, so a
+ * token minted on another site that shares the secret cannot be replayed here. Empty or absent: not checked.
+ */
+export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch, allowedHostnames: readonly string[] = []) {
+  const allowed = new Set(allowedHostnames.map((h) => h.toLowerCase()));
   return async (token: string, ip: string): Promise<Outcome> => {
     if (!token || token.length > MAX_TOKEN) return { ok: false, reason: "no-token" };
     try {
@@ -180,8 +185,11 @@ export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch)
         signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) return { ok: false, reason: String(res.status) };
-      const json = (await res.json()) as { success?: unknown; "error-codes"?: unknown };
-      if (json.success === true) return { ok: true };
+      const json = (await res.json()) as { success?: unknown; hostname?: unknown; "error-codes"?: unknown };
+      if (json.success === true) {
+        if (allowed.size && !(typeof json.hostname === "string" && allowed.has(json.hostname.toLowerCase()))) return { ok: false, reason: "hostname" };
+        return { ok: true };
+      }
       // Cloudflare's own codes (e.g. invalid-input-secret, timeout-or-duplicate). Only well-formed ones are kept.
       const raw: unknown[] = Array.isArray(json["error-codes"]) ? json["error-codes"] : [];
       const codes = raw.filter((c): c is string => typeof c === "string" && /^[a-z0-9-]{1,40}$/.test(c)).slice(0, 5);
@@ -221,7 +229,9 @@ export function contactDepsFrom(
   // On Vercel, x-forwarded-for is overwritten with the real client address, so the first entry is trustworthy.
   // On any other host the header is client-supplied and spoofable (the limiter can then be evaded).
   const ip = getHeader("x-forwarded-for")?.split(",")[0]?.trim() || getHeader("x-real-ip")?.trim() || UNKNOWN_IP;
-  const { RESEND_API_KEY, CONTACT_TO, CONTACT_FROM, TURNSTILE_SECRET_KEY, NEXT_PUBLIC_TURNSTILE_SITE_KEY, CONTACT_DRY_RUN, VERCEL_ENV } = env;
+  const { RESEND_API_KEY, CONTACT_TO, CONTACT_FROM, TURNSTILE_SECRET_KEY, NEXT_PUBLIC_TURNSTILE_SITE_KEY, CONTACT_DRY_RUN, VERCEL_ENV, TURNSTILE_HOSTNAMES } = env;
+  // Optional, comma-separated: the hostnames the Turnstile widget may run on (unset or empty: not checked).
+  const hostnames = (TURNSTILE_HOSTNAMES ?? "").split(",").map((h) => h.trim()).filter(Boolean);
   const missing = Object.entries({ RESEND_API_KEY, CONTACT_TO, TURNSTILE_SECRET_KEY, NEXT_PUBLIC_TURNSTILE_SITE_KEY })
     .filter(([, value]) => !value)
     .map(([name]) => name);
@@ -232,7 +242,7 @@ export function contactDepsFrom(
     fuse: shared.fuse,
     // Without a site key the page renders no widget, so no visitor could ever pass: that is "not configured",
     // not a failed bot check.
-    verifyToken: TURNSTILE_SECRET_KEY && NEXT_PUBLIC_TURNSTILE_SITE_KEY ? createTurnstileVerifier(TURNSTILE_SECRET_KEY, shared.fetch) : null,
+    verifyToken: TURNSTILE_SECRET_KEY && NEXT_PUBLIC_TURNSTILE_SITE_KEY ? createTurnstileVerifier(TURNSTILE_SECRET_KEY, shared.fetch, hostnames) : null,
     send:
       RESEND_API_KEY && CONTACT_TO
         ? createResendSender({ apiKey: RESEND_API_KEY, from: CONTACT_FROM || DEFAULT_FROM, to: CONTACT_TO }, shared.fetch)

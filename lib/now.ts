@@ -7,5 +7,6 @@ import { fetchNowStats, type NowStats } from "@/lib/github";
 export async function getNowStats(): Promise<NowStats | null> {
   "use cache";
   cacheLife("hours");
-  return fetchNowStats(GITHUB_USER, fetch, new Date());
+  // Server only, read inside the cached scope (never in a page render). Optional: unset = unauthenticated.
+  return fetchNowStats(GITHUB_USER, fetch, new Date(), process.env.GITHUB_TOKEN || undefined);
 }

@@ -176,6 +176,36 @@ describe("createTurnstileVerifier", () => {
     const impl = async () => new Response(JSON.stringify({ success: false, "error-codes": ["bad-request", "Ada <ada@example.com>", 7, "x".repeat(41), "a", "b", "c", "d", "e"] }));
     expect(await createTurnstileVerifier("sec", impl as unknown as typeof fetch)("tok", "1.2.3.4")).toEqual({ ok: false, reason: "bad-request,a,b,c,d" });
   });
+
+  describe("hostname allow-list", () => {
+    const answer = (body: object) => (async () => new Response(JSON.stringify(body))) as unknown as typeof fetch;
+    const HOSTS = ["eminsportfolio.vercel.app"] as const;
+    it("accepts a token minted on an allowed hostname", async () => {
+      const f = answer({ success: true, hostname: "eminsportfolio.vercel.app" });
+      expect(await createTurnstileVerifier("sec", f, HOSTS)("tok", "1.2.3.4")).toEqual({ ok: true });
+    });
+    it.each([
+      ["another hostname", { success: true, hostname: "evil.example" }],
+      ["a missing hostname", { success: true }],
+      ["a non-string hostname", { success: true, hostname: 7 }],
+      ["a suffix match only", { success: true, hostname: "x.eminsportfolio.vercel.app" }],
+    ])("rejects %s with reason hostname", async (_n, body) => {
+      expect(await createTurnstileVerifier("sec", answer(body), HOSTS)("tok", "1.2.3.4")).toEqual({ ok: false, reason: "hostname" });
+    });
+    it("compares case-insensitively", async () => {
+      expect(await createTurnstileVerifier("sec", answer({ success: true, hostname: "EminsPortfolio.Vercel.App" }), HOSTS)("tok", "1.2.3.4")).toEqual({ ok: true });
+      expect(await createTurnstileVerifier("sec", answer({ success: true, hostname: "eminsportfolio.vercel.app" }), ["EMINSPORTFOLIO.VERCEL.APP"])("tok", "1.2.3.4")).toEqual({ ok: true });
+    });
+    it("ignores the hostname without an allow-list (or with an empty one)", async () => {
+      const f = answer({ success: true, hostname: "evil.example" });
+      expect(await createTurnstileVerifier("sec", f)("tok", "1.2.3.4")).toEqual({ ok: true });
+      expect(await createTurnstileVerifier("sec", f, [])("tok", "1.2.3.4")).toEqual({ ok: true });
+    });
+    it("still reports Cloudflare's own failure before the hostname", async () => {
+      const f = answer({ success: false, hostname: "evil.example", "error-codes": ["timeout-or-duplicate"] });
+      expect(await createTurnstileVerifier("sec", f, HOSTS)("tok", "1.2.3.4")).toEqual({ ok: false, reason: "timeout-or-duplicate" });
+    });
+  });
 });
 
 describe("createResendSender", () => {
@@ -474,5 +504,20 @@ describe("contactDepsFrom", () => {
     expect(await submitContact(form(), d)).toEqual({ status: "success" });
     const urls = (s.fetch as unknown as ReturnType<typeof vi.fn>).mock.calls.map((c) => c[0]);
     expect(urls).toEqual(["https://challenges.cloudflare.com/turnstile/v0/siteverify", "https://api.resend.com/emails"]);
+  });
+  describe("TURNSTILE_HOSTNAMES", () => {
+    const verify = async (env: Record<string, string | undefined>, hostname: string) => {
+      const s = { ...shared(), fetch: (async () => new Response(JSON.stringify({ success: true, hostname }))) as unknown as typeof fetch };
+      return contactDepsFrom({ ...FULL, ...env }, headers({ "x-forwarded-for": "203.0.113.7" }), s).verifyToken!("tok", "203.0.113.7");
+    };
+    it("is read comma-separated and trimmed", async () => {
+      const env = { TURNSTILE_HOSTNAMES: " emindundar.dev , eminsportfolio.vercel.app ," };
+      expect(await verify(env, "eminsportfolio.vercel.app")).toEqual({ ok: true });
+      expect(await verify(env, "emindundar.dev")).toEqual({ ok: true });
+      expect(await verify(env, "other.example")).toEqual({ ok: false, reason: "hostname" });
+    });
+    it.each([undefined, "", " , "])("unset or empty (%j) → no hostname check", async (value) => {
+      expect(await verify({ TURNSTILE_HOSTNAMES: value }, "other.example")).toEqual({ ok: true });
+    });
   });
 });

@@ -28,9 +28,11 @@ All variables are optional. Copy `.env.example` to `.env.local`.
 | `RESEND_API_KEY`, `CONTACT_TO` | contact form mail | form answers "not available", points to LinkedIn | Production only |
 | `CONTACT_FROM` | sender address | `Portfolio <onboarding@resend.dev>` | Production only |
 | `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | bot check (both are needed) | form answers "not available" | Production only |
+| `TURNSTILE_HOSTNAMES` | comma-separated hostnames a Turnstile token must come from (e.g. `eminsportfolio.vercel.app`), server only | hostname not checked | Production only |
 | `CONTACT_DRY_RUN=1` | local work, e2e, previews: validates, answers success, sends nothing | — (ignored when `VERCEL_ENV=production`) | Preview only |
 | `NEXT_PUBLIC_UMAMI_ID` | analytics | no analytics script | Production only |
 | `NEXT_PUBLIC_UMAMI_DOMAINS` | comma-separated hostnames allowed to report | attribute omitted, every host reports | Production only |
+| `GITHUB_TOKEN` | "now" panel GitHub requests, server only: a fine-grained token with **no** permissions (public data only) | unauthenticated requests (Vercel's shared build IPs often hit that rate limit; the panel then shows only the hand-written line) | Production only |
 
 - Real keys go into **Production only**. Preview deployments run on other hostnames, where the Turnstile widget is not authorised: give Preview nothing but `CONTACT_DRY_RUN=1`.
 - While `CONTACT_FROM` is the default, `CONTACT_TO` must be the Resend account's own e-mail address; Resend rejects any other recipient (403).
@@ -40,6 +42,8 @@ All variables are optional. Copy `.env.example` to `.env.local`.
 
 Data flows: a submitted name, e-mail address and message are sent as an e-mail through Resend and stored nowhere else; Cloudflare Turnstile runs the bot check and receives the visitor's IP address. The form says so under the submit button. The site itself sets one first-party cookie, `theme`, when the theme toggle is used. Analytics, when enabled, is Umami Cloud: no cookies, no personal data, Do Not Track respected, so there is no consent banner.
 
-The home page "now" panel reads `content/now.json` (edit the text and the `updated` date by hand) and, once an hour, two unauthenticated GitHub API endpoints. If GitHub does not answer, only the hand-written line is shown.
+The home page "now" panel reads `content/now.json` (edit the text and the `updated` date by hand) and, once an hour, two public GitHub API endpoints (authenticated with `GITHUB_TOKEN` when set). If GitHub does not answer, only the hand-written line is shown.
+
+Security headers are static and set in `next.config.ts` (`lib/security-headers.ts`) for every path except the hashed build assets under `/_next/static/` (those get `nosniff` only): a Content-Security-Policy, HSTS, `X-Frame-Options: DENY`, `nosniff`, a referrer policy and a permissions policy. The CSP allows only Cloudflare Turnstile (script and frame) and Umami (script `cloud.umami.is`, collection `gateway.umami.is`) besides the site itself. Known limitation: scripts and styles may run inline (`'unsafe-inline'`) because a per-request nonce would make every page dynamic; origins, framing, forms and plugins stay locked down. A new third-party script, frame or endpoint needs an entry there (`e2e/headers.spec.ts` fails on any CSP violation). The Vercel preview toolbar (`vercel.live`) is not allowed, so it does not load on preview deployments.
 
 Design specs and plans live in `docs/superpowers/`.
