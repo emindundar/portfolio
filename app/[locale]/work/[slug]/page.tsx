@@ -18,9 +18,11 @@ import { CaseNav } from "@/components/case/CaseNav";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Forces the whole route to be prerendered; with cacheComponents this also makes unknown slugs return a real 404
-// (pinned by e2e/case.spec.ts).
+// Forces the whole route to be prerendered. Slugs outside generateStaticParams are closed ("not-found"): Next.js
+// answers them with app/global-not-found.tsx, a server-rendered localized 404 (pinned by e2e/notfound.spec.ts and
+// e2e/case.spec.ts). notFound() below stays as a guard.
 export const ensureStatic = "navigation";
+export const unstable_paramMatching = { slug: "not-found" };
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) => getProjects(locale).map((p) => ({ locale, slug: p.slug })));

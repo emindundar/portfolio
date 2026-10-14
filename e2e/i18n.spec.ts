@@ -51,6 +51,7 @@ test.describe("locale routing", () => {
     const res = await page.goto("/tr/boyle-bir-sayfa-yok");
     expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Sayfa bulunamadı");
+    await expect(page.locator("html")).toHaveAttribute("lang", "tr");
   });
 
   test("language toggle switches locale and keeps path", async ({ page }) => {

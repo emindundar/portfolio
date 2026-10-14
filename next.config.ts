@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
     // (.next/cache/turbopack, restored by Vercel from an earlier deployment) can serve a stale stylesheet:
     // production builds failed on a class that no longer existed in any scanned file.
     turbopackFileSystemCacheForBuild: false,
+    // app/global-not-found.tsx: bilingual 404 for URLs that match no route (the proxy skips paths with a dot).
+    globalNotFound: true,
   },
   turbopack: {
     rules: {
