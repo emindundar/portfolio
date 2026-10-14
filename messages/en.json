@@ -50,7 +50,8 @@
   "NotFound": {
     "title": "Page not found",
     "body": "Nothing lives at this address.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "metaTitle": "404 — Page not found"
   },
   "Error": {
     "title": "Something went wrong.",

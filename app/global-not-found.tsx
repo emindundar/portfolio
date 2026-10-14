@@ -35,7 +35,7 @@ async function requestedLocale(): Promise<Locale | null> {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await requestedLocale();
   const m = locale === "tr" ? tr.NotFound : en.NotFound;
-  return { title: `404 — ${m.title}` };
+  return { title: m.metaTitle };
 }
 
 export default async function GlobalNotFound() {

@@ -78,7 +78,8 @@ for (const scheme of ["light", "dark"] as const) {
 }
 
 // Decision: the global page runs ThemeScript like every other page, so a theme the visitor picked with the toggle
-// wins over the system scheme here too (ThemeScript reads document.cookie on the client; the page stays static).
+// wins over the system scheme here too (ThemeScript reads document.cookie on the client; the server never reads the cookie. The page itself is dynamic,
+// `ƒ /_not-found`, because it reads the locale request header).
 test("global 404 honours the saved theme cookie over the system scheme", async ({ browser, baseURL }) => {
   const ctx = await browser.newContext({ colorScheme: "light" });
   await ctx.addCookies([{ name: "theme", value: "dark", url: baseURL! }]);

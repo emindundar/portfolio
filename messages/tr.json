@@ -50,7 +50,8 @@
   "NotFound": {
     "title": "Sayfa bulunamadı",
     "body": "Bu adreste bir şey yok.",
-    "backHome": "Ana sayfaya dön"
+    "backHome": "Ana sayfaya dön",
+    "metaTitle": "404 — Sayfa bulunamadı"
   },
   "Error": {
     "title": "Bir şeyler ters gitti.",
