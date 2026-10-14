@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getProjects, getProject } from "@/lib/content";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
 import { MDXContent } from "@/components/mdx/MDXContent";
@@ -29,7 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!hasLocale(routing.locales, locale)) return {};
   const p = getProject(locale, slug);
   if (!p) return {};
-  return { title: p.title, description: p.summary, alternates: alternatesFor(`/work/${slug}`, locale) };
+  return {
+    title: p.title, description: p.summary,
+    alternates: alternatesFor(`/work/${slug}`, locale),
+    ...openGraphFor({ path: `/work/${slug}`, locale, title: p.title, description: p.summary, type: "article" }),
+  };
 }
 
 // Hero sizing lives here, not in MediaCover: the phone frame is capped to ~70% of the viewport height

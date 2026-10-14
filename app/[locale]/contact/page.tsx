@@ -3,7 +3,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { BUDGETS, HONEYPOT_FIELD } from "@/lib/contact";
 import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
 import { ContactForm } from "@/components/contact/ContactForm";
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Contact" });
-  return { title: t("title"), description: t("description"), alternates: alternatesFor("/contact", locale) };
+  return { title: t("title"), description: t("description"), alternates: alternatesFor("/contact", locale), ...openGraphFor({ path: "/contact", locale, title: t("title"), description: t("description") }) };
 }
 
 export function generateStaticParams() {

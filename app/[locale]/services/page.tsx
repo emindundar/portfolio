@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getServices } from "@/lib/content";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Services" });
-  return { title: t("title"), description: t("description"), alternates: alternatesFor("/services", locale) };
+  return { title: t("title"), description: t("description"), alternates: alternatesFor("/services", locale), ...openGraphFor({ path: "/services", locale, title: t("title"), description: t("description") }) };
 }
 
 export function generateStaticParams() {

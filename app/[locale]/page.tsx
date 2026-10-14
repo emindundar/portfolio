@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getProjects } from "@/lib/content";
 import { Hero } from "@/components/home/Hero";
 import { NowPanel } from "@/components/home/NowPanel";
@@ -17,7 +17,8 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
-  return { alternates: alternatesFor("/", locale) };
+  const t = await getTranslations({ locale, namespace: "Meta" });
+  return { alternates: alternatesFor("/", locale), ...openGraphFor({ path: "/", locale, title: t("title"), description: t("description") }) };
 }
 
 export default async function HomePage({ params }: Props) {
