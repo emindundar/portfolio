@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { UMAMI_COLLECT } from "@/lib/security-headers";
 
 // Build-time constant (cacheComponents: no per-request env read in render).
 const ID = process.env.NEXT_PUBLIC_UMAMI_ID ?? "";
@@ -13,6 +14,8 @@ export function Analytics() {
     <Script
       src="https://cloud.umami.is/script.js"
       data-website-id={ID}
+      // The script's own default today; pinned so a changed default cannot silently fall outside the CSP connect-src.
+      data-host-url={UMAMI_COLLECT}
       data-do-not-track="true"
       data-domains={DOMAINS_OK ? DOMAINS : undefined}
       strategy="afterInteractive"

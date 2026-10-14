@@ -36,8 +36,8 @@ describe("NowPanel", () => {
   it("names the repo link with a space before the new-tab note, and labels the source", async () => {
     const { container } = await show({ repo: { name: "portfolio", url: "https://github.com/emindundar/portfolio" }, pushedAt: "2026-10-07", commits30d: 42 });
     const link = screen.getByRole("link", { name: "portfolio (opens in a new tab)" });
-    // The space sits in normal flow: leading whitespace inside the absolutely positioned sr-only box can be collapsed away.
-    expect(link.querySelector(".sr-only")!.textContent).toBe("(opens in a new tab)");
+    // A no-break space (never collapsed) leads the sr-only box; nothing visible trails the label.
+    expect(link.querySelector(".sr-only")!.textContent).toBe("\u00A0(opens in a new tab)");
     expect(container.querySelector("[data-now-live]")).toHaveTextContent("From GitHub");
   });
   it("omits the commit count when it is unknown and pluralizes one", async () => {

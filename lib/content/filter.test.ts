@@ -3,7 +3,7 @@ import { parseFacet, filterProjects } from "./filter";
 import type { Project } from "./merge";
 
 const p = (slug: string, facets: Project["facets"]): Project =>
-  ({ slug, facets, stack: [], year: 2026, role: "solo", featured: false, order: 1, links: {}, title: slug, summary: "", code: "", locale: "en", fallback: false }) as Project;
+  ({ slug, facets, stack: [], year: 2026, role: "solo", featured: false, order: 1, links: {}, title: slug, summary: "", description: "", code: "", locale: "en", fallback: false }) as Project;
 
 describe("parseFacet", () => {
   it("accepts known facets only", () => {

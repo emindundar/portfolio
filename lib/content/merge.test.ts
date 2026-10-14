@@ -19,6 +19,7 @@ const content = (slug: string, locale: "en" | "tr"): ProjectContent => ({
   locale,
   title: `${slug} ${locale}`,
   summary: `summary of ${slug} in ${locale} language`,
+  description: `description of ${slug} in ${locale}`,
   code: "",
 });
 

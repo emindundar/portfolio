@@ -1,5 +1,6 @@
 {
   "Meta": {
+    "jobTitle": "Yazılım Geliştirici",
     "title": "Emin Dündar — Mobil, Web, Backend ve AI",
     "description": "Ürünü uçtan uca kurarım: mobil uygulama, web, backend ve AI entegrasyonları."
   },
@@ -49,7 +50,8 @@
   "NotFound": {
     "title": "Sayfa bulunamadı",
     "body": "Bu adreste bir şey yok.",
-    "backHome": "Ana sayfaya dön"
+    "backHome": "Ana sayfaya dön",
+    "metaTitle": "404 — Sayfa bulunamadı"
   },
   "Error": {
     "title": "Bir şeyler ters gitti.",
@@ -99,7 +101,7 @@
   },
   "About": {
     "title": "Hakkımda",
-    "description": "Kimim, nerelerde çalıştım, neler öğrendim.",
+    "description": "Kimim, nerelerde çalıştım; mobil, web, backend ve AI ürünleri geliştirirken neler öğrendim.",
     "intro": "Ben Emin — mobil uygulamalar, web ürünleri ve arkalarındaki backend'leri geliştiren bir Yönetim Bilişim Sistemleri mezunuyum; AI'ı iş akışına bağlamak da alışkanlığım. İstanbul'dayım.",
     "timelineHeading": "Zaman çizelgesi",
     "certsHeading": "Sertifikalar",
@@ -116,14 +118,14 @@
   },
   "Services": {
     "title": "Hizmetler",
-    "description": "Müşterilerim için neler geliştiriyorum.",
+    "description": "Müşteriler için geliştirdiklerim: mobil uygulamalar, web ürünleri, backend sistemleri ve AI entegrasyonları; ilk taslaktan yayına kadar.",
     "intro": "Freelance ve proje bazlı işlere açığım. İyi yaptığım dört şey:",
     "cta": "Proje başlat",
     "seeCase": "İlgili çalışmayı incele"
   },
   "Colophon": {
     "title": "Künye",
-    "description": "Bu site nasıl yapıldı.",
+    "description": "Bu site nasıl yapıldı: kullanılan teknolojiler, tasarım kararları ve arkasındaki süreç.",
     "p1": "Bu site başlı başına bir vaka çalışması. Önce yazılı bir spec olarak tasarlandı, sonra görev görev planlandı ve Claude Code alt ajanlarından oluşan bir ekiple geliştirildi: bir ajan yazıyor, yeni bir ajan gözden geçiriyor, her anlaşmazlıkta kararı ben veriyorum.",
     "p2": "Teknolojiler: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, git tabanlı MDX içerik için Velite, hareket için GSAP + Lenis, hero shader için OGL.",
     "p3": "Hareket azaltma tercihi açıkken her animasyonun yerini statik görünüm alır; hareket kodu yalnızca hydration sonrası yüklenir, böylece ilk yükleme JavaScript'i 180 KB'ın altında kalır.",
@@ -169,7 +171,7 @@
     "fieldInvalid": "Bu değer geçerli görünmüyor.",
     "elsewhere": "Diğer kanallar",
     "noScript": "Bot doğrulaması JavaScript gerektirir. JavaScript kapalıysa lütfen bana <link>LinkedIn'den</link> ulaşın.",
-    "privacy": "Adınız, e-posta adresiniz ve mesajınız Resend aracılığıyla gelen kutuma iletilir ve yalnızca size yanıt vermek için kullanılır. Cloudflare Turnstile bot olmadığınızı doğrular ve IP adresinizi görür. İzleme çerezi kullanılmaz; mesajınızın kopyası bu sitede tutulmaz. Tarayıcınızda yalnızca tema tercihiniz saklanır."
+    "privacy": "Adınız, e-posta adresiniz ve mesajınız Resend aracılığıyla gelen kutuma iletilir ve yalnızca size yanıt vermek için kullanılır. Cloudflare Turnstile bot olmadığınızı doğrular ve IP adresinizi görür. İzleme çerezi kullanılmaz; mesajınızın kopyası bu sitede tutulmaz. Tarayıcınızda yalnızca tema ve dil tercihiniz saklanır."
   },
   "Now": {
     "heading": "Şu an",

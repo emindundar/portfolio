@@ -26,6 +26,13 @@ describe("Analytics", () => {
     expect(s).toHaveAttribute("data-do-not-track", "true");
     expect(s).toHaveAttribute("strategy", "afterInteractive");
   });
+  it("pins the collector to the host the CSP allows (connect-src), so a script-side default change cannot break it", async () => {
+    const s = (await load("abc-1234")).getByTestId("umami");
+    expect(s).toHaveAttribute("data-host-url", "https://gateway.umami.is");
+    const { contentSecurityPolicy } = await import("@/lib/security-headers");
+    const connect = contentSecurityPolicy({ dev: false }).split("; ").find((d) => d.startsWith("connect-src "));
+    expect(connect).toContain(s.getAttribute("data-host-url"));
+  });
   it("has no data-domains attribute unless NEXT_PUBLIC_UMAMI_DOMAINS is set", async () => {
     expect((await load("abc-1234")).getByTestId("umami")).not.toHaveAttribute("data-domains");
   });

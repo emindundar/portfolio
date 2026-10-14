@@ -21,7 +21,7 @@ describe("contact page", () => {
     for (const [label, href] of [["LinkedIn", "https://www.linkedin.com/in/emindundar"], ["GitHub", "https://github.com/emindundar"]] as const) {
       const link = screen.getByRole("link", { name: `${label} (opens in a new tab)` });
       expect(link).toHaveAttribute("href", href);
-      expect(link.querySelector(".sr-only")!.textContent).toBe("(opens in a new tab)");
+      expect(link.querySelector(".sr-only")!.textContent).toBe("\u00A0(opens in a new tab)");
     }
   });
   it("publishes the contact address as a plain mailto link (owner decision, plan deviation 5)", async () => {

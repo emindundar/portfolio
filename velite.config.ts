@@ -14,7 +14,12 @@ const projectContent = defineCollection({
   schema: s
     .object({
       title: s.string().min(1).max(120),
+      /** Meta title when `title` is too long for a 70-character <title>: 56 = 70 minus the 14-character " — Emin Dündar"
+       *  suffix of the title template in app/[locale]/layout.tsx; change both together. */
+      seoTitle: s.string().min(1).max(56).optional(),
       summary: s.string().min(10).max(240),
+      /** Meta / Open Graph / JSON-LD description; `summary` stays the visible text. */
+      description: s.string().min(120).max(160),
       metrics: s.array(s.object({ label: s.string(), value: s.string() })).optional(),
       code: s.mdx(),
       path: s.path(),

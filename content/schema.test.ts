@@ -54,6 +54,22 @@ describe("projectMetaSchema", () => {
     expect(projectMetaSchema.safeParse({ ...valid, client: { en: "x" } }).success).toBe(false);
     expect(projectMetaSchema.safeParse({ ...valid, credits: { en: "x", tr: "" } }).success).toBe(false);
   });
+  it.each([
+    ["repo", { repo: ["http://github.com/x"] }],
+    ["live", { live: "http://a.b" }],
+    ["demo", { demo: "javascript:alert(1)" }],
+    ["video", { video: "ftp://a.b/v.mp4" }],
+    ["store", { store: "//apps.apple.com/x" }],
+  ])("links.%s: only https URLs", (field, links) => {
+    const r = projectMetaSchema.safeParse({ ...valid, links });
+    expect(r.success).toBe(false);
+    expect(r.error!.issues[0]!.path).toContain(field);
+    expect(r.error!.issues.map((i) => i.message).join(" ")).toMatch(/https/);
+  });
+  it("links: https URLs pass", () => {
+    const links = { repo: ["https://github.com/x"], live: "https://a.b", demo: "https://a.b/d", video: "https://a.b/v", store: "https://a.b/s" };
+    expect(projectMetaSchema.safeParse({ ...valid, links }).success).toBe(true);
+  });
   it("rejects cover without a known type", () => {
     expect(projectMetaSchema.safeParse({ ...valid, cover: { type: "gif", src: "/media/a/cover", frame: "none" } }).success).toBe(false);
   });

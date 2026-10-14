@@ -4,7 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getProjects } from "@/lib/content";
 import { parseFacet, filterProjects } from "@/lib/content/filter";
 import { WorkFilter } from "@/components/work/WorkFilter";
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Work" });
-  return { title: t("title"), description: t("description"), alternates: alternatesFor("/work", locale) };
+  return { title: t("title"), description: t("description"), alternates: alternatesFor("/work", locale), ...openGraphFor({ path: "/work", locale, title: t("title"), description: t("description") }) };
 }
 
 // The filtered list is streamed into a hidden `<div hidden id="S:…">` at the end of <body> and moved into place by

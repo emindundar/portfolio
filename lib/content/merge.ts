@@ -5,13 +5,15 @@ export type ProjectContent = {
   slug: string;
   locale: Locale;
   title: string;
+  seoTitle?: string;
   summary: string;
+  description: string;
   metrics?: { label: string; value: string }[];
   code: string;
 };
 
 export type Project = ProjectMeta &
-  Pick<ProjectContent, "title" | "summary" | "metrics" | "code"> & {
+  Pick<ProjectContent, "title" | "seoTitle" | "summary" | "description" | "metrics" | "code"> & {
     locale: Locale;
     fallback: boolean;
   };
@@ -40,7 +42,9 @@ export function mergeProjects(
     out.push({
       ...m,
       title: chosen.title,
+      seoTitle: chosen.seoTitle,
       summary: chosen.summary,
+      description: chosen.description,
       metrics: chosen.metrics,
       code: chosen.code,
       locale: chosen.locale,

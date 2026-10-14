@@ -4,9 +4,11 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { getProjects, getProject } from "@/lib/content";
 import { FACET_LABEL_KEYS } from "@/lib/content/facets";
+import { caseLd } from "@/lib/jsonld";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { MDXContent } from "@/components/mdx/MDXContent";
 import { MediaCover } from "@/components/media/MediaCover";
 import { CaseHeader } from "@/components/case/CaseHeader";
@@ -16,9 +18,11 @@ import { CaseNav } from "@/components/case/CaseNav";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
-// Forces the whole route to be prerendered; with cacheComponents this also makes unknown slugs return a real 404
-// (pinned by e2e/case.spec.ts).
+// Forces the whole route to be prerendered. Slugs outside generateStaticParams are closed ("not-found"): Next.js
+// answers them with app/global-not-found.tsx, a server-rendered localized 404 (pinned by e2e/notfound.spec.ts and
+// e2e/case.spec.ts). notFound() below stays as a guard.
 export const ensureStatic = "navigation";
+export const unstable_paramMatching = { slug: "not-found" };
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) => getProjects(locale).map((p) => ({ locale, slug: p.slug })));
@@ -29,7 +33,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!hasLocale(routing.locales, locale)) return {};
   const p = getProject(locale, slug);
   if (!p) return {};
-  return { title: p.title, description: p.summary, alternates: alternatesFor(`/work/${slug}`, locale) };
+  // Search metadata: a shorter title where the full one would overflow 70 characters, and a 120-160 character
+  // description; the page itself shows `title` and `summary`.
+  const title = p.seoTitle ?? p.title;
+  return {
+    title, description: p.description,
+    alternates: alternatesFor(`/work/${slug}`, locale),
+    ...openGraphFor({ path: `/work/${slug}`, locale, title, description: p.description, type: "article" }),
+  };
 }
 
 // Hero sizing lives here, not in MediaCover: the phone frame is capped to ~70% of the viewport height
@@ -55,6 +66,7 @@ export default async function CasePage({ params }: Props) {
 
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
+      <JsonLd data={caseLd({ locale, project, image: `/${locale}/work/${project.slug}/opengraph-image` })} />
       {project.fallback && (
         <p role="note" className="mb-6 border border-line px-3 py-2 font-mono text-sm text-muted">
           {t("fallbackNote")}

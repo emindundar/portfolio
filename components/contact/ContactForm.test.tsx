@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
+import tr from "@/messages/tr.json";
 import { BUDGETS, HONEYPOT_FIELD, type ContactState } from "@/lib/contact";
 
 const state = vi.hoisted(() => ({ current: { status: "idle" } as ContactState, pending: false, recover: false }));
@@ -62,6 +63,7 @@ describe("ContactForm", () => {
     expect(note).toHaveTextContent(/through Resend and used only to reply/);
     expect(note).toHaveTextContent(/Cloudflare Turnstile .* sees your IP address/);
     expect(note).toHaveTextContent(/No tracking cookies/);
+    expect(note).toHaveTextContent(/theme and language choices/);
     const button = screen.getByRole("button", { name: "Send message" });
     expect(button.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.querySelector("form")).toContainElement(note as HTMLElement);
@@ -100,8 +102,28 @@ describe("ContactForm", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("The form is not available right now.");
     expect(screen.getByRole("alert").querySelector("a")).toHaveAttribute("href", LINKEDIN);
   });
+  it("the alert sentence reads 'LinkedIn.' with no visible gap before the full stop", () => {
+    show({ status: "error", code: "unavailable", values: EMPTY });
+    const copy = screen.getByRole("alert").cloneNode(true) as Element;
+    copy.querySelectorAll(".sr-only").forEach((n) => n.remove());
+    expect(copy.textContent).toMatch(/reach me on LinkedIn\.$/);
+    expect(screen.getByRole("link", { name: "LinkedIn (opens in a new tab)" })).toBeInTheDocument();
+  });
+  it("TR: the alert sentence reads \"LinkedIn'den ulaşın.\" with one visible space", () => {
+    state.current = { status: "error", code: "unavailable", values: EMPTY };
+    render(
+      <NextIntlClientProvider locale="tr" messages={tr}>
+        <ContactForm locale="tr" siteKey="" linkedinUrl={LINKEDIN} budgets={BUDGETS} honeypotField={HONEYPOT_FIELD} />
+      </NextIntlClientProvider>,
+    );
+    const copy = screen.getByRole("alert").cloneNode(true) as Element;
+    copy.querySelectorAll(".sr-only").forEach((n) => n.remove());
+    expect(copy.textContent).toMatch(/bana LinkedIn'den ulaşın\.$/);
+  });
   it("bot check cannot load: alert with the LinkedIn fallback instead of a dead button", () => {
     show({ status: "idle" }, { siteKey: "site-key" });
+    expect(screen.queryByRole("alert")).toBeNull(); // the widget mounts on the first interaction
+    fireEvent.focusIn(screen.getByLabelText("Name"));
     const alert = screen.getByRole("alert");
     expect(alert).toHaveTextContent("The bot check did not complete.");
     expect(alert.querySelector("a")).toHaveAttribute("href", LINKEDIN);
@@ -111,6 +133,8 @@ describe("ContactForm", () => {
     state.recover = true;
     try {
       show({ status: "idle" }, { siteKey: "site-key" });
+      fireEvent.focusIn(screen.getByLabelText("Name"));
+      expect(document.querySelector("[data-turnstile]")).not.toBeNull();
       expect(screen.queryByRole("alert")).toBeNull();
     } finally {
       state.recover = false;

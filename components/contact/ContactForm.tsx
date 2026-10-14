@@ -7,6 +7,7 @@ import { sendContact } from "@/app/[locale]/contact/actions";
 // prefetches this route's chunks from every page. The page passes the constants down as props instead.
 import type { Budget, ContactErrorCode, ContactField, ContactState, FieldError } from "@/lib/contact";
 import { buttonClasses } from "@/components/ui/Button";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 import { Turnstile } from "./Turnstile";
 
 const FIELD_ERROR_KEY = { required: "fieldRequired", tooShort: "fieldTooShort", tooLong: "fieldTooLong", invalid: "fieldInvalid" } as const satisfies Record<FieldError, string>;
@@ -14,6 +15,15 @@ const ERROR_KEY = { invalid: "errorInvalid", turnstile: "errorTurnstile", rate: 
 const BUDGET_KEY = { lt1k: "budgetLt1k", "1k-5k": "budget1k5k", "5k-15k": "budget5k15k", gt15k: "budgetGt15k" } as const satisfies Record<Budget, string>;
 const FIELD_ORDER: ContactField[] = ["name", "email", "message", "budget"];
 const INITIAL: ContactState = { status: "idle" };
+/** Cloudflare's hidden input inside the widget; the server action reads the same name. */
+const TOKEN_FIELD = "cf-turnstile-response";
+/** A submit that arrives before the widget produced a token waits this long for it, then shows the bot-check alert. */
+const TOKEN_WAIT_MS = 8000;
+
+function hasToken(form: HTMLFormElement) {
+  const v = new FormData(form).get(TOKEN_FIELD);
+  return typeof v === "string" && v !== "";
+}
 
 // border-muted, not border-line: the edge of an input has to reach 3:1 against the page (WCAG 1.4.11).
 const control = "block w-full min-h-11 border border-muted bg-surface px-3 py-3 font-sans text-base text-fg hover:border-fg aria-[invalid=true]:border-accent";
@@ -32,11 +42,58 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
   const [answer, setAnswer] = useState({ state, round: 0 });
   if (answer.state !== state) setAnswer({ state, round: answer.round + 1 });
   const [botCheckDown, setBotCheckDown] = useState(false);
+  // Cloudflare's script (≈28 KiB) loads on the first focus, pointer press or input inside the form, not on page
+  // load. It stays armed across server answers (the remounted widget renders at once from the loaded script).
+  const [armed, setArmed] = useState(false);
+  const arm = useCallback(() => setArmed(true), []);
+  // A submit made before the widget issued a token is held here (one at a time) and re-sent when the token arrives.
+  const [waiting, setWaiting] = useState(false);
+  const held = useRef<ReturnType<typeof setTimeout> | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const alertRef = useRef<HTMLParagraphElement>(null);
   const successRef = useRef<HTMLParagraphElement>(null);
-  const onUnavailable = useCallback(() => setBotCheckDown(true), []);
-  const onAvailable = useCallback(() => setBotCheckDown(false), []);
+  const release = useCallback(() => {
+    if (held.current === null) return false;
+    clearTimeout(held.current);
+    held.current = null;
+    setWaiting(false);
+    return true;
+  }, []);
+  const onUnavailable = useCallback(() => {
+    release();
+    setBotCheckDown(true);
+  }, [release]);
+  const onAvailable = useCallback(() => {
+    setBotCheckDown(false);
+    // Cloudflare fills its hidden input before the callback; submit on the next task so the form data has it.
+    if (release()) setTimeout(() => formRef.current?.requestSubmit());
+  }, [release]);
+  useEffect(
+    () => () => {
+      if (held.current !== null) clearTimeout(held.current);
+    },
+    [],
+  );
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    // Without a site key the server fails closed (`unavailable`); with a token the action runs as usual.
+    if (!siteKey || hasToken(e.currentTarget)) return;
+    // Cancelling the event keeps React from running the action.
+    e.preventDefault();
+    setArmed(true);
+    if (held.current !== null) return; // already waiting: never a second submission
+    if (botCheckDown) {
+      alertRef.current?.focus();
+      return;
+    }
+    setWaiting(true);
+    held.current = setTimeout(() => {
+      held.current = null;
+      setWaiting(false);
+      setBotCheckDown(true);
+      setTimeout(() => alertRef.current?.focus());
+    }, TOKEN_WAIT_MS);
+  };
 
   // After each server answer move focus to the result: the success message, the first invalid field,
   // or the alert when no single field is at fault.
@@ -52,10 +109,9 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
   }, [state]);
 
   const linkedin = (chunks: React.ReactNode) => (
-    <a href={linkedinUrl} target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">
+    <ExternalLink href={linkedinUrl} newTabLabel={tc("newTab")} unstyled className="underline underline-offset-4">
       {chunks}
-      <span className="sr-only"> ({tc("newTab")})</span>
-    </a>
+    </ExternalLink>
   );
 
   if (state.status === "success") {
@@ -96,7 +152,18 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
   };
 
   return (
-    <form key={answer.round} ref={formRef} action={action} noValidate data-contact-form className="grid gap-6">
+    <form
+      key={answer.round}
+      ref={formRef}
+      action={action}
+      onSubmit={onSubmit}
+      onFocus={siteKey && !armed ? arm : undefined}
+      onPointerDown={siteKey && !armed ? arm : undefined}
+      onInput={siteKey && !armed ? arm : undefined}
+      noValidate
+      data-contact-form
+      className="grid gap-6"
+    >
       {errorCode && (
         <p ref={alertRef} tabIndex={-1} role="alert" data-contact-status="error" className="flex gap-3 border border-accent p-4">
           <span aria-hidden="true" className={marker} />
@@ -139,9 +206,9 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
       </div>
       <noscript><p className="text-sm text-muted">{t.rich("noScript", { link: linkedin })}</p></noscript>
       <div>
-        {siteKey && <Turnstile siteKey={siteKey} locale={locale} onUnavailable={onUnavailable} onAvailable={onAvailable} />}
-        <button type="submit" disabled={pending} className={buttonClasses("primary", "cursor-pointer disabled:cursor-wait disabled:opacity-60")}>
-          {pending ? t("sending") : t("submit")}
+        {siteKey && armed && <Turnstile siteKey={siteKey} locale={locale} onUnavailable={onUnavailable} onAvailable={onAvailable} />}
+        <button type="submit" disabled={pending || waiting} className={buttonClasses("primary", "cursor-pointer disabled:cursor-wait disabled:opacity-60")}>
+          {pending || waiting ? t("sending") : t("submit")}
         </button>
         {/* KVKK art. 10 / GDPR art. 13: say where the data goes at the point of collection. text-muted on bg is 5.73:1 (dark) and 4.74:1 (light). */}
         <p data-contact-privacy className="mt-4 max-w-xl text-sm text-muted">{t("privacy")}</p>

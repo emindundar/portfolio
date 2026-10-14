@@ -1,5 +1,6 @@
 {
   "Meta": {
+    "jobTitle": "Software Developer",
     "title": "Emin Dündar — Mobile, Web, Backend & AI",
     "description": "I build products end to end: mobile apps, web, backend and AI integrations."
   },
@@ -49,7 +50,8 @@
   "NotFound": {
     "title": "Page not found",
     "body": "Nothing lives at this address.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "metaTitle": "404 — Page not found"
   },
   "Error": {
     "title": "Something went wrong.",
@@ -99,7 +101,7 @@
   },
   "About": {
     "title": "About",
-    "description": "Who I am, where I've worked, what I've learned.",
+    "description": "Who I am, where I have worked and what I have learned building mobile, web, backend and AI products.",
     "intro": "I'm Emin — a Management Information Systems graduate who builds mobile apps, web products and the backends behind them, with a habit of wiring AI into the workflow. Based in Istanbul.",
     "timelineHeading": "Timeline",
     "certsHeading": "Certificates",
@@ -116,14 +118,14 @@
   },
   "Services": {
     "title": "Services",
-    "description": "What I build for clients.",
+    "description": "What I build for clients: mobile apps, web products, backend systems and AI integrations, from first sketch to release.",
     "intro": "Available for freelance and project work. Four things I do well:",
     "cta": "Start a project",
     "seeCase": "See a case"
   },
   "Colophon": {
     "title": "Colophon",
-    "description": "How this site was built.",
+    "description": "How this site was built: the stack, the design decisions and the process behind it.",
     "p1": "This site is a case study in itself. It was designed as a written spec first, then planned task by task and implemented with Claude Code acting as a subagent team: one agent implements, a fresh one reviews, and I rule on every disagreement.",
     "p2": "Stack: Next.js 16 (App Router, cache components), React 19, TypeScript, Tailwind v4, next-intl, Velite for git-based MDX content, GSAP + Lenis for motion, OGL for the hero shader.",
     "p3": "Every animation degrades to a static page under reduced motion; motion code loads only after hydration, so the first-load JavaScript stays under 180 KB.",
@@ -169,7 +171,7 @@
     "fieldInvalid": "This does not look right.",
     "elsewhere": "Elsewhere",
     "noScript": "The bot check needs JavaScript. Without it, please reach me on <link>LinkedIn</link>.",
-    "privacy": "Your name, e-mail and message are sent to my inbox through Resend and used only to reply. Cloudflare Turnstile checks that you are not a bot and sees your IP address. No tracking cookies; the site keeps no copy of your message. The only thing stored in your browser is your theme choice."
+    "privacy": "Your name, e-mail and message are sent to my inbox through Resend and used only to reply. Cloudflare Turnstile checks that you are not a bot and sees your IP address. No tracking cookies; the site keeps no copy of your message. The only things stored in your browser are your theme and language choices."
   },
   "Now": {
     "heading": "Now",
