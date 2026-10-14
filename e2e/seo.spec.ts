@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { FACETS } from "../content/facet-list";
+import { KNOWS_ABOUT } from "../lib/site";
 
 const CASES = ["bio-astral", "cursor-notion-mcp", "geotrack", "gymai", "karaoke-sync", "kipgoz", "notifyx"];
 const PAGES = ["", "/work", "/about", "/services", "/colophon", "/contact", ...CASES.map((slug) => `/work/${slug}`)];
@@ -63,8 +65,7 @@ test("every page carries Person and WebSite data; a case adds a CreativeWork by 
   const person = home.find((x) => x["@type"] === "Person");
   expect(person).toMatchObject({ name: "Emin Dündar", jobTitle: "Yazılım Geliştirici" });
   expect(person.sameAs).toHaveLength(2);
-  expect(person.knowsAbout.length).toBeGreaterThanOrEqual(5);
-  expect(person.knowsAbout.length).toBeLessThanOrEqual(30);
+  expect(person.knowsAbout).toHaveLength(FACETS.length + KNOWS_ABOUT.length);
   expect(new Set(person.knowsAbout).size).toBe(person.knowsAbout.length);
   const site = home.find((x) => x["@type"] === "WebSite");
   expect(site).toMatchObject({ inLanguage: "tr" });
@@ -75,4 +76,38 @@ test("every page carries Person and WebSite data; a case adds a CreativeWork by 
   expect(work.author["@id"]).toBe(person["@id"]);
   expect(new URL(work.url).pathname).toBe("/tr/work/geotrack");
   expect(work.name).toBe(await page.getByRole("heading", { level: 1 }).innerText());
+});
+
+for (const path of ["/en", "/tr/about", "/tr/work/geotrack"]) {
+  test(`${path}: og:image and twitter:image are a real 1200×630 PNG on this origin`, async ({ page, request }) => {
+    await page.goto(path);
+    const src = await page.locator('meta[property="og:image"]').getAttribute("content");
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", src!);
+    const res = await request.get(new URL(src!).pathname + new URL(src!).search);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toBe("image/png");
+    const buf = await res.body();
+    expect(buf.readUInt32BE(16)).toBe(1200); // PNG IHDR width
+    expect(buf.readUInt32BE(20)).toBe(630);
+    expect(buf.length).toBeLessThan(300_000);
+  });
+}
+
+test("the Turkish case image differs from the English one (localized title)", async ({ page, request }) => {
+  const get = async (p: string) => {
+    await page.goto(p);
+    const u = new URL((await page.locator('meta[property="og:image"]').getAttribute("content"))!);
+    return (await request.get(u.pathname + u.search)).body();
+  };
+  expect((await get("/en/work/geotrack")).equals(await get("/tr/work/geotrack"))).toBe(false);
+});
+
+test("the case JSON-LD image is the case's Open Graph image", async ({ page, request }) => {
+  await page.goto("/en/work/geotrack");
+  const work = (await ld(page)).find((n) => n["@type"] === "CreativeWork");
+  const res = await request.get(new URL(String(work!.image)).pathname);
+  expect(res.status()).toBe(200);
+  expect(res.headers()["content-type"]).toBe("image/png");
 });

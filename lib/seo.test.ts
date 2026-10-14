@@ -57,6 +57,16 @@ describe("absoluteUrl / openGraphFor", () => {
     expect(m.openGraph).toMatchObject({ type: "article", url: "/tr/work/geotrack", title: "T", description: "D", siteName: "Emin Dündar", locale: "tr_TR", alternateLocale: ["en_US"] });
     expect(m.twitter).toMatchObject({ card: "summary_large_image", title: "T", description: "D" });
   });
+  it("points pages without an image file at the locale image, and leaves pages that have their own file alone", () => {
+    const img = (path: string) => openGraphFor({ path, locale: "tr", title: "T", description: "D" });
+    expect(img("/about").openGraph).toMatchObject({ images: [{ url: "/tr/opengraph-image", width: 1200, height: 630, type: "image/png", alt: "Emin Dündar" }] });
+    expect(img("/about").twitter).toMatchObject({ images: [{ url: "/tr/opengraph-image", alt: "Emin Dündar" }] });
+    expect(img("/work").openGraph).toHaveProperty("images");
+    for (const own of ["/", "", "/work/geotrack"]) {
+      expect(img(own).openGraph).not.toHaveProperty("images");
+      expect(img(own).twitter).not.toHaveProperty("images");
+    }
+  });
   it("lists every static page once", () => {
     expect(PAGE_PATHS).toEqual(["", "/work", "/about", "/services", "/colophon", "/contact"]);
   });

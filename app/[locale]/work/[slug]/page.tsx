@@ -64,7 +64,7 @@ export default async function CasePage({ params }: Props) {
 
   return (
     <main className="px-4 py-12 md:px-6 md:py-16">
-      <JsonLd data={caseLd({ locale, project })} />
+      <JsonLd data={caseLd({ locale, project, image: `/${locale}/work/${project.slug}/opengraph-image` })} />
       {project.fallback && (
         <p role="note" className="mb-6 border border-line px-3 py-2 font-mono text-sm text-muted">
           {t("fallbackNote")}
