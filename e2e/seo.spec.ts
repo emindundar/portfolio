@@ -8,6 +8,7 @@ test("robots.txt allows everything and names the sitemap", async ({ request }) =
   const body = await res.text();
   expect(body).toMatch(/User-Agent: \*/i);
   expect(body).toMatch(/Allow: \//);
+  expect(body).not.toMatch(/^Host:/im);
   expect(body).toMatch(/Sitemap: https?:\/\/[^\s]+\/sitemap\.xml/);
 });
 
@@ -18,6 +19,7 @@ test("every sitemap URL resolves on this server and has hreflang pairs", async (
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname);
   expect(locs.length).toBeGreaterThanOrEqual(PAGES.length * 2);
   expect(xml).toMatch(/hreflang="x-default"/);
+  expect(xml).not.toMatch(/<lastmod>/);
   for (const path of locs) expect((await request.get(path)).status(), path).toBe(200);
 });
 

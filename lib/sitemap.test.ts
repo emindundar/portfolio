@@ -4,7 +4,7 @@ import { buildSitemap } from "@/app/sitemap";
 import { SITE_URL } from "./seo";
 
 describe("buildSitemap", () => {
-  const map = buildSitemap(["geotrack", "kipgoz"], new Date("2026-10-09T00:00:00Z"));
+  const map = buildSitemap(["geotrack", "kipgoz"]);
   it("lists every static page and case in both locales", () => {
     const urls = map.map((e) => e.url);
     expect(urls).toHaveLength((6 + 2) * 2);
@@ -18,7 +18,7 @@ describe("buildSitemap", () => {
     expect(entry.alternates?.languages).toEqual({
       en: `${SITE_URL}/en/work/geotrack`, tr: `${SITE_URL}/tr/work/geotrack`, "x-default": `${SITE_URL}/en/work/geotrack`,
     });
-    expect(entry.lastModified).toEqual(new Date("2026-10-09T00:00:00Z"));
+    expect(entry).not.toHaveProperty("lastModified");
   });
   it("never emits a trailing slash or a double slash in the path", () => {
     for (const e of map) expect(new URL(e.url).pathname).toMatch(/^\/(en|tr)(\/[a-z0-9-]+)*$/);
