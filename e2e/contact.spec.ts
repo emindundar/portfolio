@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { watchCsp } from "./helpers/csp";
 
 // The server keeps one in-memory limiter (5/hour/IP) and local runs reuse the server, so every page gets a
 // forwarded address nobody has used before: random 10.x.y.z per test, never repeated across runs in practice.
@@ -102,6 +103,13 @@ test.describe("/contact", () => {
     const button = await page.getByRole("button", { name: "Send message" }).boundingBox();
     expect((await note.boundingBox())!.y).toBeGreaterThanOrEqual(button!.y + button!.height);
     await expect(page.getByRole("complementary").getByRole("link", { name: "LinkedIn (opens in a new tab)", exact: true })).toBeVisible();
+    // The new-tab note is sr-only and carries its own separator: nothing visible (or underlined) trails the label.
+    const linkedin = page.getByRole("complementary").getByRole("link", { name: "LinkedIn (opens in a new tab)", exact: true });
+    expect(await linkedin.evaluate((a) => {
+      const copy = a.cloneNode(true) as Element;
+      copy.querySelectorAll(".sr-only, [aria-hidden='true']").forEach((n) => n.remove());
+      return copy.textContent;
+    })).toBe("LinkedIn");
     const mail = page.getByRole("complementary").getByRole("link", { name: /@/ });
     await expect(mail).toHaveAttribute("href", /^mailto:[^@\s]+@[^@\s]+$/);
     await expect(mail).not.toHaveAttribute("target", "_blank");
@@ -172,7 +180,8 @@ test.describe("/contact without JavaScript", () => {
 // variable in the e2e shell; CI builds without a key, so this is skipped there. The server is still dry-run.
 test.describe("/contact with the Turnstile widget", () => {
   test.skip(!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY, "build without a Turnstile site key");
-  test("Cloudflare is not contacted before the first interaction; the submit carries a token", async ({ page }) => {
+  test("Cloudflare is not contacted before the first interaction; the submit carries a token; no CSP violation", async ({ page }) => {
+    const check = await watchCsp(page);
     const cloudflare: string[] = [];
     let posts = 0;
     page.on("request", (r) => {
@@ -192,5 +201,6 @@ test.describe("/contact with the Turnstile widget", () => {
     expect(token).toBeTruthy();
     await expect(page.locator('[data-contact-status="success"]')).toBeVisible();
     expect(posts).toBe(1);
+    await check();
   });
 });

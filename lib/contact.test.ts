@@ -185,12 +185,14 @@ describe("createTurnstileVerifier", () => {
       expect(await createTurnstileVerifier("sec", f, HOSTS)("tok", "1.2.3.4")).toEqual({ ok: true });
     });
     it.each([
-      ["another hostname", { success: true, hostname: "evil.example" }],
-      ["a missing hostname", { success: true }],
-      ["a non-string hostname", { success: true, hostname: 7 }],
-      ["a suffix match only", { success: true, hostname: "x.eminsportfolio.vercel.app" }],
-    ])("rejects %s with reason hostname", async (_n, body) => {
-      expect(await createTurnstileVerifier("sec", answer(body), HOSTS)("tok", "1.2.3.4")).toEqual({ ok: false, reason: "hostname" });
+      ["another hostname", { success: true, hostname: "evil.example" }, "hostname:evil.example"],
+      ["a missing hostname", { success: true }, "hostname"],
+      ["a non-string hostname", { success: true, hostname: 7 }, "hostname"],
+      ["a suffix match only", { success: true, hostname: "x.eminsportfolio.vercel.app" }, "hostname:x.eminsportfolio.vercel.app"],
+      ["a hostname that is not a plain DNS name (never logged)", { success: true, hostname: "a b<script>@x" }, "hostname"],
+      ["an over-long hostname (never logged)", { success: true, hostname: "a".repeat(254) }, "hostname"],
+    ])("rejects %s, naming the host in the reason only when it is a plain DNS name", async (_n, body, reason) => {
+      expect(await createTurnstileVerifier("sec", answer(body), HOSTS)("tok", "1.2.3.4")).toEqual({ ok: false, reason });
     });
     it("compares case-insensitively", async () => {
       expect(await createTurnstileVerifier("sec", answer({ success: true, hostname: "EminsPortfolio.Vercel.App" }), HOSTS)("tok", "1.2.3.4")).toEqual({ ok: true });
@@ -514,7 +516,7 @@ describe("contactDepsFrom", () => {
       const env = { TURNSTILE_HOSTNAMES: " emindundar.dev , eminsportfolio.vercel.app ," };
       expect(await verify(env, "eminsportfolio.vercel.app")).toEqual({ ok: true });
       expect(await verify(env, "emindundar.dev")).toEqual({ ok: true });
-      expect(await verify(env, "other.example")).toEqual({ ok: false, reason: "hostname" });
+      expect(await verify(env, "other.example")).toEqual({ ok: false, reason: "hostname:other.example" });
     });
     it.each([undefined, "", " , "])("unset or empty (%j) → no hostname check", async (value) => {
       expect(await verify({ TURNSTILE_HOSTNAMES: value }, "other.example")).toEqual({ ok: true });

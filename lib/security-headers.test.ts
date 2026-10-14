@@ -53,7 +53,7 @@ describe("securityHeaders", () => {
     expect(h["Referrer-Policy"]).toBe("strict-origin-when-cross-origin");
     expect(h["X-Frame-Options"]).toBe("DENY");
     expect(h["Permissions-Policy"]).toBe("camera=(), microphone=(), geolocation=(), browsing-topics=()");
-    expect(h["Strict-Transport-Security"]).toBe("max-age=63072000; includeSubDomains; preload");
+    expect(h["Strict-Transport-Security"]).toBe("max-age=63072000; includeSubDomains");
     expect(h["Content-Security-Policy"]).toBe(contentSecurityPolicy({ dev: false }));
   });
   it("omits HSTS in development", () => {

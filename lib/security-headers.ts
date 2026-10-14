@@ -7,8 +7,9 @@ type Directives = Record<string, string[]>;
 
 const TURNSTILE = "https://challenges.cloudflare.com";
 const UMAMI_SCRIPT = "https://cloud.umami.is";
-// Observed on the live site: cloud.umami.is/script.js sends events to https://gateway.umami.is/api/send.
-const UMAMI_COLLECT = "https://gateway.umami.is";
+// cloud.umami.is/script.js sends events to `${data-host-url ?? "https://gateway.umami.is"}/api/send`;
+// components/layout/Analytics.tsx pins data-host-url to this value.
+export const UMAMI_COLLECT = "https://gateway.umami.is";
 
 export function contentSecurityPolicy({ dev }: { dev: boolean }): string {
   const directives: Directives = {
@@ -42,7 +43,7 @@ export function securityHeaders({ dev }: { dev: boolean }): { key: string; value
     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
     { key: "X-Frame-Options", value: "DENY" },
     { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
-    ...(dev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }]),
+    ...(dev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }]),
   ];
 }
 

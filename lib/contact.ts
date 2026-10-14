@@ -187,7 +187,11 @@ export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch,
       if (!res.ok) return { ok: false, reason: String(res.status) };
       const json = (await res.json()) as { success?: unknown; hostname?: unknown; "error-codes"?: unknown };
       if (json.success === true) {
-        if (allowed.size && !(typeof json.hostname === "string" && allowed.has(json.hostname.toLowerCase()))) return { ok: false, reason: "hostname" };
+        const host = typeof json.hostname === "string" ? json.hostname : "";
+        if (allowed.size && !allowed.has(host.toLowerCase())) {
+          // The rejected site's hostname (not visitor data) helps during a domain switch; only a plain DNS name is logged.
+          return { ok: false, reason: /^[a-z0-9.-]{1,253}$/i.test(host) ? `hostname:${host}` : "hostname" };
+        }
         return { ok: true };
       }
       // Cloudflare's own codes (e.g. invalid-input-secret, timeout-or-duplicate). Only well-formed ones are kept.

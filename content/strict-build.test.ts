@@ -31,6 +31,18 @@ beforeAll(() => {
     }),
   );
   writeFileSync(
+    join(dir, "projects/insecure.meta.json"),
+    JSON.stringify({
+      slug: "insecure",
+      facets: ["web"],
+      stack: ["Next.js"],
+      year: 2026,
+      role: "solo",
+      order: 2,
+      links: { live: "http://example.com" },
+    }),
+  );
+  writeFileSync(
     join(dir, "projects/bad.en.mdx"),
     "---\ntitle: Bad project\nsummary: A valid summary that is long enough.\n---\n\nBody.\n",
   );
@@ -73,6 +85,21 @@ describe("velite strict build", () => {
       const output = warn.mock.calls.flat().join("\n");
       expect(output).toMatch(/facets/);
       expect(output).toMatch(/blockchain|Invalid/i);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it("rejects a non-https project link, naming the file and the field", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    vi.spyOn(console, "clear").mockImplementation(() => {});
+    try {
+      await expect(build({ config: configPath, strict: true })).rejects.toThrow(/Schema validation failed/);
+      const output = warn.mock.calls.flat().join("\n");
+      expect(output).toMatch(/insecure\.meta\.json/);
+      expect(output).toMatch(/links\.live/);
+      expect(output).toMatch(/https URLs only/);
     } finally {
       vi.restoreAllMocks();
     }

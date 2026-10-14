@@ -4,6 +4,8 @@ import { FACETS, type Facet } from "./facet-list";
 export { FACETS, type Facet };
 
 const MEDIA_BASE = /^\/media\/[a-z0-9-]+\/[a-z0-9-]+$/;
+/** Project links open in a new tab (components/ui/ExternalLink): https only, so http/javascript:/data: fail the build here. */
+const HTTPS_URL = s.string().url().regex(/^https:\/\//, "https URLs only");
 
 export const projectMetaSchema = s.object({
   slug: s.string().regex(/^[a-z0-9-]+$/, "slug: only a-z, 0-9 and dashes"),
@@ -35,11 +37,11 @@ export const projectMetaSchema = s.object({
   credits: s.object({ en: s.string().min(1).max(200), tr: s.string().min(1).max(200) }).optional(),
   links: s
     .object({
-      repo: s.array(s.string().url()).optional(),
-      live: s.string().url().optional(),
-      demo: s.string().url().optional(),
-      video: s.string().url().optional(),
-      store: s.string().url().optional(),
+      repo: s.array(HTTPS_URL).optional(),
+      live: HTTPS_URL.optional(),
+      demo: HTTPS_URL.optional(),
+      video: HTTPS_URL.optional(),
+      store: HTTPS_URL.optional(),
     })
     .default({}),
 });
