@@ -24,11 +24,12 @@ export function ExternalLink({ href, newTabLabel, className, arrow = false, unst
   if (!/^https:\/\//.test(href)) throw new Error(`ExternalLink: only https URLs are allowed, got ${href}`);
   return (
     <a href={href} target="_blank" rel="noreferrer noopener" className={unstyled ? className : cn(BASE, className)}>
-      {/* One flex item, space in normal flow: whitespace at the start of the absolutely positioned sr-only box is dropped from the name. */}
+      {/* One flex item. The separator is a no-break space inside the sr-only box: a plain leading space there is
+          dropped from the name, and a space in normal flow would show (underlined) after the label. */}
       <span>
         {children}
-        {arrow && <span aria-hidden="true">&nbsp;↗</span>}{" "}
-        <span className="sr-only">({newTabLabel})</span>
+        {arrow && <span aria-hidden="true">&nbsp;↗</span>}
+        <span className="sr-only">&nbsp;({newTabLabel})</span>
       </span>
     </a>
   );

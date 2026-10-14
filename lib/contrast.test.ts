@@ -28,9 +28,9 @@ describe.each([
   ["light", light],
 ] as const)("%s theme tokens", (_name, t) => {
   it("has all six tokens", () => expect(Object.keys(t).sort()).toEqual(["accent", "bg", "fg", "line", "muted", "surface"]));
-  it("body text on background and surface ≥ 7:1", () => {
-    expect(contrast(t.fg, t.bg)).toBeGreaterThanOrEqual(7);
-    expect(contrast(t.fg, t.surface)).toBeGreaterThanOrEqual(7);
+  it("body text on background and surface ≥ 12:1 (spec §4.8)", () => {
+    expect(contrast(t.fg, t.bg)).toBeGreaterThanOrEqual(12);
+    expect(contrast(t.fg, t.surface)).toBeGreaterThanOrEqual(12);
   });
   it("muted text on background and surface ≥ 4.5:1", () => {
     expect(contrast(t.muted, t.bg)).toBeGreaterThanOrEqual(4.5);
