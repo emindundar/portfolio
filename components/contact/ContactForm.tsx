@@ -7,6 +7,7 @@ import { sendContact } from "@/app/[locale]/contact/actions";
 // prefetches this route's chunks from every page. The page passes the constants down as props instead.
 import type { Budget, ContactErrorCode, ContactField, ContactState, FieldError } from "@/lib/contact";
 import { buttonClasses } from "@/components/ui/Button";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 import { Turnstile } from "./Turnstile";
 
 const FIELD_ERROR_KEY = { required: "fieldRequired", tooShort: "fieldTooShort", tooLong: "fieldTooLong", invalid: "fieldInvalid" } as const satisfies Record<FieldError, string>;
@@ -108,10 +109,9 @@ export function ContactForm({ locale, siteKey, linkedinUrl, budgets, honeypotFie
   }, [state]);
 
   const linkedin = (chunks: React.ReactNode) => (
-    <a href={linkedinUrl} target="_blank" rel="noreferrer noopener" className="underline underline-offset-4">
+    <ExternalLink href={linkedinUrl} newTabLabel={tc("newTab")} unstyled className="underline underline-offset-4">
       {chunks}
-      <span className="sr-only"> ({tc("newTab")})</span>
-    </a>
+    </ExternalLink>
   );
 
   if (state.status === "success") {

@@ -5,6 +5,7 @@ import { slugify } from "@/lib/slugify";
 import { FlowDiagram } from "@/components/ui/FlowDiagram";
 import { Metrics } from "@/components/ui/Metrics";
 import { DeviceFrame } from "@/components/ui/DeviceFrame";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 function textOf(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -19,10 +20,10 @@ function A({ href = "", children, ...rest }: ComponentProps<"a">) {
   const external = /^(https?:)?\/\//.test(href);
   if (external) {
     return (
-      <a href={href} className={cls} target="_blank" rel="noreferrer noopener" {...rest}>
+      // http:// and protocol-relative URLs land here too and fail the build: content links must be https.
+      <ExternalLink href={href} newTabLabel={t("newTab")} unstyled className={cls}>
         {children}
-        <span className="sr-only"> ({t("newTab")})</span>
-      </a>
+      </ExternalLink>
     );
   }
   if (href.startsWith("/")) {

@@ -3,6 +3,7 @@ import type { Locale } from "@/i18n/routing";
 import { getNow } from "@/lib/content/site";
 import { formatDate } from "@/lib/format";
 import { getNowStats } from "@/lib/now";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 export async function NowPanel({ locale }: { locale: Locale }) {
   const t = await getTranslations("Now");
@@ -26,12 +27,9 @@ export async function NowPanel({ locale }: { locale: Locale }) {
           <div data-now-live className="md:col-span-4">
             <p>
               <span className="text-muted">{t("lastPush")}: </span>
-              <a href={stats.repo.url} target="_blank" rel="noreferrer noopener" className="inline-flex min-h-11 items-center underline underline-offset-4 md:min-h-0">
-                {/* One flex item, with the space in normal flow: leading whitespace inside the sr-only box can be collapsed out of the name. */}
-                <span>
-                  {stats.repo.name} <span className="sr-only">({tc("newTab")})</span>
-                </span>
-              </a>
+              <ExternalLink href={stats.repo.url} newTabLabel={tc("newTab")} className="md:min-h-0">
+                {stats.repo.name}
+              </ExternalLink>
               <span className="text-muted"> · </span>
               <time dateTime={stats.pushedAt}>{formatDate(stats.pushedAt, locale)}</time>
             </p>

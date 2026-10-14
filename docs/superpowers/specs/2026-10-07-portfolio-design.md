@@ -125,7 +125,7 @@ MDX frontmatter (`<slug>.<locale>.mdx`): `title`, `summary`, `metrics?: {label, 
 | `--line` | `#2A2A2E` | `#D9D6D0` |
 | `--fg` | `#EDEDED` | `#111111` |
 | `--muted` | `#8A8A90` | `#6B6B70` |
-| `--accent` | `#FF4D00` | `#E04300` |
+| `--accent` | `#FF4D00` | `#CA3C00` (Faz 1.5: `#E04300` 3.78:1 → 4.52:1 on bg, same hue) |
 
 Köşe yarıçapı 0. Kenarlık 1 px. Gölge yok. Tema `data-theme` ile `<html>`'de, cookie ile kalıcı, sistem tercihi varsayılan.
 

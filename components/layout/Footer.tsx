@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 // Computed once at module load: a build-time constant is correct for a statically built site.
 const YEAR = new Date().getFullYear();
@@ -23,10 +24,9 @@ export async function Footer() {
       <nav aria-label={t("nav")} className="flex flex-wrap gap-x-6">
         <Link href="/colophon" className={linkClass}>{tn("colophon")}</Link>
         {externals.map((e) => (
-          <a key={e.href} href={e.href} target="_blank" rel="noreferrer noopener" className={linkClass}>
+          <ExternalLink key={e.href} href={e.href} newTabLabel={tc("newTab")} unstyled className={linkClass}>
             {e.label}
-            <span className="sr-only"> ({tc("newTab")})</span>
-          </a>
+          </ExternalLink>
         ))}
       </nav>
     </footer>

@@ -7,6 +7,7 @@ import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { BUDGETS, HONEYPOT_FIELD } from "@/lib/contact";
 import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from "@/lib/site";
 import { ContactForm } from "@/components/contact/ContactForm";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -52,14 +53,9 @@ export default async function ContactPage({ params }: Props) {
             </li>
             {links.map((l) => (
               <li key={l.href}>
-                <a href={l.href} target="_blank" rel="noreferrer noopener" className="inline-flex min-h-11 items-center underline underline-offset-4">
-                  {/* One flex item, with the space in normal flow: leading whitespace inside the sr-only box can be collapsed out of the name. */}
-                  <span>
-                    {l.label}
-                    <span aria-hidden="true">&nbsp;↗</span>{" "}
-                    <span className="sr-only">({tc("newTab")})</span>
-                  </span>
-                </a>
+                <ExternalLink href={l.href} newTabLabel={tc("newTab")} arrow>
+                  {l.label}
+                </ExternalLink>
               </li>
             ))}
           </ul>

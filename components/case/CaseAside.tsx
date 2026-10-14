@@ -2,24 +2,14 @@ import { getTranslations } from "next-intl/server";
 import type { Project } from "@/lib/content";
 import { Metrics } from "@/components/ui/Metrics";
 import { cn } from "@/lib/utils/cn";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 const LABEL = "font-mono text-xs uppercase text-muted";
-const LINK =
-  "inline-flex min-h-11 items-center gap-2 [overflow-wrap:anywhere] font-mono text-sm text-fg underline decoration-accent underline-offset-4 hover:text-accent";
+const LINK = "[overflow-wrap:anywhere] font-mono text-sm text-fg decoration-accent hover:text-accent";
 
 /** Last path segment of a repository URL: https://github.com/u/map_tracking → map_tracking. */
 function repoName(url: string): string {
   return new URL(url).pathname.split("/").filter(Boolean).pop() ?? url;
-}
-
-function External({ href, newTab, children }: { href: string; newTab: string; children: React.ReactNode }) {
-  return (
-    <a href={href} target="_blank" rel="noreferrer noopener" className={LINK}>
-      {children}
-      <span aria-hidden="true">↗</span>
-      <span className="sr-only"> ({newTab})</span>
-    </a>
-  );
 }
 
 export async function CaseAside({ project, className }: { project: Project; className?: string }) {
@@ -73,16 +63,16 @@ export async function CaseAside({ project, className }: { project: Project; clas
           <ul className="m-0 mt-1 list-none p-0">
             {links.repo?.map((href) => (
               <li key={href}>
-                <External href={href} newTab={tc("newTab")}>
+                <ExternalLink href={href} newTabLabel={tc("newTab")} arrow className={LINK}>
                   {t("repo")}: {repoName(href)}
-                </External>
+                </ExternalLink>
               </li>
             ))}
             {single.map(({ key, href }) => (
               <li key={key}>
-                <External href={href} newTab={tc("newTab")}>
+                <ExternalLink href={href} newTabLabel={tc("newTab")} arrow className={LINK}>
                   {t(key)}: {new URL(href).host}
-                </External>
+                </ExternalLink>
               </li>
             ))}
           </ul>

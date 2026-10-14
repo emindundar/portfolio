@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { REPO_URL } from "@/lib/site";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -62,15 +63,9 @@ export default async function ColophonPage({ params }: Props) {
         </section>
       </div>
       <p className="mt-10">
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="inline-flex min-h-11 items-center font-mono text-sm text-accent underline underline-offset-4"
-        >
+        <ExternalLink href={REPO_URL} newTabLabel={tc("newTab")} className="font-mono text-sm text-accent">
           {t("repo")}
-          <span className="sr-only"> ({tc("newTab")})</span>
-        </a>
+        </ExternalLink>
       </p>
     </main>
   );
